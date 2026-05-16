@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c \"git diff --name-only HEAD 2>/dev/null | grep -E '^src/(features|app/api)/.+\\.ts$' | grep -v '\\.test\\.ts$' | while read f; do test_f=\\\"${f%.ts}.test.ts\\\"; [ ! -f \\\"$test_f\\\" ] && echo \\\"WARNING: $f has no test file ($test_f missing)\\\"; done\""
+          }
+        ]
+      }
+    ]
+  }
+}

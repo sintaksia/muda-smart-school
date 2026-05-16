@@ -7,7 +7,9 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:prod": "bun --env-file=.env.prod next dev",
     "build": "prisma generate && next build",
+    "build:prod": "bun --env-file=.env.prod prisma generate && bun --env-file=.env.prod next build",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
@@ -16,7 +18,10 @@
     "release": "release-it",
     "release:patch": "release-it patch --ci",
     "release:minor": "release-it minor --ci",
-    "release:major": "release-it major --ci"
+    "release:major": "release-it major --ci",
+    "test": "vitest",
+    "test:run": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -74,19 +79,25 @@
     "@commitlint/config-conventional": "^20.4.1",
     "@release-it/conventional-changelog": "^10.0.5",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^9",
     "eslint-config-next": "16.1.2",
     "husky": "^9.1.7",
+    "jsdom": "^29.1.1",
     "prettier": "^3.8.1",
     "prisma": "^7.3.0",
     "release-it": "^19.2.4",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "tw-animate-css": "^1.4.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.6"
   }
 }

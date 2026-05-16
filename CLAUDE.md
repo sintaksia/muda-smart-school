@@ -152,6 +152,27 @@ pnpx prisma generate       # NOT npx prisma generate
 - NEVER use `any` (implicit or explicit)
 - Always explicitly type variables, parameters, and return types — never rely on implicit `any`
 - In `.map()`, `.filter()`, `.forEach()`, etc., always ensure the callback parameter has a known type (from a typed array or explicit annotation)
+- In `catch` blocks, always type as `unknown` and narrow with `instanceof Error`; omit the binding entirely if it is not used
+
+```tsx
+// ✅ CORRECT
+} catch (error: unknown) {
+  toast.error(error instanceof Error ? error.message : "Something went wrong");
+}
+
+// ✅ CORRECT - binding omitted when unused
+} catch {
+  toast.error("Something went wrong");
+}
+
+// ❌ WRONG
+} catch (error: any) { ... }
+
+// ❌ WRONG - unused binding triggers no-unused-vars
+} catch (error) {
+  toast.error("Something went wrong");
+}
+```
 
 ### Components
 
@@ -201,6 +222,37 @@ z.number({ invalid_type_error: "Must be a number" });
 | `required_error`     | `message` |
 | `invalid_type_error` | `message` |
 | `errorMap`           | `error`   |
+
+---
+
+## Unit Testing — MANDATORY RULE
+
+**EVERY time you create a new file in `src/features/` or `src/app/api/`, you MUST also create a corresponding test file.**
+
+### Test File Placement
+
+| Source file                           | Test file                                  |
+| ------------------------------------- | ------------------------------------------ |
+| `src/features/[feat]/services/foo.ts` | `src/features/[feat]/services/foo.test.ts` |
+| `src/features/[feat]/utils/bar.ts`    | `src/features/[feat]/utils/bar.test.ts`    |
+| `src/features/[feat]/hooks/useBaz.ts` | `src/features/[feat]/hooks/useBaz.test.ts` |
+| `src/app/api/[route]/route.ts`        | `src/app/api/[route]/route.test.ts`        |
+
+### What to Test
+
+- **Services:** mock `prisma` with `vi.mock`, test each exported function
+- **Utils:** pure functions — test all branches and edge cases
+- **Hooks:** use `renderHook` from `@testing-library/react`
+- **API routes:** mock `prisma`, assert response status + body
+
+### Minimum Coverage Requirement
+
+Every new feature file must have at least:
+
+- 1 happy-path test
+- 1 error/edge-case test
+
+Run `pnpm test:run` before marking any task complete.
 
 ---
 

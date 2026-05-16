@@ -9,7 +9,7 @@ import {
   XCircle,
   FileText,
   Download,
-  Trash2
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -27,7 +27,9 @@ interface RegistrationActionsProps {
   registration: Pendaftaran;
 }
 
-export function RegistrationActions({ registration }: RegistrationActionsProps) {
+export function RegistrationActions({
+  registration,
+}: RegistrationActionsProps) {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +48,7 @@ export function RegistrationActions({ registration }: RegistrationActionsProps) 
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          status: "DITERIMA" // Sesuai dengan enum di Prisma
+          status: "DITERIMA", // Sesuai dengan enum di Prisma
         }),
       });
 
@@ -62,10 +64,13 @@ export function RegistrationActions({ registration }: RegistrationActionsProps) 
 
       // Refresh data
       router.refresh();
-
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("❌ Validation error:", error);
-      toast.error(error.message || "Gagal memvalidasi pendaftaran");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Gagal memvalidasi pendaftaran",
+      );
     }
   };
 
@@ -78,7 +83,7 @@ export function RegistrationActions({ registration }: RegistrationActionsProps) 
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          status: "DITOLAK" // Sesuai dengan enum di Prisma
+          status: "DITOLAK", // Sesuai dengan enum di Prisma
         }),
       });
 
@@ -94,10 +99,11 @@ export function RegistrationActions({ registration }: RegistrationActionsProps) 
 
       // Refresh data
       router.refresh();
-
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("❌ Rejection error:", error);
-      toast.error(error.message || "Gagal menolak pendaftaran");
+      toast.error(
+        error instanceof Error ? error.message : "Gagal menolak pendaftaran",
+      );
     }
   };
 
@@ -113,7 +119,7 @@ export function RegistrationActions({ registration }: RegistrationActionsProps) 
 
       toast.success("Pendaftaran berhasil dihapus");
       router.refresh();
-    } catch (error) {
+    } catch {
       toast.error("Gagal menghapus pendaftaran");
     } finally {
       setIsLoading(false);
@@ -121,10 +127,8 @@ export function RegistrationActions({ registration }: RegistrationActionsProps) 
     }
   };
 
-  // Action: Download/Export single
   const handleDownload = () => {
-    toast.info("Fitur download akan segera tersedia");
-    // Implement export single to PDF/Excel
+    window.open(`/api/admin/registrations/${registration.id}/print`, "_blank");
   };
 
   return (
@@ -154,7 +158,10 @@ export function RegistrationActions({ registration }: RegistrationActionsProps) 
           {/* Status Actions - hanya untuk PENDING */}
           {registration.status === "PENDING" && (
             <>
-              <DropdownMenuItem onClick={handleValidate} className="text-green-600">
+              <DropdownMenuItem
+                onClick={handleValidate}
+                className="text-green-600"
+              >
                 <CheckCircle className="mr-2 h-4 w-4" />
                 Terima
               </DropdownMenuItem>
@@ -168,17 +175,19 @@ export function RegistrationActions({ registration }: RegistrationActionsProps) 
 
           {/* Mark as Verified - untuk yang belum diverifikasi */}
           {registration.status === "PENDING" && (
-            <DropdownMenuItem onClick={() => {
-              // Action untuk tandai sebagai terverifikasi
-              fetch(`/api/registrasi/${registration.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "DIVERIFIKASI" }),
-              }).then(() => {
-                toast.success("Ditandai sebagai terverifikasi");
-                router.refresh();
-              });
-            }}>
+            <DropdownMenuItem
+              onClick={() => {
+                // Action untuk tandai sebagai terverifikasi
+                fetch(`/api/registrasi/${registration.id}`, {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ status: "DIVERIFIKASI" }),
+                }).then(() => {
+                  toast.success("Ditandai sebagai terverifikasi");
+                  router.refresh();
+                });
+              }}
+            >
               <FileText className="mr-2 h-4 w-4" />
               Tandai Terverifikasi
             </DropdownMenuItem>
