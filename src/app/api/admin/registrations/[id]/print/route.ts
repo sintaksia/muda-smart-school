@@ -134,10 +134,12 @@ export async function GET(
     .btn-back  { background: #fff; border: 1px solid #ccc; color: #333; }
     .btn-print { background: #32368C; border: none; color: #fff; }
 
+    @page { margin: 0; }
+
     @media print {
       .print-controls { display: none !important; }
       body { background: #fff; }
-      .page { margin: 0; padding: 10mm 15mm; box-shadow: none; }
+      .page { margin: 0; padding: 15mm 20mm; box-shadow: none; }
       .section { page-break-inside: avoid; }
     }
 
