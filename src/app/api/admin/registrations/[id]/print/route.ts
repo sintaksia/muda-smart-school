@@ -261,15 +261,13 @@ export async function GET(
       padding-top: 10px;
       border-top: 1px solid #ccc;
     }
-    .sig-block { text-align: center; }
+    .sig-block { text-align: left; }
     .sig-block p { font-size: 9pt; }
     .sig-line {
-      width: 130px;
+      width: 200px;
       border-bottom: 1px solid #000;
-      margin: 48px auto 4px;
+      margin: 56px 0 4px;
     }
-    .sig-name { font-size: 9pt; font-weight: 700; }
-    .sig-role { font-size: 8pt; color: #555; }
 
     /* ── FOOTER ── */
     .footer {
@@ -403,23 +401,14 @@ export async function GET(
   <!-- TANDA TANGAN -->
   <div class="signature-section">
     <div class="sig-block">
-      <p>Mengetahui,</p>
-      <p>Orang Tua / Wali Peserta Didik</p>
+      <p>Mengetahui :</p>
+      <p>Orang Tua / Wali Murid,</p>
       <div class="sig-line"></div>
-      <p class="sig-name">( ________________________________ )</p>
     </div>
     <div class="sig-block">
-      <p>Bandung, ${printDate}</p>
-      <p>Peserta Didik</p>
+      <p>Bandung, &hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip; ${new Date().getFullYear()}</p>
+      <p>Calon Murid,</p>
       <div class="sig-line"></div>
-      <p class="sig-name">( ${reg.namaLengkap} )</p>
-    </div>
-    <div class="sig-block">
-      <p>Mengesahkan,</p>
-      <p>Kepala Sekolah</p>
-      <div class="sig-line"></div>
-      <p class="sig-name">( ________________________________ )</p>
-      <p class="sig-role">NIP. ________________________</p>
     </div>
   </div>
 
