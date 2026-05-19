@@ -158,25 +158,27 @@ export async function GET(
       display: flex;
       align-items: center;
       gap: 16px;
-      border-bottom: 3px solid #32368C;
+      border-bottom: 3px solid #000;
       padding-bottom: 10px;
       margin-bottom: 4px;
     }
     .kop-logo {
-      width: 68px;
-      height: 68px;
+      width: 80px;
+      height: 80px;
       object-fit: contain;
       flex-shrink: 0;
     }
-    .kop-text .school-name {
-      font-size: 16pt;
-      font-weight: 700;
-      color: #32368C;
-      line-height: 1.2;
+    .kop-text {
+      flex: 1;
+      text-align: center;
+      line-height: 1.3;
     }
-    .kop-text .school-sub { font-size: 9pt; color: #444; margin-top: 2px; }
-    .kop-text .school-addr { font-size: 8.5pt; color: #555; margin-top: 3px; }
-    .sub-border { height: 2px; background: #F2C94C; margin-bottom: 14px; }
+    .kop-text .org-top    { font-size: 11pt; font-weight: 700; color: #000; }
+    .kop-text .org-mid    { font-size: 10.5pt; font-weight: 700; color: #000; }
+    .kop-text .school-name { font-size: 15pt; font-weight: 700; color: #000; margin-top: 2px; }
+    .kop-text .school-sub  { font-size: 11pt; font-weight: 700; color: #000; }
+    .kop-text .school-addr { font-size: 8.5pt; color: #000; margin-top: 3px; }
+    .sub-border { height: 2px; background: #000; margin-bottom: 14px; }
 
     /* ── TITLE ── */
     .doc-title { text-align: center; margin-bottom: 12px; }
@@ -187,7 +189,7 @@ export async function GET(
       letter-spacing: .5px;
       text-decoration: underline;
     }
-    .doc-title p { font-size: 9.5pt; color: #333; margin-top: 3px; }
+    .doc-title p { font-size: 12pt; font-weight: 700; color: #000; margin-top: 3px; }
 
     /* ── META ── */
     .reg-meta {
@@ -294,17 +296,19 @@ export async function GET(
   <div class="kop">
     <img class="kop-logo" src="/logo.jpg" alt="Logo SMK Muhammadiyah 2 Cibiru" />
     <div class="kop-text">
-      <div class="school-name">SMK Muhammadiyah 2 Cibiru</div>
-      <div class="school-sub">Sekolah Menengah Kejuruan &bull; Terakreditasi A (Unggul)</div>
-      <div class="school-addr">Jl. Raya Cibiru, Cibiru, Bandung, Jawa Barat &bull; smkmuhammadiyah2cibiru.sch.id</div>
+      <div class="org-top">PIMPINAN DAERAH MUHAMMADIYAH KOTA BANDUNG</div>
+      <div class="org-mid">MAJELIS PENDIDIKAN DASAR MENENGAH DAN PENDIDIKAN NONFORMAL</div>
+      <div class="school-name">SMK MUHAMMADIYAH 2 CIBIRU</div>
+      <div class="school-sub">TERAKREDITASI &ldquo;A&rdquo; ( UNGGUL )</div>
+      <div class="school-addr">Sekretariat : Jl. Cilengkrang II No. 7 Tlp. 022-7805502 Kel. Palassari Kec. Cibiru</div>
     </div>
   </div>
   <div class="sub-border"></div>
 
   <!-- TITLE -->
   <div class="doc-title">
-    <h2>Formulir Data Pendaftaran Peserta Didik Baru</h2>
-    <p>Penerimaan Peserta Didik Baru (PPDB) Tahun Pelajaran 2026/2027</p>
+    <h2>FORMULIR MURID BARU</h2>
+    <p>TAHUN PELAJARAN 2026 / 2027</p>
   </div>
 
   <!-- META -->
