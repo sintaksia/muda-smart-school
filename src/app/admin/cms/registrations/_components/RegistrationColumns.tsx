@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import { RegistrationActions } from "./RegistrationActions";
 // import { formatTanggal, getStatusColor, getStatusLabel } from "@/src/features/registration/services";
-import type { Pendaftaran } from "@/src/features/registration/services";
+import type { PendaftaranWithStudent } from "@/src/features/registration/services";
 
 // --- UTILS LOKAL (Client Safe) ---
 const formatTanggal = (date: Date | string): string => {
@@ -44,7 +44,7 @@ const getProgramLabel = (program: string): string => {
 };
 // --- END UTILS ---
 
-export const registrationColumns: ColumnDef<Pendaftaran>[] = [
+export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
   {
     accessorKey: "nomorPendaftaran",
     header: "No. Pendaftaran",

@@ -20,6 +20,8 @@ model User {
   createdById  String?    @map("created_by_id")
   createdBy    User?      @relation("CreatedByUser", fields: [createdById], references: [id])
   createdUsers User[]     @relation("CreatedByUser")
+  student      Student?
+  guru         Guru?
 
   @@map("users")
 }
@@ -69,8 +71,154 @@ model Pendaftaran {
   status             StatusPendaftaran @default(PENDING)
   tahunLulus         Int               @map("tahun_lulus")
   tanggalPendaftaran DateTime          @default(now()) @map("tanggal_pendaftaran")
+  student            Student?
 
   @@map("pendaftaran")
+}
+
+model Student {
+  id              String          @id @default(cuid())
+  userId          String          @unique @map("user_id")
+  pendaftaranId   String?         @unique @map("pendaftaran_id")
+  nis             String          @unique
+  nisn            String          @unique
+  programKeahlian ProgramKeahlian @map("program_keahlian")
+  angkatan        Int
+  kelasId         String?         @map("kelas_id")
+  status          StudentStatus   @default(AKTIF)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  user         User           @relation(fields: [userId], references: [id])
+  pendaftaran  Pendaftaran?   @relation(fields: [pendaftaranId], references: [id])
+  kelas        Kelas?         @relation(fields: [kelasId], references: [id])
+  absensiSiswa AbsensiSiswa[]
+
+  @@map("students")
+}
+
+model Guru {
+  id                   String            @id @default(cuid())
+  userId               String            @unique @map("user_id")
+  nip                  String?           @unique
+  nuptk                String?           @unique
+  jenisKelamin         JenisKelamin      @map("jenis_kelamin")
+  tempatLahir          String            @map("tempat_lahir")
+  tanggalLahir         DateTime          @map("tanggal_lahir")
+  pendidikanTerakhir   Pendidikan        @map("pendidikan_terakhir")
+  jabatan              String?
+  statusKepegawaian    StatusKepegawaian @map("status_kepegawaian")
+  tanggalMulaiMengajar DateTime?         @map("tanggal_mulai_mengajar")
+  createdAt            DateTime          @default(now()) @map("created_at")
+  updatedAt            DateTime          @updatedAt @map("updated_at")
+
+  user          User                @relation(fields: [userId], references: [id])
+  mataPelajaran GuruMataPelajaran[]
+  kelasWali     Kelas[]
+  jadwal        Jadwal[]
+  absensiGuru   AbsensiGuru[]
+
+  @@map("guru")
+}
+
+model Kelas {
+  id              String          @id @default(cuid())
+  nama            String
+  tingkat         Int
+  programKeahlian ProgramKeahlian @map("program_keahlian")
+  tahunAjaran     String          @map("tahun_ajaran")
+  waliKelasId     String?         @map("wali_kelas_id")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  waliKelas Guru?     @relation(fields: [waliKelasId], references: [id])
+  students  Student[]
+  jadwal    Jadwal[]
+
+  @@unique([nama, tahunAjaran])
+  @@map("kelas")
+}
+
+model MataPelajaran {
+  id              String           @id @default(cuid())
+  nama            String
+  kode            String           @unique
+  programKeahlian ProgramKeahlian? @map("program_keahlian")
+  tingkat         Int?
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  guru   GuruMataPelajaran[]
+  jadwal Jadwal[]
+
+  @@map("mata_pelajaran")
+}
+
+model GuruMataPelajaran {
+  id              String @id @default(cuid())
+  guruId          String @map("guru_id")
+  mataPelajaranId String @map("mata_pelajaran_id")
+
+  guru          Guru          @relation(fields: [guruId], references: [id])
+  mataPelajaran MataPelajaran @relation(fields: [mataPelajaranId], references: [id])
+
+  @@unique([guruId, mataPelajaranId])
+  @@map("guru_mata_pelajaran")
+}
+
+model Jadwal {
+  id              String   @id @default(cuid())
+  kelasId         String   @map("kelas_id")
+  mataPelajaranId String   @map("mata_pelajaran_id")
+  guruId          String   @map("guru_id")
+  hari            HariEnum
+  jamMulai        String   @map("jam_mulai")
+  jamSelesai      String   @map("jam_selesai")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  kelas         Kelas          @relation(fields: [kelasId], references: [id])
+  mataPelajaran MataPelajaran  @relation(fields: [mataPelajaranId], references: [id])
+  guru          Guru           @relation(fields: [guruId], references: [id])
+  absensiSiswa  AbsensiSiswa[]
+  absensiGuru   AbsensiGuru[]
+
+  @@map("jadwal")
+}
+
+model AbsensiSiswa {
+  id        String        @id @default(cuid())
+  jadwalId  String        @map("jadwal_id")
+  studentId String        @map("student_id")
+  tanggal   DateTime
+  status    AbsensiStatus
+  catatan   String?
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  jadwal  Jadwal  @relation(fields: [jadwalId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@unique([jadwalId, studentId, tanggal])
+  @@map("absensi_siswa")
+}
+
+model AbsensiGuru {
+  id        String        @id @default(cuid())
+  jadwalId  String        @map("jadwal_id")
+  guruId    String        @map("guru_id")
+  tanggal   DateTime
+  status    AbsensiStatus
+  jamMasuk  DateTime?     @map("jam_masuk")
+  catatan   String?
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  jadwal Jadwal @relation(fields: [jadwalId], references: [id])
+  guru   Guru   @relation(fields: [guruId], references: [id])
+
+  @@unique([jadwalId, guruId, tanggal])
+  @@map("absensi_guru")
 }
 
 model HeroSlide {
@@ -418,4 +566,34 @@ enum StatusPendaftaran {
   DIVERIFIKASI
   DITOLAK
   DITERIMA
+}
+
+enum StudentStatus {
+  AKTIF
+  LULUS
+  PINDAH
+  DROPOUT
+}
+
+enum StatusKepegawaian {
+  PNS
+  PPPK
+  GTY
+  GTT
+}
+
+enum HariEnum {
+  SENIN
+  SELASA
+  RABU
+  KAMIS
+  JUMAT
+  SABTU
+}
+
+enum AbsensiStatus {
+  HADIR
+  SAKIT
+  IZIN
+  ALPHA
 }

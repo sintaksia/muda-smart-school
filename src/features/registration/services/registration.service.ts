@@ -1,6 +1,7 @@
 import { prisma } from "@/src/lib/prisma";
 import type {
   Pendaftaran,
+  Student,
   JenisKelamin,
   ProgramKeahlian,
   Pendidikan,
@@ -10,6 +11,7 @@ import type { RegistrasiFormData } from "./registration.schema";
 
 // Re-export types
 export type { Pendaftaran };
+export type PendaftaranWithStudent = Pendaftaran & { student: Student | null };
 
 // ======================
 // 1. INTERFACE FOR CREATE
@@ -75,6 +77,7 @@ export interface CreateRegistrationInput {
 
 export async function getAllRegistrations() {
   return prisma.pendaftaran.findMany({
+    include: { student: true },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -82,6 +85,7 @@ export async function getAllRegistrations() {
 export async function getRegistrationById(id: string) {
   return prisma.pendaftaran.findUnique({
     where: { id },
+    include: { student: true },
   });
 }
 

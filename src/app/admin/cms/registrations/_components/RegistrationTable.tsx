@@ -29,10 +29,10 @@ import {
 import { Download } from "lucide-react";
 import { StatusFilter } from "./StatusFilter";
 import { registrationColumns } from "./RegistrationColumns";
-import type { Pendaftaran } from "@/src/features/registration/services";
+import type { PendaftaranWithStudent } from "@/src/features/registration/services";
 
 interface RegistrationTableProps {
-  data: Pendaftaran[];
+  data: PendaftaranWithStudent[];
 }
 
 export function RegistrationTable({ data }: RegistrationTableProps) {

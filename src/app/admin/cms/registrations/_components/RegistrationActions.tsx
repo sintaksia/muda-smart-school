@@ -10,6 +10,7 @@ import {
   FileText,
   Download,
   Trash2,
+  UserPlus,
 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -20,11 +21,12 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import { DeleteDialog } from "@/src/app/admin/_components/DeleteDialog";
+import { CreateStudentAccountDialog } from "./CreateStudentAccountDialog";
 import { toast } from "sonner";
-import type { Pendaftaran } from "@/src/features/registration/services";
+import type { PendaftaranWithStudent } from "@/src/features/registration/services";
 
 interface RegistrationActionsProps {
-  registration: Pendaftaran;
+  registration: PendaftaranWithStudent;
 }
 
 export function RegistrationActions({
@@ -32,6 +34,7 @@ export function RegistrationActions({
 }: RegistrationActionsProps) {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCreateStudentDialog, setShowCreateStudentDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // Action: View Details
@@ -173,6 +176,19 @@ export function RegistrationActions({
             </>
           )}
 
+          {/* Buat Akun Siswa - untuk yang sudah diterima dan belum punya akun */}
+          {registration.status === "DITERIMA" && !registration.student && (
+            <>
+              <DropdownMenuItem
+                onClick={() => setShowCreateStudentDialog(true)}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Buat Akun Siswa
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
+
           {/* Mark as Verified - untuk yang belum diverifikasi */}
           {registration.status === "PENDING" && (
             <DropdownMenuItem
@@ -212,6 +228,13 @@ export function RegistrationActions({
         isLoading={isLoading}
         title="Hapus Pendaftaran"
         description={`Apakah Anda yakin ingin menghapus pendaftaran "${registration.namaLengkap}"?`}
+      />
+
+      {/* Create Student Account Dialog */}
+      <CreateStudentAccountDialog
+        open={showCreateStudentDialog}
+        onOpenChange={setShowCreateStudentDialog}
+        registration={registration}
       />
     </>
   );
