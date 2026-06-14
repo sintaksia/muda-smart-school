@@ -1,7 +1,43 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Badge } from "@/src/components/ui/badge";
 import { Users, FileText, GraduationCap, Calendar } from "lucide-react";
+import {
+  getAllRegistrations,
+  getRegistrationStats,
+} from "@/src/features/registration/services/registration.service";
+import type { StatusPendaftaran } from "@prisma/client";
 
-export default function AdminPage() {
+const STATUS_LABEL: Record<StatusPendaftaran, string> = {
+  PENDING: "Menunggu",
+  DIVERIFIKASI: "Diverifikasi",
+  DITERIMA: "Diterima",
+  DITOLAK: "Ditolak",
+};
+
+const STATUS_VARIANT: Record<
+  StatusPendaftaran,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
+  PENDING: "outline",
+  DIVERIFIKASI: "secondary",
+  DITERIMA: "default",
+  DITOLAK: "destructive",
+};
+
+export default async function AdminPage() {
+  const [stats, registrations] = await Promise.all([
+    getRegistrationStats(),
+    getAllRegistrations(),
+  ]);
+
+  const recentRegistrations = registrations.slice(0, 5);
+
   return (
     <div className="space-y-6">
       <div>
@@ -14,53 +50,51 @@ export default function AdminPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Siswa</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Pendaftaran
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,234</div>
-            <p className="text-xs text-muted-foreground">
-              +20 dari bulan lalu
-            </p>
+            <div className="text-2xl font-bold">{stats.total}</div>
+            <p className="text-xs text-muted-foreground">Seluruh calon siswa</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pendaftaran Baru</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pendaftaran Baru
+            </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">56</div>
-            <p className="text-xs text-muted-foreground">
-              Menunggu verifikasi
-            </p>
+            <div className="text-2xl font-bold">{stats.pending}</div>
+            <p className="text-xs text-muted-foreground">Menunggu verifikasi</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Guru</CardTitle>
+            <CardTitle className="text-sm font-medium">Diterima</CardTitle>
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">89</div>
+            <div className="text-2xl font-bold">{stats.diterima}</div>
             <p className="text-xs text-muted-foreground">
-              Aktif mengajar
+              Calon siswa diterima
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Jadwal Hari Ini</CardTitle>
+            <CardTitle className="text-sm font-medium">Ditolak</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              Kelas aktif
-            </p>
+            <div className="text-2xl font-bold">{stats.ditolak}</div>
+            <p className="text-xs text-muted-foreground">Calon siswa ditolak</p>
           </CardContent>
         </Card>
       </div>
@@ -69,12 +103,38 @@ export default function AdminPage() {
         <Card>
           <CardHeader>
             <CardTitle>Pendaftaran Terbaru</CardTitle>
-            <CardDescription>Daftar calon siswa yang baru mendaftar</CardDescription>
+            <CardDescription>
+              Daftar calon siswa yang baru mendaftar
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Data pendaftaran akan ditampilkan di sini.
-            </p>
+            {recentRegistrations.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Belum ada pendaftaran.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {recentRegistrations.map((registration) => (
+                  <div
+                    key={registration.id}
+                    className="flex items-center justify-between gap-4"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">
+                        {registration.namaLengkap}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {registration.nomorPendaftaran} &middot;{" "}
+                        {registration.programKeahlian}
+                      </p>
+                    </div>
+                    <Badge variant={STATUS_VARIANT[registration.status]}>
+                      {STATUS_LABEL[registration.status]}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
