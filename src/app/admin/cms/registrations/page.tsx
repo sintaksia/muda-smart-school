@@ -84,7 +84,6 @@ export default async function RegistrationsPage() {
             <div>
               <h4 className="font-medium">Informasi Penting</h4>
               <ul className="mt-2 list-inside list-disc space-y-1 text-muted-foreground">
-                <li>Data pendaftaran otomatis terhapus setelah 1 tahun</li>
                 <li>Hanya admin yang bisa mengubah status pendaftaran</li>
                 <li>Pastikan validasi data sebelum menerima pendaftaran</li>
                 <li>Export data tersedia dalam format Excel</li>
