@@ -1,38 +1,10 @@
 import { NextResponse } from "next/server";
 import { getRegistrationById } from "@/src/features/registration/services";
-
-const STATUS_LABEL: Record<string, string> = {
-  PENDING: "Menunggu Validasi",
-  DIVERIFIKASI: "Terverifikasi",
-  DITERIMA: "Diterima",
-  DITOLAK: "Ditolak",
-};
-
-const PROGRAM_LABEL: Record<string, string> = {
-  PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM:
-    "Pengembangan Perangkat Lunak dan Gim (PPLG)",
-  TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI:
-    "Teknik Jaringan Komputer dan Telekomunikasi (TJKT)",
-  TEKNIK_OTOMOTIF: "Teknik Kendaraan Ringan Otomotif (TKRO)",
-  MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS:
-    "Manajemen Perkantoran dan Layanan Bisnis (MPLB)",
-  AKUNTANSI_DAN_KEUANGAN_LEMBAGA: "Akuntansi dan Keuangan Lembaga (AKL)",
-};
-
-const PENDIDIKAN_LABEL: Record<string, string> = {
-  SD: "SD / Sederajat",
-  SMP: "SMP / Sederajat",
-  SMA: "SMA / Sederajat",
-  SMK: "SMK / Sederajat",
-  D1: "D1",
-  D2: "D2",
-  D3: "D3",
-  D4: "D4",
-  S1: "S1 / Sarjana",
-  S2: "S2 / Magister",
-  S3: "S3 / Doktor",
-  TIDAK_SEKOLAH: "Tidak Sekolah",
-};
+import {
+  PROGRAM_KEAHLIAN_LABELS,
+  PENDIDIKAN_LABELS,
+  STATUS_PENDAFTARAN_LABELS,
+} from "@/src/lib/constants";
 
 function formatDate(date: Date | null): string {
   if (!date) return "-";
@@ -72,14 +44,15 @@ export async function GET(
   });
 
   const statusClass = `status-${reg.status}`;
-  const statusText = STATUS_LABEL[reg.status] ?? reg.status;
-  const programText = PROGRAM_LABEL[reg.programKeahlian] ?? reg.programKeahlian;
+  const statusText = STATUS_PENDAFTARAN_LABELS[reg.status] ?? reg.status;
+  const programText =
+    PROGRAM_KEAHLIAN_LABELS[reg.programKeahlian] ?? reg.programKeahlian;
   const pendidikanAyah =
-    PENDIDIKAN_LABEL[reg.pendidikanAyah] ?? reg.pendidikanAyah;
+    PENDIDIKAN_LABELS[reg.pendidikanAyah] ?? reg.pendidikanAyah;
   const pendidikanIbu =
-    PENDIDIKAN_LABEL[reg.pendidikanIbu] ?? reg.pendidikanIbu;
+    PENDIDIKAN_LABELS[reg.pendidikanIbu] ?? reg.pendidikanIbu;
   const pendidikanWali = reg.pendidikanWali
-    ? (PENDIDIKAN_LABEL[reg.pendidikanWali] ?? reg.pendidikanWali)
+    ? (PENDIDIKAN_LABELS[reg.pendidikanWali] ?? reg.pendidikanWali)
     : "-";
 
   const waliSection = reg.namaWali

@@ -3,10 +3,12 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import { RegistrationActions } from "./RegistrationActions";
-// import { formatTanggal, getStatusColor, getStatusLabel } from "@/src/features/registration/services";
 import type { PendaftaranWithStudent } from "@/src/features/registration/services";
+import {
+  PROGRAM_KEAHLIAN_LABELS,
+  STATUS_PENDAFTARAN_LABELS,
+} from "@/src/lib/constants";
 
-// --- UTILS LOKAL (Client Safe) ---
 const formatTanggal = (date: Date | string): string => {
   const d = new Date(date);
   return d.toLocaleDateString("id-ID", {
@@ -16,33 +18,11 @@ const formatTanggal = (date: Date | string): string => {
   });
 };
 
-const getStatusLabel = (status: string): string => {
-  switch (status) {
-    case "PENDING":
-      return "Menunggu";
-    case "DIVERIFIKASI":
-      return "Terverifikasi";
-    case "DITERIMA":
-      return "Diterima";
-    case "DITOLAK":
-      return "Ditolak";
-    default:
-      return status;
-  }
-};
+const getStatusLabel = (status: string): string =>
+  STATUS_PENDAFTARAN_LABELS[status] ?? status;
 
-const getProgramLabel = (program: string): string => {
-  const programLabels: Record<string, string> = {
-    TEKNIK_OTOMOTIF: "Teknik Otomotif",
-    PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM: "Pemrograman PL & Gim",
-    TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI:
-      "Teknik Jaringan & Telekomunikasi",
-    MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS: "Manajemen Perkantoran",
-    AKUNTANSI_DAN_KEUANGAN_LEMBAGA: "Akuntansi & Keuangan",
-  };
-  return programLabels[program] || program;
-};
-// --- END UTILS ---
+const getProgramLabel = (program: string): string =>
+  PROGRAM_KEAHLIAN_LABELS[program] ?? program;
 
 export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
   {

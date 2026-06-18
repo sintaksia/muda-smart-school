@@ -2,22 +2,10 @@ import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import { getAllRegistrations } from "@/src/features/registration/services";
 import type { Pendaftaran } from "@/src/features/registration/services";
-
-const programLabels: Record<string, string> = {
-  TEKNIK_OTOMOTIF: "Teknik Otomotif",
-  PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM: "Pemrograman PL & Gim",
-  TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI:
-    "Teknik Jaringan & Telekomunikasi",
-  MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS: "Manajemen Perkantoran",
-  AKUNTANSI_DAN_KEUANGAN_LEMBAGA: "Akuntansi & Keuangan",
-};
-
-const statusLabels: Record<string, string> = {
-  PENDING: "Menunggu",
-  DIVERIFIKASI: "Terverifikasi",
-  DITERIMA: "Diterima",
-  DITOLAK: "Ditolak",
-};
+import {
+  PROGRAM_KEAHLIAN_LABELS,
+  STATUS_PENDAFTARAN_LABELS,
+} from "@/src/lib/constants";
 
 function toRow(item: Pendaftaran) {
   return {
@@ -29,8 +17,8 @@ function toRow(item: Pendaftaran) {
     "Jenis Kelamin":
       item.jenisKelamin === "LAKI_LAKI" ? "Laki-laki" : "Perempuan",
     "Program Keahlian":
-      programLabels[item.programKeahlian] ?? item.programKeahlian,
-    Status: statusLabels[item.status] ?? item.status,
+      PROGRAM_KEAHLIAN_LABELS[item.programKeahlian] ?? item.programKeahlian,
+    Status: STATUS_PENDAFTARAN_LABELS[item.status] ?? item.status,
     "Tempat Lahir": item.tempatLahir,
     "Tanggal Lahir": new Date(item.tanggalLahir).toLocaleDateString("id-ID"),
     "No. HP": item.noHpMurid,

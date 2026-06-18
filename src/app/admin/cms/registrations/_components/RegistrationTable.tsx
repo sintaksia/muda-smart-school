@@ -30,6 +30,7 @@ import { Download } from "lucide-react";
 import { StatusFilter } from "./StatusFilter";
 import { registrationColumns } from "./RegistrationColumns";
 import type { PendaftaranWithStudent } from "@/src/features/registration/services";
+import { programKeahlianOptions } from "@/src/lib/constants";
 
 interface RegistrationTableProps {
   data: PendaftaranWithStudent[];
@@ -137,19 +138,11 @@ export function RegistrationTable({ data }: RegistrationTableProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Program</SelectItem>
-                <SelectItem value="TEKNIK_OTOMOTIF">Teknik Otomotif</SelectItem>
-                <SelectItem value="PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM">
-                  Pemrograman PL & Gim
-                </SelectItem>
-                <SelectItem value="TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI">
-                  Teknik Jaringan & Telekomunikasi
-                </SelectItem>
-                <SelectItem value="MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS">
-                  Manajemen Perkantoran
-                </SelectItem>
-                <SelectItem value="AKUNTANSI_DAN_KEUANGAN_LEMBAGA">
-                  Akuntansi & Keuangan
-                </SelectItem>
+                {programKeahlianOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

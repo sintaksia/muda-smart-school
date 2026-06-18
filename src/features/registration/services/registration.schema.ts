@@ -1,61 +1,34 @@
 import { z } from "zod";
+import {
+  jenisKelaminOptions,
+  programKeahlianOptions,
+  pendidikanOptions,
+} from "@/src/lib/constants";
 
-export const jenisKelaminOptions = [
-  { value: "LAKI_LAKI", label: "Laki-laki" },
-  { value: "PEREMPUAN", label: "Perempuan" },
-] as const;
+export { jenisKelaminOptions, programKeahlianOptions, pendidikanOptions };
 
-export const programKeahlianOptions = [
-  { value: "TEKNIK_OTOMOTIF", label: "Teknik Otomotif" },
-  {
-    value: "PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM",
-    label: "Pemrograman Perangkat Lunak dan Gim",
-  },
-  {
-    value: "TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI",
-    label: "Teknik Jaringan Komputer dan Telekomunikasi",
-  },
-  {
-    value: "MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS",
-    label: "Manajemen Perkantoran dan Layanan Bisnis",
-  },
-  {
-    value: "AKUNTANSI_DAN_KEUANGAN_LEMBAGA",
-    label: "Akuntansi dan Keuangan Lembaga",
-  },
-] as const;
-
-export const pendidikanOptions = [
-  { value: "TIDAK_SEKOLAH", label: "Tidak Sekolah" },
-  { value: "SD", label: "SD/Sederajat" },
-  { value: "SMP", label: "SMP/Sederajat" },
-  { value: "SMA", label: "SMA/Sederajat" },
-  { value: "SMK", label: "SMK" },
-  { value: "D1", label: "D1" },
-  { value: "D2", label: "D2" },
-  { value: "D3", label: "D3" },
-  { value: "D4", label: "D4" },
-  { value: "S1", label: "S1" },
-  { value: "S2", label: "S2" },
-  { value: "S3", label: "S3" },
-] as const;
+const jenisKelaminValues = jenisKelaminOptions.map((o) => o.value) as [
+  (typeof jenisKelaminOptions)[number]["value"],
+  ...(typeof jenisKelaminOptions)[number]["value"][],
+];
+const programKeahlianValues = programKeahlianOptions.map((o) => o.value) as [
+  (typeof programKeahlianOptions)[number]["value"],
+  ...(typeof programKeahlianOptions)[number]["value"][],
+];
+const pendidikanValues = pendidikanOptions.map((o) => o.value) as [
+  (typeof pendidikanOptions)[number]["value"],
+  ...(typeof pendidikanOptions)[number]["value"][],
+];
 
 export const registrasiSchema = z.object({
   // Identitas Diri
   namaLengkap: z.string().min(3, "Nama lengkap minimal 3 karakter"),
-  jenisKelamin: z.enum(["LAKI_LAKI", "PEREMPUAN"], {
+  jenisKelamin: z.enum(jenisKelaminValues, {
     message: "Pilih jenis kelamin",
   }),
-  programKeahlian: z.enum(
-    [
-      "TEKNIK_OTOMOTIF",
-      "PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM",
-      "TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI",
-      "MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS",
-      "AKUNTANSI_DAN_KEUANGAN_LEMBAGA",
-    ],
-    { message: "Pilih program keahlian" },
-  ),
+  programKeahlian: z.enum(programKeahlianValues, {
+    message: "Pilih program keahlian",
+  }),
   nisn: z
     .string()
     .length(10, "NISN harus 10 digit")
@@ -119,23 +92,9 @@ export const registrasiSchema = z.object({
       (val) => val === "" || /^\d+$/.test(val),
       "Tahun lahir hanya boleh angka",
     ),
-  pendidikanAyah: z.enum(
-    [
-      "SD",
-      "SMP",
-      "SMA",
-      "SMK",
-      "D1",
-      "D2",
-      "D3",
-      "D4",
-      "S1",
-      "S2",
-      "S3",
-      "TIDAK_SEKOLAH",
-    ],
-    { message: "Pilih pendidikan ayah" },
-  ),
+  pendidikanAyah: z.enum(pendidikanValues, {
+    message: "Pilih pendidikan ayah",
+  }),
   pekerjaanAyah: z.string(),
 
   // Data Ibu
@@ -146,23 +105,9 @@ export const registrasiSchema = z.object({
       (val) => val === "" || /^\d+$/.test(val),
       "Tahun lahir hanya boleh angka",
     ),
-  pendidikanIbu: z.enum(
-    [
-      "SD",
-      "SMP",
-      "SMA",
-      "SMK",
-      "D1",
-      "D2",
-      "D3",
-      "D4",
-      "S1",
-      "S2",
-      "S3",
-      "TIDAK_SEKOLAH",
-    ],
-    { message: "Pilih pendidikan ibu" },
-  ),
+  pendidikanIbu: z.enum(pendidikanValues, {
+    message: "Pilih pendidikan ibu",
+  }),
   pekerjaanIbu: z.string(),
 
   // Data Wali (Opsional)
@@ -175,23 +120,7 @@ export const registrasiSchema = z.object({
     )
     .optional(),
   pendidikanWali: z
-    .enum(
-      [
-        "SD",
-        "SMP",
-        "SMA",
-        "SMK",
-        "D1",
-        "D2",
-        "D3",
-        "D4",
-        "S1",
-        "S2",
-        "S3",
-        "TIDAK_SEKOLAH",
-      ],
-      { message: "Pilih pendidikan wali" },
-    )
+    .enum(pendidikanValues, { message: "Pilih pendidikan wali" })
     .optional(),
   pekerjaanWali: z.string().optional(),
   noTelpWali: z
