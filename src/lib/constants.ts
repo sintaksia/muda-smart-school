@@ -4,28 +4,51 @@ export const jenisKelaminOptions = [
 ] as const;
 
 export const programKeahlianOptions = [
-  { value: "TEKNIK_OTOMOTIF", label: "Teknik Otomotif" },
+  {
+    value: "TEKNIK_OTOMOTIF",
+    label: "Teknik Otomotif",
+    short: "TO",
+    color: "#EF4444",
+  },
   {
     value: "PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM",
     label: "Pemrograman Perangkat Lunak dan Gim",
+    short: "PPLG",
+    color: "#32368C",
   },
   {
     value: "TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI",
     label: "Teknik Jaringan Komputer dan Telekomunikasi",
+    short: "TJKT",
+    color: "#4CAF93",
   },
   {
     value: "MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS",
     label: "Manajemen Perkantoran dan Layanan Bisnis",
+    short: "MPLB",
+    color: "#F2C94C",
   },
   {
     value: "AKUNTANSI_DAN_KEUANGAN_LEMBAGA",
     label: "Akuntansi dan Keuangan Lembaga",
+    short: "AKL",
+    color: "#9333EA",
   },
 ] as const;
 
 export const PROGRAM_KEAHLIAN_LABELS: Record<string, string> =
   Object.fromEntries(
     programKeahlianOptions.map((option) => [option.value, option.label]),
+  );
+
+export const PROGRAM_KEAHLIAN_SHORT_LABELS: Record<string, string> =
+  Object.fromEntries(
+    programKeahlianOptions.map((option) => [option.value, option.short]),
+  );
+
+export const PROGRAM_KEAHLIAN_COLORS: Record<string, string> =
+  Object.fromEntries(
+    programKeahlianOptions.map((option) => [option.value, option.color]),
   );
 
 export const pendidikanOptions = [
@@ -47,11 +70,6 @@ export const PENDIDIKAN_LABELS: Record<string, string> = Object.fromEntries(
   pendidikanOptions.map((option) => [option.value, option.label]),
 );
 
-// `badge` targets the single shared Badge component
-// (src/app/admin/_components/Badge.tsx), which already covers every variant
-// the app needs (success | warning | info | destructive | default | secondary | outline).
-// Always import Badge from there for status pills — never from
-// src/components/ui/badge — so there is only one variant set to keep in sync.
 export const statusPendaftaranOptions = [
   { value: "PENDING", label: "Menunggu", badge: "warning" as const },
   { value: "DIVERIFIKASI", label: "Terverifikasi", badge: "info" as const },

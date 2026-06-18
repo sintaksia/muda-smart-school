@@ -6,6 +6,8 @@ import { RegistrationActions } from "./RegistrationActions";
 import type { PendaftaranWithStudent } from "@/src/features/registration/services";
 import {
   PROGRAM_KEAHLIAN_LABELS,
+  PROGRAM_KEAHLIAN_SHORT_LABELS,
+  PROGRAM_KEAHLIAN_COLORS,
   STATUS_PENDAFTARAN_LABELS,
   STATUS_PENDAFTARAN_BADGES,
 } from "@/src/lib/constants";
@@ -24,6 +26,9 @@ const getStatusLabel = (status: string): string =>
 
 const getProgramLabel = (program: string): string =>
   PROGRAM_KEAHLIAN_LABELS[program] ?? program;
+
+const getProgramShortLabel = (program: string): string =>
+  PROGRAM_KEAHLIAN_SHORT_LABELS[program] ?? program;
 
 export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
   {
@@ -48,11 +53,24 @@ export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
   {
     accessorKey: "programKeahlian",
     header: "Program",
-    cell: ({ row }) => (
-      <Badge variant="outline" className="text-xs">
-        {getProgramLabel(row.original.programKeahlian)}
-      </Badge>
-    ),
+    cell: ({ row }) => {
+      const program = row.original.programKeahlian;
+      const color = PROGRAM_KEAHLIAN_COLORS[program] ?? "#64748b";
+      return (
+        <Badge
+          variant="outline"
+          className="text-xs font-semibold"
+          style={{
+            color,
+            borderColor: color,
+            backgroundColor: `${color}1a`,
+          }}
+          title={getProgramLabel(program)}
+        >
+          {getProgramShortLabel(program)}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "jenisKelamin",
