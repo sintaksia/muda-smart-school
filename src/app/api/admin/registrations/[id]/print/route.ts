@@ -15,15 +15,69 @@ function formatDate(date: Date | null): string {
   });
 }
 
-function row(
-  label: string,
-  value: string | null | undefined,
-  full = false,
-): string {
+interface InfoItem {
+  label: string;
+  value: string | null | undefined;
+  full?: boolean;
+}
+
+function renderInfoItem(item: InfoItem, full: boolean): string {
   return `<div class="info-item${full ? " full" : ""}">
-    <div class="label">${label}</div>
-    <div class="value">${value || "-"}</div>
+    <div class="label">${item.label}</div>
+    <div class="value">${item.value || "-"}</div>
   </div>`;
+}
+
+/**
+ * Renders a 2-column info grid. Any item that ends up alone in its row
+ * (no pairing column on the right) is promoted to full-width so it
+ * spans across instead of leaving an empty right cell.
+ */
+function infoGrid(items: InfoItem[]): string {
+  const fullFlags: boolean[] = items.map((i) => Boolean(i.full));
+  const rowOf: number[] = [];
+  let col = 0; // 0 = left, 1 = right
+  let currentRow = 0;
+
+  items.forEach((item, idx) => {
+    if (fullFlags[idx]) {
+      // A full item wraps to a fresh row; close any partial row first.
+      if (col === 1) {
+        currentRow++;
+        col = 0;
+      }
+      rowOf[idx] = currentRow;
+      currentRow++;
+      col = 0;
+    } else {
+      rowOf[idx] = currentRow;
+      if (col === 0) {
+        col = 1;
+      } else {
+        col = 0;
+        currentRow++;
+      }
+    }
+  });
+
+  // Promote any item alone in its row to full-width (colspan to the right).
+  const countPerRow: Record<number, number> = {};
+  rowOf.forEach((r) => {
+    countPerRow[r] = (countPerRow[r] || 0) + 1;
+  });
+  items.forEach((_, idx) => {
+    if (!fullFlags[idx] && countPerRow[rowOf[idx]] === 1) {
+      fullFlags[idx] = true;
+    }
+  });
+
+  const cells = items
+    .map((item, idx) => renderInfoItem(item, fullFlags[idx]))
+    .join("\n        ");
+
+  return `<div class="info-grid">
+        ${cells}
+      </div>`;
 }
 
 export async function GET(
@@ -57,13 +111,13 @@ export async function GET(
 
   const waliSection = reg.namaWali
     ? `<p class="sub-heading">Data Wali ${reg.hubunganWali ? `(${reg.hubunganWali})` : ""}</p>
-       <div class="info-grid">
-         ${row("Nama Wali", reg.namaWali)}
-         ${row("Tahun Lahir", reg.tahunLahirWali?.toString())}
-         ${row("Pendidikan", pendidikanWali)}
-         ${row("Pekerjaan", reg.pekerjaanWali)}
-         ${row("No. Telepon", reg.noTelpWali)}
-       </div>`
+       ${infoGrid([
+         { label: "Nama Wali", value: reg.namaWali },
+         { label: "Tahun Lahir", value: reg.tahunLahirWali?.toString() },
+         { label: "Pendidikan", value: pendidikanWali },
+         { label: "Pekerjaan", value: reg.pekerjaanWali },
+         { label: "No. Telepon", value: reg.noTelpWali },
+       ])}`
     : "";
 
   const html = `<!DOCTYPE html>
@@ -327,18 +381,21 @@ export async function GET(
   <div class="section">
     <div class="section-title">1. Data Pribadi Calon Peserta Didik</div>
     <div class="section-body">
-      <div class="info-grid">
-        ${row("Nama Lengkap", reg.namaLengkap)}
-        ${row("Jenis Kelamin", reg.jenisKelamin === "LAKI_LAKI" ? "Laki-laki" : "Perempuan")}
-        ${row("Program Keahlian", programText, true)}
-        ${row("NISN", reg.nisn)}
-        ${row("NIK", reg.nik)}
-        ${row("No. KK", reg.nomorKk)}
-        ${row("Tempat Lahir", reg.tempatLahir)}
-        ${row("Tanggal Lahir", formatDate(reg.tanggalLahir))}
-        ${row("No. HP Siswa", reg.noHpMurid)}
-        ${row("Email Siswa", reg.emailMurid)}
-      </div>
+      ${infoGrid([
+        { label: "Nama Lengkap", value: reg.namaLengkap },
+        {
+          label: "Jenis Kelamin",
+          value: reg.jenisKelamin === "LAKI_LAKI" ? "Laki-laki" : "Perempuan",
+        },
+        { label: "Program Keahlian", value: programText, full: true },
+        { label: "NISN", value: reg.nisn },
+        { label: "NIK", value: reg.nik },
+        { label: "No. KK", value: reg.nomorKk },
+        { label: "Tempat Lahir", value: reg.tempatLahir },
+        { label: "Tanggal Lahir", value: formatDate(reg.tanggalLahir) },
+        { label: "No. HP Siswa", value: reg.noHpMurid },
+        { label: "Email Siswa", value: reg.emailMurid },
+      ])}
     </div>
   </div>
 
@@ -346,16 +403,16 @@ export async function GET(
   <div class="section">
     <div class="section-title">2. Alamat Tempat Tinggal</div>
     <div class="section-body">
-      <div class="info-grid">
-        ${row("Alamat Jalan", reg.alamatJalan, true)}
-        ${row("RT", reg.rt)}
-        ${row("RW", reg.rw)}
-        ${row("Kelurahan / Desa", reg.kelurahanDesa)}
-        ${row("Kecamatan", reg.kecamatan)}
-        ${row("Kota / Kabupaten", reg.kotaKabupaten)}
-        ${row("Provinsi", reg.provinsi)}
-        ${row("Kode Pos", reg.kodePos)}
-      </div>
+      ${infoGrid([
+        { label: "Alamat Jalan", value: reg.alamatJalan, full: true },
+        { label: "RT", value: reg.rt },
+        { label: "RW", value: reg.rw },
+        { label: "Kelurahan / Desa", value: reg.kelurahanDesa },
+        { label: "Kecamatan", value: reg.kecamatan },
+        { label: "Kota / Kabupaten", value: reg.kotaKabupaten },
+        { label: "Provinsi", value: reg.provinsi },
+        { label: "Kode Pos", value: reg.kodePos },
+      ])}
     </div>
   </div>
 
@@ -364,22 +421,22 @@ export async function GET(
     <div class="section-title">3. Data Orang Tua / Wali</div>
     <div class="section-body">
       <p class="sub-heading">Data Ayah</p>
-      <div class="info-grid">
-        ${row("Nama Ayah", reg.namaAyah)}
-        ${row("Tahun Lahir", reg.tahunLahirAyah?.toString())}
-        ${row("Pendidikan", pendidikanAyah)}
-        ${row("Pekerjaan", reg.pekerjaanAyah)}
-        ${row("No. Telepon", reg.noTelpAyah)}
-      </div>
+      ${infoGrid([
+        { label: "Nama Ayah", value: reg.namaAyah },
+        { label: "Tahun Lahir", value: reg.tahunLahirAyah?.toString() },
+        { label: "Pendidikan", value: pendidikanAyah },
+        { label: "Pekerjaan", value: reg.pekerjaanAyah },
+        { label: "No. Telepon", value: reg.noTelpAyah },
+      ])}
 
       <p class="sub-heading">Data Ibu</p>
-      <div class="info-grid">
-        ${row("Nama Ibu", reg.namaIbu)}
-        ${row("Tahun Lahir", reg.tahunLahirIbu?.toString())}
-        ${row("Pendidikan", pendidikanIbu)}
-        ${row("Pekerjaan", reg.pekerjaanIbu)}
-        ${row("No. Telepon", reg.noTelpIbu)}
-      </div>
+      ${infoGrid([
+        { label: "Nama Ibu", value: reg.namaIbu },
+        { label: "Tahun Lahir", value: reg.tahunLahirIbu?.toString() },
+        { label: "Pendidikan", value: pendidikanIbu },
+        { label: "Pekerjaan", value: reg.pekerjaanIbu },
+        { label: "No. Telepon", value: reg.noTelpIbu },
+      ])}
 
       ${waliSection}
     </div>
@@ -389,12 +446,12 @@ export async function GET(
   <div class="section">
     <div class="section-title">4. Sekolah Asal</div>
     <div class="section-body">
-      <div class="info-grid">
-        ${row("Nama Sekolah", reg.namaAsalSekolah)}
-        ${row("NPSN", reg.npsnAsalSekolah)}
-        ${row("Alamat Sekolah", reg.alamatAsalSekolah, true)}
-        ${row("Tahun Lulus", reg.tahunLulus.toString())}
-      </div>
+      ${infoGrid([
+        { label: "Nama Sekolah", value: reg.namaAsalSekolah },
+        { label: "NPSN", value: reg.npsnAsalSekolah },
+        { label: "Alamat Sekolah", value: reg.alamatAsalSekolah, full: true },
+        { label: "Tahun Lulus", value: reg.tahunLulus.toString() },
+      ])}
     </div>
   </div>
 
