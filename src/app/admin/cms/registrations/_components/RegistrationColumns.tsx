@@ -7,6 +7,7 @@ import type { PendaftaranWithStudent } from "@/src/features/registration/service
 import {
   PROGRAM_KEAHLIAN_LABELS,
   STATUS_PENDAFTARAN_LABELS,
+  STATUS_PENDAFTARAN_BADGES,
 } from "@/src/lib/constants";
 
 const formatTanggal = (date: Date | string): string => {
@@ -76,22 +77,7 @@ export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status;
-      let variant: "success" | "warning" | "info" | "destructive" = "warning";
-
-      switch (status) {
-        case "DITERIMA":
-          variant = "success";
-          break;
-        case "DIVERIFIKASI":
-          variant = "info";
-          break;
-        case "DITOLAK":
-          variant = "destructive";
-          break;
-        case "PENDING":
-        default:
-          variant = "warning";
-      }
+      const variant = STATUS_PENDAFTARAN_BADGES[status] ?? "warning";
 
       return <Badge variant={variant}>{getStatusLabel(status)}</Badge>;
     },

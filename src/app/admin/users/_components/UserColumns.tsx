@@ -2,21 +2,13 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import type { User } from "@prisma/client";
-import { ROLE_LABELS, STATUS_LABELS } from "@/src/features/auth/types";
+import {
+  ROLE_LABELS,
+  STATUS_LABELS,
+  ROLE_BADGE_COLORS,
+  STATUS_BADGE_COLORS,
+} from "@/src/features/auth/types";
 import { UserActions } from "./UserActions";
-
-const roleBadgeColors: Record<string, string> = {
-  SUPER_ADMIN: "bg-red-100 text-red-700",
-  ADMIN: "bg-primary-100 text-primary-700",
-  TEACHER: "bg-green-100 text-green-700",
-  STUDENT: "bg-yellow-100 text-yellow-700",
-};
-
-const statusBadgeColors: Record<string, string> = {
-  ACTIVE: "bg-green-100 text-green-700",
-  INACTIVE: "bg-gray-100 text-gray-700",
-  SUSPENDED: "bg-red-100 text-red-700",
-};
 
 export const userColumns: ColumnDef<User>[] = [
   {
@@ -46,7 +38,7 @@ export const userColumns: ColumnDef<User>[] = [
     header: "Role",
     cell: ({ row }) => {
       const colors =
-        roleBadgeColors[row.original.role] || "bg-gray-100 text-gray-700";
+        ROLE_BADGE_COLORS[row.original.role] || "bg-gray-100 text-gray-700";
       return (
         <span
           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${colors}`}
@@ -61,7 +53,7 @@ export const userColumns: ColumnDef<User>[] = [
     header: "Status",
     cell: ({ row }) => {
       const colors =
-        statusBadgeColors[row.original.status] || "bg-gray-100 text-gray-700";
+        STATUS_BADGE_COLORS[row.original.status] || "bg-gray-100 text-gray-700";
       return (
         <span
           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${colors}`}

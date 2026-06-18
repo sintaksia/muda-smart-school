@@ -47,9 +47,30 @@ export const PENDIDIKAN_LABELS: Record<string, string> = Object.fromEntries(
   pendidikanOptions.map((option) => [option.value, option.label]),
 );
 
-export const STATUS_PENDAFTARAN_LABELS: Record<string, string> = {
-  PENDING: "Menunggu",
-  DIVERIFIKASI: "Terverifikasi",
-  DITERIMA: "Diterima",
-  DITOLAK: "Ditolak",
-};
+// `badge` targets the single shared Badge component
+// (src/app/admin/_components/Badge.tsx), which already covers every variant
+// the app needs (success | warning | info | destructive | default | secondary | outline).
+// Always import Badge from there for status pills — never from
+// src/components/ui/badge — so there is only one variant set to keep in sync.
+export const statusPendaftaranOptions = [
+  { value: "PENDING", label: "Menunggu", badge: "warning" as const },
+  { value: "DIVERIFIKASI", label: "Terverifikasi", badge: "info" as const },
+  { value: "DITERIMA", label: "Diterima", badge: "success" as const },
+  { value: "DITOLAK", label: "Ditolak", badge: "destructive" as const },
+] as const;
+
+export const STATUS_PENDAFTARAN_VALUES = statusPendaftaranOptions.map(
+  (option) => option.value,
+);
+
+export const STATUS_PENDAFTARAN_LABELS: Record<string, string> =
+  Object.fromEntries(
+    statusPendaftaranOptions.map((option) => [option.value, option.label]),
+  );
+
+export const STATUS_PENDAFTARAN_BADGES: Record<
+  string,
+  "success" | "warning" | "info" | "destructive"
+> = Object.fromEntries(
+  statusPendaftaranOptions.map((option) => [option.value, option.badge]),
+);

@@ -20,6 +20,10 @@ import { Badge } from "@/src/app/admin/_components/Badge";
 import { PageHeader } from "@/src/app/admin/_components/PageHeader";
 import { RegistrationDetail } from "../_components/RegistrationDetail";
 import { getRegistrationById } from "@/src/features/registration/services";
+import {
+  STATUS_PENDAFTARAN_BADGES,
+  STATUS_PENDAFTARAN_LABELS,
+} from "@/src/lib/constants";
 
 interface RegistrationDetailPageProps {
   params: Promise<{ id: string }>;
@@ -78,21 +82,11 @@ export default async function RegistrationDetailPage({
       {/* Status Badge */}
       <div className="flex items-center gap-4">
         <Badge
-          variant={
-            registration.status === "DITERIMA"
-              ? "success"
-              : registration.status === "DITOLAK"
-                ? "destructive"
-                : registration.status === "DIVERIFIKASI"
-                  ? "info"
-                  : "warning"
-          }
+          variant={STATUS_PENDAFTARAN_BADGES[registration.status] ?? "warning"}
           className="text-sm py-1.5 px-3"
         >
-          {registration.status === "PENDING" && "Menunggu Validasi"}
-          {registration.status === "DIVERIFIKASI" && "Terverifikasi"}
-          {registration.status === "DITERIMA" && "Diterima"}
-          {registration.status === "DITOLAK" && "Ditolak"}
+          {STATUS_PENDAFTARAN_LABELS[registration.status] ??
+            registration.status}
         </Badge>
       </div>
 

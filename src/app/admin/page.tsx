@@ -5,30 +5,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import { Badge } from "@/src/components/ui/badge";
+import { Badge } from "@/src/app/admin/_components/Badge";
 import { Users, FileText, GraduationCap, Calendar } from "lucide-react";
 import {
   getAllRegistrations,
   getRegistrationStats,
 } from "@/src/features/registration/services/registration.service";
-import type { StatusPendaftaran } from "@prisma/client";
-
-const STATUS_LABEL: Record<StatusPendaftaran, string> = {
-  PENDING: "Menunggu",
-  DIVERIFIKASI: "Diverifikasi",
-  DITERIMA: "Diterima",
-  DITOLAK: "Ditolak",
-};
-
-const STATUS_VARIANT: Record<
-  StatusPendaftaran,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  PENDING: "outline",
-  DIVERIFIKASI: "secondary",
-  DITERIMA: "default",
-  DITOLAK: "destructive",
-};
+import {
+  STATUS_PENDAFTARAN_LABELS,
+  STATUS_PENDAFTARAN_BADGES,
+} from "@/src/lib/constants";
 
 export default async function AdminPage() {
   const [stats, registrations] = await Promise.all([
@@ -128,8 +114,10 @@ export default async function AdminPage() {
                         {registration.programKeahlian}
                       </p>
                     </div>
-                    <Badge variant={STATUS_VARIANT[registration.status]}>
-                      {STATUS_LABEL[registration.status]}
+                    <Badge
+                      variant={STATUS_PENDAFTARAN_BADGES[registration.status]}
+                    >
+                      {STATUS_PENDAFTARAN_LABELS[registration.status]}
                     </Badge>
                   </div>
                 ))}

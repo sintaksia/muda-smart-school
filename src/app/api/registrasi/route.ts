@@ -17,14 +17,6 @@ export async function GET(request: NextRequest) {
     let registrations;
 
     if (statusParam) {
-      // Validasi status parameter
-      const validStatuses = [
-        "PENDING",
-        "DIVERIFIKASI",
-        "DITOLAK",
-        "DITERIMA",
-      ] as const;
-
       // Get filtered by status
       registrations = await getRegistrationsByStatus(statusParam);
     } else {

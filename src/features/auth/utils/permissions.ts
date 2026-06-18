@@ -1,5 +1,5 @@
 import type { UserRole } from "@prisma/client";
-import { ROLE_HIERARCHY } from "../types";
+import { ROLE_HIERARCHY, USER_ROLE_VALUES } from "../types";
 
 /**
  * Check if a role has at least the required permission level
@@ -49,7 +49,7 @@ export function canManageSettings(role: UserRole): boolean {
 export function getAllowedRolesToCreate(creatorRole: UserRole): UserRole[] {
   switch (creatorRole) {
     case "SUPER_ADMIN":
-      return ["SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT"];
+      return [...USER_ROLE_VALUES];
     case "ADMIN":
       return ["TEACHER", "STUDENT"];
     default:

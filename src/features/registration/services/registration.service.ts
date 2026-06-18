@@ -8,6 +8,7 @@ import type {
   StatusPendaftaran,
 } from "@prisma/client";
 import type { RegistrasiFormData } from "./registration.schema";
+import { STATUS_PENDAFTARAN_VALUES } from "@/src/lib/constants";
 
 // Re-export types
 export type { Pendaftaran };
@@ -278,8 +279,7 @@ export async function updateRegistrationStatus(
   status: string, // Ubah dari StatusPendaftaran ke string
 ) {
   // Validasi status
-  const validStatuses = ["PENDING", "DIVERIFIKASI", "DITOLAK", "DITERIMA"];
-  if (!validStatuses.includes(status)) {
+  if (!isValidStatus(status)) {
     throw new Error(`Status ${status} tidak valid`);
   }
 
@@ -318,13 +318,7 @@ export async function softDeleteRegistration(id: string) {
 // Get by status (untuk filter admin)
 
 export function isValidStatus(status: string): status is StatusPendaftaran {
-  const validStatuses = [
-    "PENDING",
-    "DIVERIFIKASI",
-    "DITOLAK",
-    "DITERIMA",
-  ] as const;
-  return validStatuses.includes(status as StatusPendaftaran);
+  return STATUS_PENDAFTARAN_VALUES.includes(status as StatusPendaftaran);
 }
 
 export async function getRegistrationsByStatus(status: string) {

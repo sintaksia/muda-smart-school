@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import { Badge } from "@/src/app/admin/_components/Badge";
+import { statusPendaftaranOptions } from "@/src/lib/constants";
 
 interface StatusFilterProps {
   value: string;
@@ -17,10 +18,7 @@ interface StatusFilterProps {
 export function StatusFilter({ value, onChange }: StatusFilterProps) {
   const statusOptions = [
     { value: "all", label: "Semua Status", badge: null },
-    { value: "PENDING", label: "Menunggu", badge: "warning" as const },
-    { value: "DIVERIFIKASI", label: "Terverifikasi", badge: "info" as const },
-    { value: "DITERIMA", label: "Diterima", badge: "success" as const },
-    { value: "DITOLAK", label: "Ditolak", badge: "destructive" as const },
+    ...statusPendaftaranOptions,
   ];
 
   return (
@@ -33,11 +31,12 @@ export function StatusFilter({ value, onChange }: StatusFilterProps) {
             <div className="flex items-center gap-2">
               <Badge
                 variant={
-                  statusOptions.find(opt => opt.value === value)?.badge || "default"
+                  statusOptions.find((opt) => opt.value === value)?.badge ||
+                  "default"
                 }
                 className="text-xs"
               >
-                {statusOptions.find(opt => opt.value === value)?.label}
+                {statusOptions.find((opt) => opt.value === value)?.label}
               </Badge>
             </div>
           )}

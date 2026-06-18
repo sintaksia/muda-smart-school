@@ -225,6 +225,45 @@ z.number({ invalid_type_error: "Must be a number" });
 
 ---
 
+## Enum / Status Single Source of Truth — STRICTLY FOLLOW
+
+For any value backed by a Prisma enum (e.g. `StatusPendaftaran`, `UserStatus`, `StudentStatus`), **never** hardcode its valid values, labels, or badge/color variants in more than one place. Define an options array once in `src/lib/constants.ts` and derive every label map, badge-variant map, and "is valid" check from it.
+
+```tsx
+// ✅ CORRECT - src/lib/constants.ts (single source of truth)
+export const statusPendaftaranOptions = [
+  { value: "PENDING", label: "Menunggu", badge: "warning" as const },
+  { value: "DIVERIFIKASI", label: "Terverifikasi", badge: "info" as const },
+  { value: "DITERIMA", label: "Diterima", badge: "success" as const },
+  { value: "DITOLAK", label: "Ditolak", badge: "destructive" as const },
+] as const;
+
+export const STATUS_PENDAFTARAN_VALUES = statusPendaftaranOptions.map((o) => o.value);
+export const STATUS_PENDAFTARAN_LABELS: Record<string, string> = Object.fromEntries(
+  statusPendaftaranOptions.map((o) => [o.value, o.label]),
+);
+export const STATUS_PENDAFTARAN_BADGES: Record<string, "success" | "warning" | "info" | "destructive"> =
+  Object.fromEntries(statusPendaftaranOptions.map((o) => [o.value, o.badge]));
+
+// ✅ CORRECT - consuming code imports from constants.ts
+import { STATUS_PENDAFTARAN_LABELS, STATUS_PENDAFTARAN_BADGES } from "@/src/lib/constants";
+const variant = STATUS_PENDAFTARAN_BADGES[status] ?? "warning";
+
+// ❌ WRONG - re-declaring the same values/labels/variants locally
+const validStatuses = ["PENDING", "DIVERIFIKASI", "DITOLAK", "DITERIMA"];
+const STATUS_LABEL = { PENDING: "Menunggu", DIVERIFIKASI: "Terverifikasi", ... };
+switch (status) {
+  case "DITERIMA": variant = "success"; break;
+  // ...
+}
+```
+
+- Always import status/enum badges from `src/app/admin/_components/Badge.tsx` (variants: `success | warning | info | destructive | default | secondary | outline`) — it is a superset of shadcn's `src/components/ui/badge.tsx`. **Never import `Badge` from `src/components/ui/badge` for enum/status pills.** This keeps exactly one badge-variant system, so each options array only ever needs a single `badge` field — no `adminBadge`/`uiBadge` split.
+- Before adding a new label/variant switch, ternary chain, or literal array for an existing enum, search the codebase for the enum's values first; if a constants entry already exists, import it instead of duplicating it.
+- Delete duplicate/dead status-mapping helpers when found — don't keep them "just in case."
+
+---
+
 ## Unit Testing — MANDATORY RULE
 
 **EVERY time you create a new file in `src/features/` or `src/app/api/`, you MUST also create a corresponding test file.**
