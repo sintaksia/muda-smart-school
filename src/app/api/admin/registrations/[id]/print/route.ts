@@ -79,7 +79,9 @@ export async function GET(
       font-family: 'Times New Roman', Times, serif;
       font-size: 11pt;
       color: #000;
-      background: #f5f5f5;
+      background: #e8e8e8;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     /* ── PRINT CONTROLS ── */
@@ -107,23 +109,38 @@ export async function GET(
     .btn-back  { background: #fff; border: 1px solid #ccc; color: #333; }
     .btn-print { background: #32368C; border: none; color: #fff; }
 
-    @page { margin: 0; }
+    /* Margins live on @page so EVERY printed page (incl. page 2) gets them */
+    @page { size: A4; margin: 12mm 16mm; }
 
-    @media print {
-      .print-controls { display: none !important; }
-      body { background: #fff; }
-      .page { margin: 0; padding: 15mm 20mm; box-shadow: none; }
-      .section { page-break-inside: avoid; }
+    /* ── PAGE (base) ── */
+    .page {
+      background: #fff;
+      padding: 14mm 16mm;
     }
 
-    /* ── PAGE ── */
-    .page {
-      width: 210mm;
-      min-height: 297mm;
-      margin: 20px auto;
-      padding: 15mm 20mm;
-      background: #fff;
-      box-shadow: 0 2px 20px rgba(0,0,0,.1);
+    /* On-screen preview only: A4 frame + shadow */
+    @media screen {
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 24px auto;
+        box-shadow: 0 2px 20px rgba(0,0,0,.12);
+      }
+    }
+
+    /* Print: @page handles margins, so strip the on-page padding & shadow */
+    @media print {
+      .print-controls { display: none !important; }
+      html, body { background: #fff; }
+      .page {
+        width: auto;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+      .section { page-break-inside: avoid; }
+      .signature-section { page-break-inside: avoid; }
     }
 
     /* ── KOP SURAT ── */
@@ -168,10 +185,12 @@ export async function GET(
     .reg-meta {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      gap: 16px;
       background: #f0f4ff;
       border: 1px solid #c7cdf0;
       border-radius: 4px;
-      padding: 8px 14px;
+      padding: 10px 16px;
       margin-bottom: 16px;
       font-size: 9.5pt;
     }
@@ -191,24 +210,27 @@ export async function GET(
     .status-DIVERIFIKASI { background: #D0EAFF; color: #0c5460; border: 1px solid #0dcaf0; }
 
     /* ── SECTION ── */
-    .section { margin-bottom: 14px; }
+    .section { margin-bottom: 12px; }
     .section-title {
       font-size: 10pt;
       font-weight: 700;
       color: #fff;
       background: #32368C;
-      padding: 4px 10px;
+      padding: 5px 12px;
+      letter-spacing: .3px;
     }
     .section-body {
       border: 1px solid #c7cdf0;
       border-top: none;
-      padding: 8px 10px;
+      padding: 10px 12px;
     }
     .sub-heading {
       font-size: 9.5pt;
       font-weight: 700;
       color: #32368C;
-      margin: 8px 0 4px;
+      margin: 12px 0 6px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid #e2e5f0;
     }
     .sub-heading:first-child { margin-top: 0; }
 
@@ -216,42 +238,43 @@ export async function GET(
     .info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0;
-      margin-bottom: 4px;
+      border: 1px solid #e2e5f0;
+      border-bottom: none;
+      border-right: none;
     }
+    .info-grid + .sub-heading { margin-top: 12px; }
     .info-item {
-      padding: 4px 8px;
-      border-bottom: 1px dotted #ddd;
+      padding: 5px 10px;
+      border-bottom: 1px solid #e2e5f0;
+      border-right: 1px solid #e2e5f0;
     }
-    .info-item:nth-child(odd) { border-right: 1px solid #e8e8e8; }
     .info-item.full { grid-column: 1 / -1; }
-    .label { font-size: 8pt; color: #555; font-weight: 600; }
-    .value { font-size: 9.5pt; color: #000; margin-top: 1px; }
+    .label { font-size: 8pt; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: .2px; }
+    .value { font-size: 9.5pt; color: #000; margin-top: 2px; min-height: 12pt; }
 
     /* ── SIGNATURES ── */
     .signature-section {
       display: flex;
       justify-content: space-between;
-      margin-top: 24px;
-      padding-top: 10px;
-      border-top: 1px solid #ccc;
+      margin-top: 28px;
+      padding-top: 12px;
     }
     .sig-block { text-align: left; }
-    .sig-block p { font-size: 9pt; }
+    .sig-block p { font-size: 9.5pt; line-height: 1.5; }
     .sig-line {
       width: 200px;
       border-bottom: 1px solid #000;
-      margin: 56px 0 4px;
+      margin: 52px 0 4px;
     }
 
     /* ── FOOTER ── */
     .footer {
-      margin-top: 20px;
+      margin-top: 22px;
       text-align: center;
       font-size: 8pt;
       color: #888;
       border-top: 1px solid #e0e0e0;
-      padding-top: 6px;
+      padding-top: 8px;
     }
   </style>
 </head>
