@@ -158,8 +158,9 @@ export function RegistrationActions({
 
           <DropdownMenuSeparator />
 
-          {/* Status Actions - hanya untuk PENDING */}
-          {registration.status === "PENDING" && (
+          {/* Status Actions - untuk PENDING & yang sudah Terverifikasi */}
+          {(registration.status === "PENDING" ||
+            registration.status === "DIVERIFIKASI") && (
             <>
               <DropdownMenuItem
                 onClick={handleValidate}
