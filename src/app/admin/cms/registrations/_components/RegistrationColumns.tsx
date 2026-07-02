@@ -46,7 +46,9 @@ export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
     cell: ({ row }) => (
       <div>
         <div className="font-medium">{row.original.namaLengkap}</div>
-        <div className="text-xs text-muted-foreground">{row.original.nisn}</div>
+        <div className="text-xs text-muted-foreground">
+          {row.original.noHpMurid}
+        </div>
       </div>
     ),
   },
