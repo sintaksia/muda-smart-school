@@ -32,18 +32,21 @@ import {
   type UpdateUserFormData,
 } from "./UserSchema";
 import { ROLE_LABELS, STATUS_LABELS } from "@/src/features/auth/types";
+import { getAllowedRolesToCreate } from "@/src/features/auth/utils/permissions";
 import type { User, UserRole, UserStatus } from "@prisma/client";
 
 interface UserFormProps {
   user?: User;
   mode: "create" | "edit";
+  actorRole: UserRole;
 }
 
-export function UserForm({ user, mode }: UserFormProps) {
+export function UserForm({ user, mode, actorRole }: UserFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const isCreate = mode === "create";
+  const allowedRoles = getAllowedRolesToCreate(actorRole);
 
   const form = useForm<CreateUserFormData | UpdateUserFormData>({
     resolver: zodResolver(isCreate ? createUserSchema : updateUserSchema),
@@ -184,9 +187,9 @@ export function UserForm({ user, mode }: UserFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                    {allowedRoles.map((value) => (
                       <SelectItem key={value} value={value}>
-                        {label}
+                        {ROLE_LABELS[value]}
                       </SelectItem>
                     ))}
                   </SelectContent>

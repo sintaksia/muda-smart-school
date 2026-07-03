@@ -7,7 +7,7 @@ import { canManageUsers } from "@/src/features/auth/utils/permissions";
 export default async function CreateUserPage() {
   const currentUser = await getCurrentUser();
 
-  // Only super admin can create users
+  // Only SUPER_ADMIN and ADMIN can create users
   if (!currentUser || !canManageUsers(currentUser.role)) {
     redirect("/admin");
   }
@@ -15,7 +15,7 @@ export default async function CreateUserPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Tambah User" description="Buat akun pengguna baru" />
-      <UserForm mode="create" />
+      <UserForm mode="create" actorRole={currentUser.role} />
     </div>
   );
 }

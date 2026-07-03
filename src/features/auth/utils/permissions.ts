@@ -20,11 +20,12 @@ export function canAccessAdmin(role: UserRole): boolean {
 }
 
 /**
- * Check if user can manage other users
- * Only SUPER_ADMIN can manage users
+ * Check if user can access user management
+ * SUPER_ADMIN and ADMIN can access; row-level actions are further
+ * restricted by canModifyUser/getAllowedRolesToCreate
  */
 export function canManageUsers(role: UserRole): boolean {
-  return role === "SUPER_ADMIN";
+  return hasMinimumRole(role, "ADMIN");
 }
 
 /**
@@ -79,7 +80,7 @@ export function canModifyUser(
  * Routes that require specific roles
  */
 export const PROTECTED_ROUTES: Record<string, UserRole> = {
-  "/admin/users": "SUPER_ADMIN",
+  "/admin/users": "ADMIN",
   "/admin/pengaturan": "SUPER_ADMIN",
   "/admin": "ADMIN",
 };

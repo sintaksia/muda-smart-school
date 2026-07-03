@@ -15,14 +15,17 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { DeleteDialog } from "@/src/app/admin/_components/DeleteDialog";
 import { ResetPasswordDialog } from "./ResetPasswordDialog";
-import type { User } from "@prisma/client";
+import { canModifyUser } from "@/src/features/auth/utils/permissions";
+import type { User, UserRole } from "@prisma/client";
 
 interface UserActionsProps {
   user: User;
+  actorRole: UserRole;
 }
 
-export function UserActions({ user }: UserActionsProps) {
+export function UserActions({ user, actorRole }: UserActionsProps) {
   const router = useRouter();
+  const canModify = canModifyUser(actorRole, user.role);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -50,6 +53,10 @@ export function UserActions({ user }: UserActionsProps) {
       setIsDeleting(false);
       setShowDeleteDialog(false);
     }
+  }
+
+  if (!canModify) {
+    return <span className="text-sm text-muted-foreground">-</span>;
   }
 
   return (

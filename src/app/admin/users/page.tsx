@@ -11,7 +11,7 @@ import { canManageUsers } from "@/src/features/auth/utils/permissions";
 export default async function UsersPage() {
   const currentUser = await getCurrentUser();
 
-  // Only super admin can access this page
+  // Only SUPER_ADMIN and ADMIN can access this page
   if (!currentUser || !canManageUsers(currentUser.role)) {
     redirect("/admin");
   }
@@ -32,7 +32,7 @@ export default async function UsersPage() {
           </Button>
         }
       />
-      <UserTable data={users} />
+      <UserTable data={users} actorRole={currentUser.role} />
     </div>
   );
 }

@@ -3,7 +3,10 @@ import { PageHeader } from "@/src/app/admin/_components/PageHeader";
 import { UserForm } from "../_components/UserForm";
 import { getUserById } from "@/src/features/auth/services/users";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { canManageUsers } from "@/src/features/auth/utils/permissions";
+import {
+  canManageUsers,
+  canModifyUser,
+} from "@/src/features/auth/utils/permissions";
 
 interface EditUserPageProps {
   params: Promise<{
@@ -15,7 +18,7 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
   const { id } = await params;
   const currentUser = await getCurrentUser();
 
-  // Only super admin can edit users
+  // Only SUPER_ADMIN and ADMIN can access user management
   if (!currentUser || !canManageUsers(currentUser.role)) {
     redirect("/admin");
   }
@@ -26,13 +29,18 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
     notFound();
   }
 
+  // ADMIN can only edit TEACHER/STUDENT accounts, not other admins
+  if (!canModifyUser(currentUser.role, user.role)) {
+    redirect("/admin/users");
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Edit User"
         description={`Ubah data untuk ${user.name}`}
       />
-      <UserForm user={user} mode="edit" />
+      <UserForm user={user} mode="edit" actorRole={currentUser.role} />
     </div>
   );
 }

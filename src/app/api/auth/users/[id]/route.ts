@@ -8,6 +8,7 @@ import {
 import {
   canManageUsers,
   canModifyUser,
+  getAllowedRolesToCreate,
 } from "@/src/features/auth/utils/permissions";
 import { updateUserSchema } from "@/src/app/admin/users/_components/UserSchema";
 
@@ -81,6 +82,14 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },
         { status: 400 },
+      );
+    }
+
+    // Prevent privilege escalation: actor must be allowed to assign the new role
+    if (!getAllowedRolesToCreate(currentUser.role).includes(result.data.role)) {
+      return NextResponse.json(
+        { error: "Anda tidak dapat memberikan role ini" },
+        { status: 403 },
       );
     }
 

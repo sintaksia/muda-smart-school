@@ -13,17 +13,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/src/components/ui/table";
-import { userColumns } from "./UserColumns";
-import type { User } from "@prisma/client";
+import { getUserColumns } from "./UserColumns";
+import type { User, UserRole } from "@prisma/client";
 
 interface UserTableProps {
   data: User[];
+  actorRole: UserRole;
 }
 
-export function UserTable({ data }: UserTableProps) {
+export function UserTable({ data, actorRole }: UserTableProps) {
+  const columns = getUserColumns(actorRole);
   const table = useReactTable({
     data,
-    columns: userColumns,
+    columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -59,10 +61,7 @@ export function UserTable({ data }: UserTableProps) {
             ))
           ) : (
             <TableRow>
-              <TableCell
-                colSpan={userColumns.length}
-                className="h-24 text-center"
-              >
+              <TableCell colSpan={columns.length} className="h-24 text-center">
                 Belum ada data user.
               </TableCell>
             </TableRow>

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { getUsers, createUser } from "@/src/features/auth/services/users";
-import { canManageUsers } from "@/src/features/auth/utils/permissions";
+import {
+  canManageUsers,
+  getAllowedRolesToCreate,
+} from "@/src/features/auth/utils/permissions";
 import { createUserSchema } from "@/src/app/admin/users/_components/UserSchema";
 
 // GET /api/auth/users - List all users
@@ -41,6 +44,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },
         { status: 400 },
+      );
+    }
+
+    if (!getAllowedRolesToCreate(currentUser.role).includes(result.data.role)) {
+      return NextResponse.json(
+        { error: "Anda tidak dapat membuat user dengan role ini" },
+        { status: 403 },
       );
     }
 
