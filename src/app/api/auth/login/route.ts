@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { login } from "@/src/features/auth/services/auth";
 import { loginSchema } from "@/src/app/(auth)/login/_components/LoginSchema";
-import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 
 export async function POST(request: Request) {
   try {
@@ -23,14 +22,6 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: error || "Login gagal" },
         { status: 401 },
-      );
-    }
-
-    // Check if user can access admin panel
-    if (!canAccessAdmin(user.role)) {
-      return NextResponse.json(
-        { error: "Anda tidak memiliki akses ke panel admin" },
-        { status: 403 },
       );
     }
 

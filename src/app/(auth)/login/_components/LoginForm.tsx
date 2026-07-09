@@ -17,13 +17,34 @@ import {
   FormLabel,
   FormMessage,
 } from "@/src/components/ui/form";
+import type { UserRole } from "@prisma/client";
+import type { AuthUser } from "@/src/features/auth/types";
 import { loginSchema, type LoginFormData } from "./LoginSchema";
+
+interface LoginResponse {
+  user?: AuthUser;
+  error?: string;
+}
+
+function getHomeRouteForRole(role: UserRole): string {
+  switch (role) {
+    case "STUDENT":
+      return "/siswa";
+    case "TEACHER":
+      return "/guru";
+    case "ADMIN":
+    case "SUPER_ADMIN":
+      return "/admin";
+    default:
+      return "/login";
+  }
+}
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/admin";
+  const redirectParam = searchParams.get("redirect");
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -45,15 +66,15 @@ export function LoginForm() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
+      const result = (await response.json()) as LoginResponse;
 
-      if (!response.ok) {
+      if (!response.ok || !result.user) {
         toast.error(result.error || "Login gagal");
         return;
       }
 
       toast.success("Login berhasil");
-      router.push(redirectTo);
+      router.push(redirectParam || getHomeRouteForRole(result.user.role));
       router.refresh();
     } catch {
       toast.error("Terjadi kesalahan. Silakan coba lagi.");
