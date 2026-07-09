@@ -30,8 +30,174 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
   },
 });
 
+const ATTENDANCE_SETTINGS: {
+  key: string;
+  value: string;
+  label: string;
+  type: "NUMBER" | "TEXT" | "BOOLEAN";
+}[] = [
+  {
+    key: "SESSION_GRACE_PERIOD_MINUTES",
+    value: "10",
+    label: "Toleransi keterlambatan (menit)",
+    type: "NUMBER",
+  },
+  {
+    key: "QR_TOKEN_TTL_SECONDS",
+    value: "45",
+    label: "Interval refresh QR dinamis (detik)",
+    type: "NUMBER",
+  },
+  {
+    key: "QR_MODE",
+    value: "STATIC",
+    label: "Mode QR (STATIC/DYNAMIC)",
+    type: "TEXT",
+  },
+  {
+    key: "GPS_RADIUS_METERS",
+    value: "100",
+    label: "Radius GPS dari sekolah (meter)",
+    type: "NUMBER",
+  },
+  {
+    key: "GPS_SCHOOL_LAT",
+    value: "-6.9345",
+    label: "Latitude sekolah",
+    type: "NUMBER",
+  },
+  {
+    key: "GPS_SCHOOL_LNG",
+    value: "107.7223",
+    label: "Longitude sekolah",
+    type: "NUMBER",
+  },
+  {
+    key: "CREDIT_POINTS_ALPA_STUDENT",
+    value: "-10",
+    label: "Poin alpa siswa",
+    type: "NUMBER",
+  },
+  {
+    key: "CREDIT_POINTS_TERLAMBAT_STUDENT",
+    value: "-3",
+    label: "Poin terlambat siswa",
+    type: "NUMBER",
+  },
+  {
+    key: "CREDIT_POINTS_ALPA_TEACHER",
+    value: "-15",
+    label: "Poin alpa guru",
+    type: "NUMBER",
+  },
+  {
+    key: "CREDIT_POINTS_TERLAMBAT_TEACHER",
+    value: "-5",
+    label: "Poin terlambat guru",
+    type: "NUMBER",
+  },
+  {
+    key: "CREDIT_SCORE_BASE",
+    value: "100",
+    label: "Skor kredit awal",
+    type: "NUMBER",
+  },
+  {
+    key: "CREDIT_SCORE_THRESHOLD_WARNING",
+    value: "70",
+    label: "Ambang peringatan skor kredit",
+    type: "NUMBER",
+  },
+  {
+    key: "CREDIT_SCORE_THRESHOLD_CRITICAL",
+    value: "40",
+    label: "Ambang kritis skor kredit",
+    type: "NUMBER",
+  },
+  {
+    key: "IZIN_SAKIT_APPROVAL_REQUIRED",
+    value: "true",
+    label: "Izin/sakit wajib disetujui wali kelas",
+    type: "BOOLEAN",
+  },
+  {
+    key: "MAX_WEEKLY_HOURS",
+    value: "24",
+    label: "Batas jam mengajar mingguan",
+    type: "NUMBER",
+  },
+];
+
+const CREDIT_CATEGORIES: {
+  ownerType: "STUDENT" | "TEACHER";
+  type: "PRESTASI" | "PELANGGARAN";
+  nama: string;
+}[] = [
+  { ownerType: "STUDENT", type: "PELANGGARAN", nama: "Kedisiplinan" },
+  { ownerType: "STUDENT", type: "PELANGGARAN", nama: "Akademik" },
+  { ownerType: "STUDENT", type: "PELANGGARAN", nama: "Etika/Perilaku" },
+  { ownerType: "STUDENT", type: "PELANGGARAN", nama: "Seragam/Atribut" },
+  { ownerType: "STUDENT", type: "PRESTASI", nama: "Akademik" },
+  { ownerType: "STUDENT", type: "PRESTASI", nama: "Non-akademik/Lomba" },
+  { ownerType: "STUDENT", type: "PRESTASI", nama: "Ekstrakurikuler" },
+  { ownerType: "STUDENT", type: "PRESTASI", nama: "Kepemimpinan" },
+  { ownerType: "TEACHER", type: "PELANGGARAN", nama: "Kedisiplinan" },
+  {
+    ownerType: "TEACHER",
+    type: "PELANGGARAN",
+    nama: "Administrasi (jurnal/RPP)",
+  },
+  { ownerType: "TEACHER", type: "PELANGGARAN", nama: "Komplain" },
+  { ownerType: "TEACHER", type: "PRESTASI", nama: "Kehadiran Sempurna" },
+  {
+    ownerType: "TEACHER",
+    type: "PRESTASI",
+    nama: "Pembinaan Siswa Berprestasi",
+  },
+  { ownerType: "TEACHER", type: "PRESTASI", nama: "Sertifikasi/Pelatihan" },
+  { ownerType: "TEACHER", type: "PRESTASI", nama: "Inovasi Pengajaran" },
+];
+
+async function seedAttendanceSettings() {
+  for (const [index, setting] of ATTENDANCE_SETTINGS.entries()) {
+    await prisma.schoolSetting.upsert({
+      where: { key: setting.key },
+      update: {},
+      create: {
+        key: setting.key,
+        value: setting.value,
+        label: setting.label,
+        type: setting.type,
+        group: "attendance",
+        order: index,
+      },
+    });
+  }
+  console.log(`Attendance settings seeded (${ATTENDANCE_SETTINGS.length})`);
+}
+
+async function seedCreditCategories() {
+  for (const [index, category] of CREDIT_CATEGORIES.entries()) {
+    await prisma.creditCategory.upsert({
+      where: {
+        ownerType_type_nama: {
+          ownerType: category.ownerType,
+          type: category.type,
+          nama: category.nama,
+        },
+      },
+      update: {},
+      create: { ...category, order: index },
+    });
+  }
+  console.log(`Credit categories seeded (${CREDIT_CATEGORIES.length})`);
+}
+
 async function main() {
   console.log("Starting seed...");
+
+  await seedAttendanceSettings();
+  await seedCreditCategories();
 
   // Check if super admin already exists
   const existingAdmin = await prisma.user.findFirst({

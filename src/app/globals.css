@@ -121,6 +121,39 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* ============================================================
+     Design system tokens (docs/design_system.md — Jago-inspired)
+     Brand indigo + teal, warmed neutrals, hairline-first elevation
+     ============================================================ */
+  --color-brand: #32368c;
+  --color-brand-50: #f3f3fb;
+  --color-brand-100: #e5e6f5;
+  --color-brand-600: #3d42a6;
+  --color-brand-700: #282c70;
+  --color-teal: #088987;
+  --color-teal-100: #dff3f2;
+  --color-teal-600: #0aa3a0;
+  --color-teal-700: #066866;
+  --color-surface: #f7f7fb;
+  --color-hairline: #e4e4ee;
+  --color-hairline-strong: #cbcbde;
+  --color-ink: #1b1c33;
+  --color-ink-secondary: #5b5d75;
+  --color-ink-muted: #8b8da3;
+  --color-success: #088987;
+  --color-warning: #c97a2b;
+  --color-danger: #c4433d;
+  --color-info: #32368c;
+
+  --radius-input: 10px;
+  --radius-card: 16px;
+  --radius-modal: 20px;
+
+  --shadow-xs: 0 1px 2px rgba(27, 28, 51, 0.04);
+  --shadow-card: 0 2px 8px rgba(27, 28, 51, 0.06);
+  --shadow-modal: 0 8px 24px rgba(27, 28, 51, 0.1);
+  --shadow-hover: 0 4px 14px rgba(50, 54, 140, 0.12);
+
   /* Border radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

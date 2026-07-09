@@ -1,0 +1,147 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Check, X } from "lucide-react";
+import { Badge } from "@/src/app/admin/_components/Badge";
+import {
+  IZIN_JENIS_LABELS,
+  IZIN_STATUS_BADGES,
+  IZIN_STATUS_LABELS,
+} from "@/src/lib/constants";
+
+interface IzinRow {
+  id: string;
+  nama: string;
+  kelas: string;
+  jenis: string;
+  tanggal: string;
+  alasan: string;
+  status: string;
+  reviewedBy: string | null;
+}
+
+interface IzinReviewTableProps {
+  submissions: IzinRow[];
+}
+
+export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
+  const router = useRouter();
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function review(
+    id: string,
+    decision: "APPROVED" | "REJECTED",
+  ): Promise<void> {
+    const reviewNote =
+      decision === "REJECTED"
+        ? (window.prompt("Alasan penolakan (opsional):") ?? undefined)
+        : undefined;
+    setBusyId(id);
+    try {
+      const response = await fetch(`/api/attendance/izin/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ decision, reviewNote }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error ?? "Gagal memproses pengajuan");
+      }
+      toast.success(
+        decision === "APPROVED" ? "Pengajuan disetujui" : "Pengajuan ditolak",
+      );
+      router.refresh();
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Terjadi kesalahan");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  return (
+    <section className="border-hairline rounded-card border bg-white">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-hairline text-ink-muted border-b text-left text-xs font-semibold uppercase tracking-wide">
+              <th className="px-5 py-3">Siswa</th>
+              <th className="px-4 py-3">Kelas</th>
+              <th className="px-4 py-3">Jenis</th>
+              <th className="px-4 py-3">Tanggal</th>
+              <th className="px-4 py-3">Alasan</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {submissions.map((izin) => (
+              <tr
+                key={izin.id}
+                className="border-hairline border-b last:border-b-0"
+              >
+                <td className="text-ink px-5 py-3 font-semibold">
+                  {izin.nama}
+                </td>
+                <td className="text-ink-secondary px-4 py-3">{izin.kelas}</td>
+                <td className="text-ink-secondary px-4 py-3">
+                  {IZIN_JENIS_LABELS[izin.jenis]}
+                </td>
+                <td className="text-ink px-4 py-3 tabular-nums">
+                  {izin.tanggal}
+                </td>
+                <td className="text-ink-secondary max-w-56 truncate px-4 py-3">
+                  {izin.alasan}
+                </td>
+                <td className="px-4 py-3">
+                  <Badge variant={IZIN_STATUS_BADGES[izin.status]}>
+                    {IZIN_STATUS_LABELS[izin.status]}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3">
+                  {izin.status === "PENDING" ? (
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        disabled={busyId === izin.id}
+                        onClick={() => review(izin.id, "APPROVED")}
+                        className="bg-teal hover:bg-teal-600 rounded-input inline-flex h-9 items-center gap-1 px-3 text-xs font-semibold text-white transition-colors disabled:opacity-50"
+                      >
+                        <Check className="h-4 w-4" strokeWidth={1.75} />
+                        Setujui
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busyId === izin.id}
+                        onClick={() => review(izin.id, "REJECTED")}
+                        className="border-hairline-strong text-ink-secondary hover:border-danger hover:text-danger rounded-input inline-flex h-9 items-center gap-1 border px-3 text-xs font-semibold transition-colors disabled:opacity-50"
+                      >
+                        <X className="h-4 w-4" strokeWidth={1.75} />
+                        Tolak
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-ink-muted text-right text-xs">
+                      {izin.reviewedBy ?? "—"}
+                    </p>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {submissions.length === 0 && (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="text-ink-muted px-5 py-12 text-center"
+                >
+                  Belum ada pengajuan izin/sakit.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}

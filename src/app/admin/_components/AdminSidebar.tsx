@@ -134,6 +134,11 @@ const managementMenuItems = [
     icon: GraduationCap,
   },
   {
+    title: "Kelas",
+    url: "/admin/kelas",
+    icon: School,
+  },
+  {
     title: "Jadwal",
     url: "/admin/jadwal",
     icon: Calendar,
@@ -142,6 +147,35 @@ const managementMenuItems = [
     title: "Mata Pelajaran",
     url: "/admin/mapel",
     icon: BookOpen,
+  },
+];
+
+// Absensi & Skor Kredit
+const attendanceMenuItems = [
+  {
+    title: "Sesi Hari Ini",
+    url: "/admin/absensi",
+    icon: Activity,
+  },
+  {
+    title: "Izin / Sakit",
+    url: "/admin/absensi/izin",
+    icon: FileText,
+  },
+  {
+    title: "Absensi Guru",
+    url: "/admin/absensi/guru",
+    icon: GraduationCap,
+  },
+  {
+    title: "Skor Kredit",
+    url: "/admin/absensi/kredit",
+    icon: Trophy,
+  },
+  {
+    title: "Pengaturan Absensi",
+    url: "/admin/absensi/pengaturan",
+    icon: Settings,
   },
 ];
 
@@ -252,6 +286,33 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
                     isActive={
                       pathname === item.url ||
                       pathname.startsWith(item.url + "/")
+                    }
+                    tooltip={item.title}
+                  >
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Absensi & Skor Kredit */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Absensi & Kredit</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {attendanceMenuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={
+                      pathname === item.url ||
+                      (item.url !== "/admin/absensi" &&
+                        pathname.startsWith(item.url + "/"))
                     }
                     tooltip={item.title}
                   >

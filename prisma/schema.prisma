@@ -23,6 +23,12 @@ model User {
   student      Student?
   guru         Guru?
 
+  notifications        Notification[]
+  creditScoresReported CreditScore[]  @relation("CreditReporter")
+  izinSubmitted        PengajuanIzin[] @relation("IzinSubmitter")
+  izinReviewed         PengajuanIzin[] @relation("IzinReviewer")
+  absensiGuruReported  AbsensiGuru[]   @relation("AbsensiGuruReporter")
+
   @@map("users")
 }
 
@@ -89,10 +95,12 @@ model Student {
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
 
-  user         User           @relation(fields: [userId], references: [id])
-  pendaftaran  Pendaftaran?   @relation(fields: [pendaftaranId], references: [id])
-  kelas        Kelas?         @relation(fields: [kelasId], references: [id])
-  absensiSiswa AbsensiSiswa[]
+  user          User            @relation(fields: [userId], references: [id])
+  pendaftaran   Pendaftaran?    @relation(fields: [pendaftaranId], references: [id])
+  kelas         Kelas?          @relation(fields: [kelasId], references: [id])
+  absensiSiswa  AbsensiSiswa[]
+  creditScores  CreditScore[]
+  pengajuanIzin PengajuanIzin[]
 
   @@map("students")
 }
@@ -112,11 +120,14 @@ model Guru {
   createdAt            DateTime          @default(now()) @map("created_at")
   updatedAt            DateTime          @updatedAt @map("updated_at")
 
-  user          User                @relation(fields: [userId], references: [id])
-  mataPelajaran GuruMataPelajaran[]
-  kelasWali     Kelas[]
-  jadwal        Jadwal[]
-  absensiGuru   AbsensiGuru[]
+  user                 User                @relation(fields: [userId], references: [id])
+  mataPelajaran        GuruMataPelajaran[]
+  kelasWali            Kelas[]
+  jadwal               Jadwal[]
+  absensiGuru          AbsensiGuru[]
+  absensiGuruPengganti AbsensiGuru[]       @relation("SubstituteGuru")
+  sesiDibuka           Sesi[]              @relation("SesiActualGuru")
+  creditScores         CreditScore[]
 
   @@map("guru")
 }
@@ -174,51 +185,175 @@ model Jadwal {
   hari            HariEnum
   jamMulai        String   @map("jam_mulai")
   jamSelesai      String   @map("jam_selesai")
+  tahunAjaran     String?  @map("tahun_ajaran")
+  isActive        Boolean  @default(true) @map("is_active")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  kelas         Kelas          @relation(fields: [kelasId], references: [id])
-  mataPelajaran MataPelajaran  @relation(fields: [mataPelajaranId], references: [id])
-  guru          Guru           @relation(fields: [guruId], references: [id])
+  kelas         Kelas           @relation(fields: [kelasId], references: [id])
+  mataPelajaran MataPelajaran   @relation(fields: [mataPelajaranId], references: [id])
+  guru          Guru            @relation(fields: [guruId], references: [id])
   absensiSiswa  AbsensiSiswa[]
   absensiGuru   AbsensiGuru[]
+  sesi          Sesi[]
+  pengajuanIzin PengajuanIzin[]
 
   @@map("jadwal")
 }
 
+model Sesi {
+  id              String     @id @default(cuid())
+  jadwalId        String     @map("jadwal_id")
+  tanggal         DateTime
+  status          SesiStatus @default(OPEN)
+  openedAt        DateTime?  @map("opened_at")
+  closedAt        DateTime?  @map("closed_at")
+  qrToken         String?    @unique @map("qr_token")
+  qrTokenIssuedAt DateTime?  @map("qr_token_issued_at")
+  actualGuruId    String?    @map("actual_guru_id")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  jadwal        Jadwal          @relation(fields: [jadwalId], references: [id])
+  actualGuru    Guru?           @relation("SesiActualGuru", fields: [actualGuruId], references: [id])
+  absensiSiswa  AbsensiSiswa[]
+  creditScores  CreditScore[]
+  pengajuanIzin PengajuanIzin[]
+
+  @@unique([jadwalId, tanggal])
+  @@map("sesi")
+}
+
 model AbsensiSiswa {
-  id        String        @id @default(cuid())
-  jadwalId  String        @map("jadwal_id")
-  studentId String        @map("student_id")
-  tanggal   DateTime
-  status    AbsensiStatus
-  catatan   String?
-  createdAt DateTime      @default(now()) @map("created_at")
-  updatedAt DateTime      @updatedAt @map("updated_at")
+  id          String         @id @default(cuid())
+  jadwalId    String         @map("jadwal_id")
+  studentId   String         @map("student_id")
+  sesiId      String?        @map("sesi_id")
+  tanggal     DateTime
+  status      AbsensiStatus
+  catatan     String?
+  scanTime    DateTime?      @map("scan_time")
+  gpsLat      Float?         @map("gps_lat")
+  gpsLng      Float?         @map("gps_lng")
+  gpsValid    Boolean?       @map("gps_valid")
+  needsReview Boolean        @default(false) @map("needs_review")
+  method      AbsensiMethod  @default(MANUAL)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
 
   jadwal  Jadwal  @relation(fields: [jadwalId], references: [id])
   student Student @relation(fields: [studentId], references: [id])
+  sesi    Sesi?   @relation(fields: [sesiId], references: [id])
 
   @@unique([jadwalId, studentId, tanggal])
   @@map("absensi_siswa")
 }
 
 model AbsensiGuru {
-  id        String        @id @default(cuid())
-  jadwalId  String        @map("jadwal_id")
-  guruId    String        @map("guru_id")
-  tanggal   DateTime
-  status    AbsensiStatus
-  jamMasuk  DateTime?     @map("jam_masuk")
-  catatan   String?
-  createdAt DateTime      @default(now()) @map("created_at")
-  updatedAt DateTime      @updatedAt @map("updated_at")
+  id               String        @id @default(cuid())
+  jadwalId         String        @map("jadwal_id")
+  guruId           String        @map("guru_id")
+  tanggal          DateTime
+  status           AbsensiStatus
+  jamMasuk         DateTime?     @map("jam_masuk")
+  catatan          String?
+  reportedById     String?       @map("reported_by_id")
+  substituteGuruId String?       @map("substitute_guru_id")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
 
-  jadwal Jadwal @relation(fields: [jadwalId], references: [id])
-  guru   Guru   @relation(fields: [guruId], references: [id])
+  jadwal         Jadwal @relation(fields: [jadwalId], references: [id])
+  guru           Guru   @relation(fields: [guruId], references: [id])
+  reportedBy     User?  @relation("AbsensiGuruReporter", fields: [reportedById], references: [id])
+  substituteGuru Guru?  @relation("SubstituteGuru", fields: [substituteGuruId], references: [id])
 
   @@unique([jadwalId, guruId, tanggal])
   @@map("absensi_guru")
+}
+
+model CreditScore {
+  id           String          @id @default(cuid())
+  ownerType    CreditOwnerType @map("owner_type")
+  studentId    String?         @map("student_id")
+  guruId       String?         @map("guru_id")
+  type         CreditEntryType
+  category     String
+  points       Int
+  note         String?
+  evidence     String?
+  source       CreditSource
+  refSesiId    String?         @map("ref_sesi_id")
+  reportedById String?         @map("reported_by_id")
+  createdAt    DateTime        @default(now()) @map("created_at")
+
+  student    Student? @relation(fields: [studentId], references: [id])
+  guru       Guru?    @relation(fields: [guruId], references: [id])
+  refSesi    Sesi?    @relation(fields: [refSesiId], references: [id])
+  reportedBy User?    @relation("CreditReporter", fields: [reportedById], references: [id])
+
+  @@index([studentId])
+  @@index([guruId])
+  @@index([refSesiId])
+  @@map("credit_scores")
+}
+
+model CreditCategory {
+  id            String          @id @default(cuid())
+  ownerType     CreditOwnerType @map("owner_type")
+  type          CreditEntryType
+  nama          String
+  defaultPoints Int             @default(0) @map("default_points")
+  order         Int             @default(0)
+  isActive      Boolean         @default(true) @map("is_active")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  @@unique([ownerType, type, nama])
+  @@map("credit_categories")
+}
+
+model PengajuanIzin {
+  id            String     @id @default(cuid())
+  studentId     String     @map("student_id")
+  jenis         IzinJenis
+  tanggal       DateTime
+  jadwalId      String?    @map("jadwal_id")
+  sesiId        String?    @map("sesi_id")
+  alasan        String
+  lampiran      String?
+  status        IzinStatus @default(PENDING)
+  submittedById String?    @map("submitted_by_id")
+  reviewedById  String?    @map("reviewed_by_id")
+  reviewedAt    DateTime?  @map("reviewed_at")
+  reviewNote    String?    @map("review_note")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  student     Student @relation(fields: [studentId], references: [id])
+  jadwal      Jadwal? @relation(fields: [jadwalId], references: [id])
+  sesi        Sesi?   @relation(fields: [sesiId], references: [id])
+  submittedBy User?   @relation("IzinSubmitter", fields: [submittedById], references: [id])
+  reviewedBy  User?   @relation("IzinReviewer", fields: [reviewedById], references: [id])
+
+  @@index([studentId, tanggal])
+  @@map("pengajuan_izin")
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  title     String
+  body      String
+  type      NotificationType
+  refId     String?   @map("ref_id")
+  channel   String    @default("IN_APP")
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, readAt])
+  @@map("notifications")
 }
 
 model HeroSlide {
@@ -593,7 +728,56 @@ enum HariEnum {
 
 enum AbsensiStatus {
   HADIR
+  TERLAMBAT
   SAKIT
   IZIN
   ALPHA
+}
+
+enum AbsensiMethod {
+  QR
+  MANUAL
+}
+
+enum SesiStatus {
+  OPEN
+  CLOSED
+  KELAS_KOSONG
+}
+
+enum CreditOwnerType {
+  STUDENT
+  TEACHER
+}
+
+enum CreditEntryType {
+  PRESTASI
+  PELANGGARAN
+  KOREKSI
+}
+
+enum CreditSource {
+  AUTO
+  MANUAL
+}
+
+enum IzinJenis {
+  IZIN
+  SAKIT
+}
+
+enum IzinStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NotificationType {
+  CREDIT_WARNING
+  CREDIT_CRITICAL
+  CREDIT_MANUAL_ENTRY
+  GPS_REVIEW
+  TEACHER_ABSENCE
+  KELAS_KOSONG
+  IZIN_STATUS
 }

@@ -1,0 +1,106 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+interface TeacherAbsenceFormProps {
+  guruOptions: { id: string; nama: string }[];
+}
+
+export function TeacherAbsenceForm({ guruOptions }: TeacherAbsenceFormProps) {
+  const router = useRouter();
+  const [guruId, setGuruId] = useState<string>("");
+  const [tanggal, setTanggal] = useState<string>(
+    new Date().toISOString().slice(0, 10),
+  );
+  const [status, setStatus] = useState<string>("IZIN");
+  const [catatan, setCatatan] = useState<string>("");
+  const [submitting, setSubmitting] = useState<boolean>(false);
+
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> {
+    event.preventDefault();
+    if (!guruId) {
+      toast.error("Pilih guru terlebih dahulu");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const response = await fetch("/api/attendance/teacher-absence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guruId, tanggal, status, catatan }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error ?? "Gagal mencatat absensi guru");
+      }
+      toast.success("Absensi guru tercatat untuk semua jadwal hari itu");
+      setCatatan("");
+      router.refresh();
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Terjadi kesalahan");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const inputClass =
+    "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="border-hairline rounded-card border bg-white p-5"
+    >
+      <h3 className="text-ink mb-4 text-base font-semibold">
+        Catat Ketidakhadiran Guru
+      </h3>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <select
+          value={guruId}
+          onChange={(event) => setGuruId(event.target.value)}
+          className={inputClass}
+        >
+          <option value="">Pilih guru…</option>
+          {guruOptions.map((guru) => (
+            <option key={guru.id} value={guru.id}>
+              {guru.nama}
+            </option>
+          ))}
+        </select>
+        <input
+          type="date"
+          value={tanggal}
+          onChange={(event) => setTanggal(event.target.value)}
+          className={inputClass}
+        />
+        <select
+          value={status}
+          onChange={(event) => setStatus(event.target.value)}
+          className={inputClass}
+        >
+          <option value="IZIN">Izin</option>
+          <option value="SAKIT">Sakit</option>
+          <option value="ALPHA">Alpa</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Catatan (opsional)"
+          value={catatan}
+          onChange={(event) => setCatatan(event.target.value)}
+          className={inputClass}
+        />
+        <button
+          type="submit"
+          disabled={submitting}
+          className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+        >
+          {submitting ? "Menyimpan..." : "Simpan"}
+        </button>
+      </div>
+    </form>
+  );
+}
