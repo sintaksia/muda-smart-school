@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   MoreHorizontal,
   Eye,
+  Pencil,
   CheckCircle,
   XCircle,
   FileText,
@@ -40,6 +41,11 @@ export function RegistrationActions({
   // Action: View Details
   const handleViewDetails = () => {
     router.push(`/admin/registrations/${registration.id}`);
+  };
+
+  // Action: Edit
+  const handleEdit = () => {
+    router.push(`/admin/registrations/${registration.id}/edit`);
   };
 
   // Action: Validate (accept)
@@ -148,6 +154,12 @@ export function RegistrationActions({
           <DropdownMenuItem onClick={handleViewDetails}>
             <Eye className="mr-2 h-4 w-4" />
             Lihat Detail
+          </DropdownMenuItem>
+
+          {/* Edit */}
+          <DropdownMenuItem onClick={handleEdit}>
+            <Pencil className="mr-2 h-4 w-4" />
+            Edit
           </DropdownMenuItem>
 
           {/* Download */}
