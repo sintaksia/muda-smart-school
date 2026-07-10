@@ -1,30 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { FileSpreadsheet, LayoutGrid, List, Plus } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { HARI_LABELS, HARI_VALUES } from "@/src/lib/constants";
+import {
+  findConflictIds,
+  type JadwalEntry,
+} from "@/src/features/attendance/utils/jadwalGrid";
+import { exportJadwalToExcel } from "@/src/features/attendance/utils/exportJadwal";
 import { JadwalForm } from "./JadwalForm";
-
-export interface JadwalRow {
-  id: string;
-  hari: string;
-  jamMulai: string;
-  jamSelesai: string;
-  kelas: string;
-  mataPelajaran: string;
-  guru: string;
-}
-
-export interface OptionItem {
-  id: string;
-  nama?: string;
-}
+import {
+  EMPTY_FILTERS,
+  JadwalFilters,
+  type JadwalFilterState,
+} from "./JadwalFilters";
+import { JadwalListView } from "./JadwalListView";
+import { JadwalGridView } from "./JadwalGridView";
 
 interface JadwalManagerProps {
-  jadwal: JadwalRow[];
+  jadwal: JadwalEntry[];
   kelasOptions: { id: string; nama: string }[];
   mapelOptions: { id: string; nama: string }[];
   guruOptions: { id: string; nama: string }[];
@@ -38,6 +34,20 @@ export function JadwalManager({
 }: JadwalManagerProps) {
   const router = useRouter();
   const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [view, setView] = useState<"list" | "grid">("list");
+  const [filters, setFilters] = useState<JadwalFilterState>(EMPTY_FILTERS);
+
+  const filtered = useMemo(
+    () =>
+      jadwal.filter(
+        (row) =>
+          (filters.hari === "ALL" || row.hari === filters.hari) &&
+          (filters.kelasId === "ALL" || row.kelasId === filters.kelasId) &&
+          (filters.guruId === "ALL" || row.guruId === filters.guruId),
+      ),
+    [jadwal, filters],
+  );
+  const conflictIds = useMemo(() => findConflictIds(jadwal), [jadwal]);
 
   async function handleDelete(id: string): Promise<void> {
     try {
@@ -55,16 +65,56 @@ export function JadwalManager({
     }
   }
 
+  const viewButtons = [
+    { value: "list" as const, label: "Daftar", icon: List },
+    { value: "grid" as const, label: "Grid", icon: LayoutGrid },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
-        <Button
-          onClick={() => setFormOpen(true)}
-          className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 px-5 text-sm font-semibold text-white"
-        >
-          <Plus className="h-5 w-5" strokeWidth={1.75} />
-          Tambah Jadwal
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <JadwalFilters
+          filters={filters}
+          onChange={setFilters}
+          kelasOptions={kelasOptions}
+          guruOptions={guruOptions}
+        />
+        <div className="flex items-center gap-3">
+          <div className="border-hairline flex overflow-hidden rounded-full border text-sm font-medium">
+            {viewButtons.map((button) => (
+              <button
+                key={button.value}
+                type="button"
+                onClick={() => setView(button.value)}
+                className={`flex items-center gap-1.5 px-4 py-1.5 transition-colors ${
+                  view === button.value
+                    ? "bg-brand text-white"
+                    : "text-ink-secondary hover:text-ink"
+                }`}
+              >
+                <button.icon className="h-4 w-4" strokeWidth={1.75} />
+                {button.label}
+              </button>
+            ))}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => exportJadwalToExcel(filtered)}
+            disabled={filtered.length === 0}
+            className="rounded-input border-hairline-strong h-11 px-4 text-sm font-semibold"
+          >
+            <FileSpreadsheet className="h-5 w-5" strokeWidth={1.75} />
+            Export Excel
+          </Button>
+          <Button
+            onClick={() => setFormOpen(true)}
+            className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 px-5 text-sm font-semibold text-white"
+          >
+            <Plus className="h-5 w-5" strokeWidth={1.75} />
+            Tambah Jadwal
+          </Button>
+        </div>
       </div>
 
       <JadwalForm
@@ -75,67 +125,19 @@ export function JadwalManager({
         guruOptions={guruOptions}
       />
 
-      {HARI_VALUES.map((hari) => {
-        const rows = jadwal.filter((row) => row.hari === hari);
-        if (rows.length === 0) {
-          return null;
-        }
-        return (
-          <section
-            key={hari}
-            className="border-hairline rounded-card border bg-white"
-          >
-            <header className="border-hairline flex items-center justify-between border-b px-5 py-4">
-              <h3 className="text-ink text-base font-semibold">
-                {HARI_LABELS[hari]}
-              </h3>
-              <span className="text-ink-muted text-xs font-medium">
-                {rows.length} sesi
-              </span>
-            </header>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <tbody>
-                  {rows.map((row) => (
-                    <tr
-                      key={row.id}
-                      className="border-hairline border-b last:border-b-0"
-                    >
-                      <td className="text-ink w-32 px-5 py-3 font-semibold tabular-nums">
-                        {row.jamMulai}–{row.jamSelesai}
-                      </td>
-                      <td className="text-ink px-4 py-3">
-                        {row.mataPelajaran}
-                      </td>
-                      <td className="text-ink-secondary px-4 py-3">
-                        {row.kelas}
-                      </td>
-                      <td className="text-ink-secondary px-4 py-3">
-                        {row.guru}
-                      </td>
-                      <td className="w-16 px-4 py-3 text-right">
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(row.id)}
-                          className="text-ink-muted hover:text-danger transition-colors"
-                          aria-label="Nonaktifkan jadwal"
-                        >
-                          <Trash2 className="h-5 w-5" strokeWidth={1.75} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        );
-      })}
-
-      {jadwal.length === 0 && (
-        <div className="border-hairline rounded-card text-ink-muted border bg-white px-5 py-12 text-center text-sm">
-          Belum ada jadwal. Tambahkan entri pertama untuk memulai.
-        </div>
+      {view === "list" ? (
+        <JadwalListView
+          jadwal={filtered}
+          conflictIds={conflictIds}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <JadwalGridView
+          entries={filtered}
+          conflictIds={conflictIds}
+          kelasOptions={kelasOptions}
+          guruOptions={guruOptions}
+        />
       )}
     </div>
   );

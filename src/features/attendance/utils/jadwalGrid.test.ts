@@ -1,0 +1,124 @@
+import { describe, expect, it } from "vitest";
+import {
+  buildTimeBoundaries,
+  findConflictIds,
+  findGaps,
+  summarizeByEntity,
+  type JadwalEntry,
+} from "./jadwalGrid";
+
+function entry(overrides: Partial<JadwalEntry> & { id: string }): JadwalEntry {
+  return {
+    hari: "SENIN",
+    jamMulai: "07:00",
+    jamSelesai: "08:30",
+    kelasId: "k1",
+    kelas: "X-A",
+    guruId: "g1",
+    guru: "Budi",
+    mataPelajaran: "Matematika",
+    ...overrides,
+  };
+}
+
+describe("buildTimeBoundaries", () => {
+  it("returns sorted unique boundaries", () => {
+    const boundaries = buildTimeBoundaries([
+      entry({ id: "a", jamMulai: "08:30", jamSelesai: "10:00" }),
+      entry({ id: "b", jamMulai: "07:00", jamSelesai: "08:30" }),
+    ]);
+    expect(boundaries).toEqual(["07:00", "08:30", "10:00"]);
+  });
+
+  it("returns empty array for no entries", () => {
+    expect(buildTimeBoundaries([])).toEqual([]);
+  });
+});
+
+describe("findConflictIds", () => {
+  it("flags same-guru overlap on the same day", () => {
+    const conflicts = findConflictIds([
+      entry({ id: "a", kelasId: "k1" }),
+      entry({ id: "b", kelasId: "k2", jamMulai: "08:00", jamSelesai: "09:00" }),
+    ]);
+    expect(conflicts).toEqual(new Set(["a", "b"]));
+  });
+
+  it("flags same-kelas overlap with different guru", () => {
+    const conflicts = findConflictIds([
+      entry({ id: "a", guruId: "g1" }),
+      entry({ id: "b", guruId: "g2", jamMulai: "07:30", jamSelesai: "08:00" }),
+    ]);
+    expect(conflicts).toEqual(new Set(["a", "b"]));
+  });
+
+  it("ignores overlap on different days or adjacent ranges", () => {
+    const conflicts = findConflictIds([
+      entry({ id: "a" }),
+      entry({ id: "b", hari: "SELASA" }),
+      entry({ id: "c", jamMulai: "08:30", jamSelesai: "10:00" }),
+    ]);
+    expect(conflicts.size).toBe(0);
+  });
+});
+
+describe("findGaps", () => {
+  it("detects an empty interval between sessions", () => {
+    const gaps = findGaps([
+      entry({ id: "a", jamMulai: "07:00", jamSelesai: "08:30" }),
+      entry({ id: "b", jamMulai: "09:00", jamSelesai: "10:00" }),
+    ]);
+    expect(gaps).toEqual([
+      { hari: "SENIN", jamMulai: "08:30", jamSelesai: "09:00" },
+    ]);
+  });
+
+  it("reports no gap for back-to-back or overlapping sessions", () => {
+    const gaps = findGaps([
+      entry({ id: "a", jamMulai: "07:00", jamSelesai: "08:30" }),
+      entry({ id: "b", jamMulai: "08:30", jamSelesai: "10:00" }),
+      entry({ id: "c", jamMulai: "09:00", jamSelesai: "09:30" }),
+    ]);
+    expect(gaps).toEqual([]);
+  });
+});
+
+describe("summarizeByEntity", () => {
+  it("rolls up sessions, hours, conflicts, and gaps per kelas per day", () => {
+    const summary = summarizeByEntity(
+      [
+        entry({ id: "a", jamMulai: "07:00", jamSelesai: "08:30" }),
+        entry({
+          id: "b",
+          jamMulai: "09:00",
+          jamSelesai: "10:00",
+          guruId: "g2",
+        }),
+      ],
+      "kelasId",
+    );
+    const senin = summary.get("k1")?.get("SENIN");
+    expect(senin).toEqual({
+      sessionCount: 2,
+      totalHours: 2.5,
+      hasConflict: false,
+      gapCount: 1,
+    });
+  });
+
+  it("marks conflicts in the rollup", () => {
+    const summary = summarizeByEntity(
+      [
+        entry({ id: "a" }),
+        entry({
+          id: "b",
+          jamMulai: "07:30",
+          jamSelesai: "08:00",
+          guruId: "g2",
+        }),
+      ],
+      "kelasId",
+    );
+    expect(summary.get("k1")?.get("SENIN")?.hasConflict).toBe(true);
+  });
+});

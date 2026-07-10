@@ -41,9 +41,11 @@ export default async function JadwalPage() {
           hari: j.hari,
           jamMulai: j.jamMulai,
           jamSelesai: j.jamSelesai,
+          kelasId: j.kelas.id,
           kelas: j.kelas.nama,
-          mataPelajaran: j.mataPelajaran.nama,
+          guruId: j.guru.id,
           guru: j.guru.user.name,
+          mataPelajaran: j.mataPelajaran.nama,
         }))}
         kelasOptions={kelasList}
         mapelOptions={mapelList}
