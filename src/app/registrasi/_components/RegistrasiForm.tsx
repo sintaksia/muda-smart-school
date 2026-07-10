@@ -4,15 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  User,
-  MapPin,
-  Users,
-  School,
-  Loader2,
-  Phone,
-  Mail,
-} from "lucide-react";
+import { User, MapPin, Users, School, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -180,7 +172,9 @@ export default function RegistrasiForm() {
       const result = await response.json();
 
       if (!response.ok) {
-        toast.error(result.message || "Terjadi kesalahan saat mendaftar");
+        toast.error(
+          result.error || result.message || "Terjadi kesalahan saat mendaftar",
+        );
         return;
       }
 

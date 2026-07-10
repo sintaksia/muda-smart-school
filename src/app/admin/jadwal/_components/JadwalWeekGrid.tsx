@@ -6,6 +6,7 @@ import {
   buildTimeBoundaries,
   type JadwalEntry,
 } from "@/src/features/attendance/utils/jadwalGrid";
+import { FREE_SLOT_CLASS, GAP_HIGHLIGHT_CLASS } from "./jadwalStyles";
 
 interface JadwalWeekGridProps {
   /** Entries already filtered to a single kelas or guru. */
@@ -91,8 +92,8 @@ export function JadwalWeekGrid({
                         className={`border-hairline border-l px-3 py-2 text-xs ${
                           insideSpan
                             ? mode === "kelas"
-                              ? "bg-yellow-100 text-yellow-950"
-                              : "bg-green-50 text-green-800"
+                              ? GAP_HIGHLIGHT_CLASS
+                              : FREE_SLOT_CLASS
                             : "text-ink-muted"
                         }`}
                       >

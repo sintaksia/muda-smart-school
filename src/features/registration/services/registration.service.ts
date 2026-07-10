@@ -76,6 +76,10 @@ export interface CreateRegistrationInput {
 // 2. READ OPERATIONS
 // ======================
 
+/**
+ * Ambil semua pendaftaran (terbaru dulu) beserta relasi akun siswa.
+ * Dipakai halaman admin — jangan diekspos tanpa auth (berisi PII).
+ */
 export async function getAllRegistrations() {
   return prisma.pendaftaran.findMany({
     include: { student: true },
@@ -83,6 +87,7 @@ export async function getAllRegistrations() {
   });
 }
 
+/** Ambil satu pendaftaran berdasarkan id, beserta relasi akun siswa. */
 export async function getRegistrationById(id: string) {
   return prisma.pendaftaran.findUnique({
     where: { id },
@@ -94,6 +99,11 @@ export async function getRegistrationById(id: string) {
 // 3. CREATE OPERATION
 // ======================
 
+/**
+ * Buat pendaftaran baru.
+ * Menolak NISN/NIK duplikat (throw) dan meng-generate nomor pendaftaran
+ * berurutan per tahun dengan format `SPMB-<tahun>-<urutan 3 digit>`.
+ */
 export async function createRegistration(data: CreateRegistrationInput) {
   // 1. Cek duplikasi
   const existing = await prisma.pendaftaran.findFirst({
@@ -144,16 +154,30 @@ export async function createRegistration(data: CreateRegistrationInput) {
 // 4. HELPER: Convert Zod to Prisma
 // ======================
 
+// Helper untuk konversi string ke number
+function toNumber(val: string | undefined): number | undefined {
+  if (!val || val.trim() === "") return undefined;
+  const num = parseInt(val);
+  return isNaN(num) ? undefined : num;
+}
+
+// Untuk kolom Prisma yang wajib (Int) — gagal eksplisit, bukan NaN/undefined
+function toRequiredNumber(val: string | undefined, fieldName: string): number {
+  const num = toNumber(val);
+  if (num === undefined) {
+    throw new Error(`${fieldName} wajib diisi dengan angka`);
+  }
+  return num;
+}
+
+/**
+ * Konversi data form (semua string) ke input create Prisma:
+ * tahun jadi number, tanggal jadi Date, field opsional kosong jadi undefined.
+ * Throw jika tahun wajib (ayah/ibu/lulus) tidak berisi angka.
+ */
 export function convertZodToPrisma(
   data: RegistrasiFormData,
 ): CreateRegistrationInput {
-  // Helper untuk konversi string ke number
-  const toNumber = (val: string | undefined): number | undefined => {
-    if (!val || val.trim() === "") return undefined;
-    const num = parseInt(val);
-    return isNaN(num) ? undefined : num;
-  };
-
   return {
     // Data Pribadi
     namaLengkap: data.namaLengkap,
@@ -181,14 +205,14 @@ export function convertZodToPrisma(
 
     // Data Ayah
     namaAyah: data.namaAyah,
-    tahunLahirAyah: toNumber(data.tahunLahirAyah)!,
+    tahunLahirAyah: toRequiredNumber(data.tahunLahirAyah, "Tahun lahir ayah"),
     pendidikanAyah: data.pendidikanAyah,
     pekerjaanAyah: data.pekerjaanAyah,
     noTelpAyah: data.noTelpAyah || undefined,
 
     // Data Ibu
     namaIbu: data.namaIbu,
-    tahunLahirIbu: toNumber(data.tahunLahirIbu)!,
+    tahunLahirIbu: toRequiredNumber(data.tahunLahirIbu, "Tahun lahir ibu"),
     pendidikanIbu: data.pendidikanIbu,
     pekerjaanIbu: data.pekerjaanIbu,
     noTelpIbu: data.noTelpIbu || undefined,
@@ -205,16 +229,29 @@ export function convertZodToPrisma(
     namaAsalSekolah: data.namaAsalSekolah,
     npsnAsalSekolah: data.npsnAsalSekolah,
     alamatAsalSekolah: data.alamatAsalSekolah,
-    tahunLulus: toNumber(data.tahunLulus)!,
+    tahunLulus: toRequiredNumber(data.tahunLulus, "Tahun lulus"),
   };
 }
 
-// Helper untuk konversi data form (RegistrasiFormData) menjadi input update
+// Konversi data form edit menjadi input update.
+// Field opsional yang dikosongkan harus tersimpan sebagai null —
+// undefined akan di-skip oleh Prisma sehingga nilai lama tidak terhapus.
 export function convertZodToUpdateInput(
   data: RegistrasiFormData,
 ): UpdateRegistrationInput {
-  const created = convertZodToPrisma(data);
-  return created;
+  return {
+    ...convertZodToPrisma(data),
+    emailMurid: data.emailMurid || null,
+    kodePos: data.kodePos || null,
+    noTelpAyah: data.noTelpAyah || null,
+    noTelpIbu: data.noTelpIbu || null,
+    namaWali: data.namaWali || null,
+    tahunLahirWali: toNumber(data.tahunLahirWali) ?? null,
+    pendidikanWali: data.pendidikanWali || null,
+    pekerjaanWali: data.pekerjaanWali || null,
+    noTelpWali: data.noTelpWali || null,
+    hubunganWali: data.hubunganWali || null,
+  };
 }
 
 // ======================
@@ -234,8 +271,7 @@ export interface UpdateRegistrationInput {
 
   // Kontak
   noHpMurid?: string;
-  emailMurid?: string;
-  noHpOrtu?: string;
+  emailMurid?: string | null;
 
   // Alamat
   alamatJalan?: string;
@@ -245,29 +281,29 @@ export interface UpdateRegistrationInput {
   kecamatan?: string;
   kotaKabupaten?: string;
   provinsi?: string;
-  kodePos?: string;
+  kodePos?: string | null;
 
   // Data Ayah
   namaAyah?: string;
   tahunLahirAyah?: number;
   pendidikanAyah?: Pendidikan;
   pekerjaanAyah?: string;
-  noTelpAyah?: string;
+  noTelpAyah?: string | null;
 
   // Data Ibu
   namaIbu?: string;
   tahunLahirIbu?: number;
   pendidikanIbu?: Pendidikan;
   pekerjaanIbu?: string;
-  noTelpIbu?: string;
+  noTelpIbu?: string | null;
 
   // Data Wali
-  namaWali?: string;
-  tahunLahirWali?: number;
-  pendidikanWali?: Pendidikan;
-  pekerjaanWali?: string;
-  noTelpWali?: string;
-  hubunganWali?: string;
+  namaWali?: string | null;
+  tahunLahirWali?: number | null;
+  pendidikanWali?: Pendidikan | null;
+  pekerjaanWali?: string | null;
+  noTelpWali?: string | null;
+  hubunganWali?: string | null;
 
   // Sekolah Asal
   namaAsalSekolah?: string;
@@ -282,6 +318,7 @@ export interface UpdateRegistrationInput {
 }
 
 // Update seluruh data pendaftaran (edit)
+/** Update data pendaftaran (edit penuh dari form admin). */
 export async function updateRegistration(
   id: string,
   data: UpdateRegistrationInput,
@@ -292,22 +329,20 @@ export async function updateRegistration(
   });
 }
 
-// Update status =
-export async function updateRegistrationStatus(
-  id: string,
-  status: string, // Ubah dari StatusPendaftaran ke string
-) {
-  // Validasi status
+/**
+ * Update status pendaftaran (PENDING/DIVERIFIKASI/DITERIMA/DITOLAK).
+ * Menerima string agar bisa dipakai langsung dari request body;
+ * throw jika status bukan nilai StatusPendaftaran yang valid.
+ */
+export async function updateRegistrationStatus(id: string, status: string) {
   if (!isValidStatus(status)) {
     throw new Error(`Status ${status} tidak valid`);
   }
 
-  // Hanya update status saja, tanpa tanggalValidasi
-  // Karena field tanggalValidasi tidak ada di model
   return prisma.pendaftaran.update({
     where: { id },
     data: {
-      status: status as StatusPendaftaran, // Cast ke enum
+      status: status as StatusPendaftaran,
     },
   });
 }
@@ -316,17 +351,10 @@ export async function updateRegistrationStatus(
 // 6. DELETE OPERATION
 // ======================
 
+/** Hapus permanen satu pendaftaran. */
 export async function deleteRegistration(id: string) {
   return prisma.pendaftaran.delete({
     where: { id },
-  });
-}
-
-// Soft delete alternative (jika perlu)
-export async function softDeleteRegistration(id: string) {
-  return prisma.pendaftaran.update({
-    where: { id },
-    data: { status: "DITOLAK" as StatusPendaftaran }, // Atau tambah field isDeleted
   });
 }
 
@@ -334,12 +362,15 @@ export async function softDeleteRegistration(id: string) {
 // 7. UTILITY FUNCTIONS
 // ======================
 
-// Get by status (untuk filter admin)
-
+/** Type guard: apakah string merupakan nilai StatusPendaftaran yang valid. */
 export function isValidStatus(status: string): status is StatusPendaftaran {
   return STATUS_PENDAFTARAN_VALUES.includes(status as StatusPendaftaran);
 }
 
+/**
+ * Ambil pendaftaran yang berstatus tertentu (untuk filter admin),
+ * beserta relasi akun siswa. Throw jika status tidak valid.
+ */
 export async function getRegistrationsByStatus(status: string) {
   if (!isValidStatus(status)) {
     throw new Error(`Status "${status}" tidak valid`);
@@ -349,11 +380,12 @@ export async function getRegistrationsByStatus(status: string) {
     where: {
       status: status as StatusPendaftaran,
     },
+    include: { student: true },
     orderBy: { createdAt: "desc" },
   });
 }
 
-// Count statistics
+/** Hitung jumlah pendaftaran per status untuk kartu statistik admin. */
 export async function getRegistrationStats() {
   const [total, pending, diterima, ditolak] = await Promise.all([
     prisma.pendaftaran.count(),
@@ -368,20 +400,4 @@ export async function getRegistrationStats() {
     diterima,
     ditolak,
   };
-}
-
-// Search registrations
-export async function searchRegistrations(query: string) {
-  return prisma.pendaftaran.findMany({
-    where: {
-      OR: [
-        { namaLengkap: { contains: query, mode: "insensitive" } },
-        { nisn: { contains: query } },
-        { nik: { contains: query } },
-        { namaAsalSekolah: { contains: query, mode: "insensitive" } },
-      ],
-    },
-    orderBy: { createdAt: "desc" },
-    take: 50, // Limit results
-  });
 }

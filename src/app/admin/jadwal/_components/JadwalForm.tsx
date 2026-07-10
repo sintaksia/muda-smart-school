@@ -18,13 +18,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/src/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
 import { hariOptions } from "@/src/lib/constants";
@@ -32,6 +25,7 @@ import {
   jadwalSchema,
   type JadwalFormData,
 } from "@/src/app/api/attendance/jadwal/JadwalSchema";
+import { JadwalSelectField } from "./JadwalSelectField";
 
 interface JadwalFormProps {
   open: boolean;
@@ -40,6 +34,9 @@ interface JadwalFormProps {
   mapelOptions: { id: string; nama: string }[];
   guruOptions: { id: string; nama: string }[];
 }
+
+const toSelectOptions = (items: { id: string; nama: string }[]) =>
+  items.map((item) => ({ value: item.id, label: item.nama }));
 
 export function JadwalForm({
   open,
@@ -78,13 +75,22 @@ export function JadwalForm({
   }
 
   const selectFields = [
-    { name: "kelasId" as const, label: "Kelas", options: kelasOptions },
+    {
+      name: "kelasId" as const,
+      label: "Kelas",
+      options: toSelectOptions(kelasOptions),
+    },
     {
       name: "mataPelajaranId" as const,
       label: "Mata Pelajaran",
-      options: mapelOptions,
+      options: toSelectOptions(mapelOptions),
     },
-    { name: "guruId" as const, label: "Guru", options: guruOptions },
+    {
+      name: "guruId" as const,
+      label: "Guru",
+      options: toSelectOptions(guruOptions),
+    },
+    { name: "hari" as const, label: "Hari", options: hariOptions },
   ];
 
   return (
@@ -96,60 +102,14 @@ export function JadwalForm({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {selectFields.map((field) => (
-              <FormField
+              <JadwalSelectField
                 key={field.name}
                 control={form.control}
                 name={field.name}
-                render={({ field: controller }) => (
-                  <FormItem>
-                    <FormLabel>{field.label}</FormLabel>
-                    <Select
-                      onValueChange={controller.onChange}
-                      value={controller.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="rounded-input w-full">
-                          <SelectValue placeholder={`Pilih ${field.label}`} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {field.options.map((option) => (
-                          <SelectItem key={option.id} value={option.id}>
-                            {option.nama}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label={field.label}
+                options={field.options}
               />
             ))}
-
-            <FormField
-              control={form.control}
-              name="hari"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Hari</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="rounded-input w-full">
-                        <SelectValue placeholder="Pilih hari" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {hariOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <div className="grid grid-cols-2 gap-4">
               {(["jamMulai", "jamSelesai"] as const).map((name) => (

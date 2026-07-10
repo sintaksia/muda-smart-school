@@ -5,6 +5,7 @@ import {
   summarizeByEntity,
   type JadwalEntry,
 } from "@/src/features/attendance/utils/jadwalGrid";
+import { GAP_HIGHLIGHT_CLASS } from "./jadwalStyles";
 
 interface JadwalHeatmapProps {
   entries: JadwalEntry[];
@@ -90,7 +91,9 @@ export function JadwalHeatmap({
                       · {day.sessionCount} sesi
                       {day.hasConflict && <span> · Bentrok</span>}
                       {mode === "kelas" && day.gapCount > 0 && (
-                        <span className="mt-1 block rounded bg-yellow-100 px-1.5 py-0.5 font-semibold text-yellow-950">
+                        <span
+                          className={`mt-1 block rounded px-1.5 py-0.5 font-semibold ${GAP_HIGHLIGHT_CLASS}`}
+                        >
                           {day.gapCount} jam kosong
                         </span>
                       )}

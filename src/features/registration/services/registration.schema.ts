@@ -88,10 +88,7 @@ export const registrasiSchema = z.object({
   namaAyah: z.string().min(3, "Nama ayah minimal 3 karakter"),
   tahunLahirAyah: z
     .string()
-    .refine(
-      (val) => val === "" || /^\d+$/.test(val),
-      "Tahun lahir hanya boleh angka",
-    ),
+    .regex(/^\d{4}$/, "Tahun lahir harus 4 digit angka"),
   pendidikanAyah: z.enum(pendidikanValues, {
     message: "Pilih pendidikan ayah",
   }),
@@ -99,12 +96,7 @@ export const registrasiSchema = z.object({
 
   // Data Ibu
   namaIbu: z.string().min(3, "Nama ibu minimal 3 karakter"),
-  tahunLahirIbu: z
-    .string()
-    .refine(
-      (val) => val === "" || /^\d+$/.test(val),
-      "Tahun lahir hanya boleh angka",
-    ),
+  tahunLahirIbu: z.string().regex(/^\d{4}$/, "Tahun lahir harus 4 digit angka"),
   pendidikanIbu: z.enum(pendidikanValues, {
     message: "Pilih pendidikan ibu",
   }),

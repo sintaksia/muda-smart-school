@@ -1,31 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/src/features/auth/services/auth";
+import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import {
   getAllRegistrations,
   createRegistration,
   convertZodToPrisma,
   getRegistrationsByStatus,
+  isValidStatus,
 } from "@/src/features/registration/services";
 import { registrasiSchema } from "@/src/features/registration/services/registration.schema";
 
-// GET: Get all registrations
+// GET: Get all registrations (admin only — contains applicant PII)
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const statusParam = searchParams.get("status");
-
-    let registrations;
-
-    if (statusParam) {
-      // Get filtered by status
-      registrations = await getRegistrationsByStatus(statusParam);
-    } else {
-      // Get all
-      registrations = await getAllRegistrations();
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (!canAccessAdmin(currentUser.role)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const statusParam = request.nextUrl.searchParams.get("status");
+
+    if (statusParam && !isValidStatus(statusParam)) {
+      return NextResponse.json(
+        { error: `Status "${statusParam}" tidak valid` },
+        { status: 400 },
+      );
+    }
+
+    const registrations = statusParam
+      ? await getRegistrationsByStatus(statusParam)
+      : await getAllRegistrations();
 
     return NextResponse.json(registrations);
   } catch (error) {
+    console.error("Error fetching registrations:", error);
     return NextResponse.json(
       { error: "Gagal mengambil data pendaftaran" },
       { status: 500 },
@@ -33,36 +45,33 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: Create new registration
+// POST: Create new registration (public — used by the /registrasi form)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // 1. Validate with Zod
-    const validatedData = registrasiSchema.parse(body);
+    const parsed = registrasiSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Data tidak valid", details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
 
-    // 2. Convert Zod to Prisma format
-    const prismaData = convertZodToPrisma(validatedData);
-
-    // 3. Create in database
+    const prismaData = convertZodToPrisma(parsed.data);
     const registration = await createRegistration(prismaData);
 
-    // 4. Revalidate cache
     revalidatePath("/admin/registrations");
-    revalidatePath("/api/registrations");
 
     return NextResponse.json(registration, { status: 201 });
   } catch (error) {
     console.error("Error creating registration:", error);
 
-    if (error instanceof Error && "errors" in error) {
-      return NextResponse.json(
-        {
-          error: "Data tidak valid",
-          details: error.errors,
-        },
-        { status: 400 },
-      );
+    if (
+      error instanceof Error &&
+      error.message === "NISN atau NIK sudah terdaftar"
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
     }
 
     return NextResponse.json(

@@ -6,13 +6,26 @@ import { RegistrationTable } from "./_components/RegistrationTable";
 import { StatsCards } from "./_components/StatsCards";
 import {
   getAllRegistrations,
+  getRegistrationsByStatus,
   getRegistrationStats,
+  isValidStatus,
 } from "@/src/features/registration/services";
 
-export default async function RegistrationsPage() {
+interface RegistrationsPageProps {
+  searchParams: Promise<{ status?: string }>;
+}
+
+export default async function RegistrationsPage({
+  searchParams,
+}: RegistrationsPageProps) {
+  const { status } = await searchParams;
+  const activeStatus = status && isValidStatus(status) ? status : undefined;
+
   // Fetch data parallel untuk performa lebih baik
   const [registrations, stats] = await Promise.all([
-    getAllRegistrations(),
+    activeStatus
+      ? getRegistrationsByStatus(activeStatus)
+      : getAllRegistrations(),
     getRegistrationStats(),
   ]);
 
@@ -55,12 +68,27 @@ export default async function RegistrationsPage() {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Filter className="h-4 w-4" />
               <span>Filter cepat:</span>
-              <Button variant="ghost" size="sm" asChild>
+              <Button
+                variant={activeStatus ? "ghost" : "secondary"}
+                size="sm"
+                asChild
+              >
+                <Link href="/admin/registrations">Semua ({stats.total})</Link>
+              </Button>
+              <Button
+                variant={activeStatus === "PENDING" ? "secondary" : "ghost"}
+                size="sm"
+                asChild
+              >
                 <Link href="/admin/registrations?status=PENDING">
                   Menunggu ({stats.pending})
                 </Link>
               </Button>
-              <Button variant="ghost" size="sm" asChild>
+              <Button
+                variant={activeStatus === "DITERIMA" ? "secondary" : "ghost"}
+                size="sm"
+                asChild
+              >
                 <Link href="/admin/registrations?status=DITERIMA">
                   Diterima ({stats.diterima})
                 </Link>

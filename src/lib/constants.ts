@@ -3,6 +3,10 @@ export const jenisKelaminOptions = [
   { value: "PEREMPUAN", label: "Perempuan" },
 ] as const;
 
+export const JENIS_KELAMIN_LABELS: Record<string, string> = Object.fromEntries(
+  jenisKelaminOptions.map((option) => [option.value, option.label]),
+);
+
 export const programKeahlianOptions = [
   {
     value: "TEKNIK_OTOMOTIF",

@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { getCurrentUser } from "@/src/features/auth/services/auth";
+import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
+import { STATUS_PENDAFTARAN_VALUES } from "@/src/lib/constants";
 import {
   getRegistrationById,
   deleteRegistration,
@@ -13,9 +17,34 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
+const statusUpdateSchema = z.object({
+  status: z.enum(
+    STATUS_PENDAFTARAN_VALUES as [
+      (typeof STATUS_PENDAFTARAN_VALUES)[number],
+      ...(typeof STATUS_PENDAFTARAN_VALUES)[number][],
+    ],
+    { message: "Status tidak valid" },
+  ),
+});
+
+// All handlers are admin-only: registration records contain applicant PII
+async function requireAdmin(): Promise<NextResponse | null> {
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!canAccessAdmin(currentUser.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  return null;
+}
+
 // GET: Get single registration by ID
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const authError = await requireAdmin();
+    if (authError) return authError;
+
     const { id } = await params;
     const registration = await getRegistrationById(id);
 
@@ -39,23 +68,26 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PATCH: Partial update (status update)
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
+    const authError = await requireAdmin();
+    if (authError) return authError;
+
     const { id } = await params;
     const body = await request.json();
 
-    // Handle status update
-    if (body.status) {
-      const registration = await updateRegistrationStatus(id, body.status);
-
-      revalidatePath("/admin/registrations");
-      revalidatePath(`/admin/registrations/${id}`);
-
-      return NextResponse.json(registration);
+    const parsed = statusUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Status tidak valid", details: parsed.error.flatten() },
+        { status: 400 },
+      );
     }
 
-    return NextResponse.json(
-      { error: "Tidak ada operasi yang valid" },
-      { status: 400 },
-    );
+    const registration = await updateRegistrationStatus(id, parsed.data.status);
+
+    revalidatePath("/admin/registrations");
+    revalidatePath(`/admin/registrations/${id}`);
+
+    return NextResponse.json(registration);
   } catch (error) {
     console.error("Error patching registration:", error);
     return NextResponse.json(
@@ -68,6 +100,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 // PUT: Full update of registration data
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const authError = await requireAdmin();
+    if (authError) return authError;
+
     const { id } = await params;
 
     const existing = await getRegistrationById(id);
@@ -107,9 +142,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE: Delete registration
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const authError = await requireAdmin();
+    if (authError) return authError;
+
     const { id } = await params;
 
-    // Check if exists
     const existing = await getRegistrationById(id);
     if (!existing) {
       return NextResponse.json(
@@ -120,7 +157,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     await deleteRegistration(id);
 
-    // Revalidate cache
     revalidatePath("/admin/registrations");
 
     return NextResponse.json({

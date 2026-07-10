@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { CheckCircle, XCircle, FileCheck } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { toast } from "sonner";
+import type { StatusPendaftaran } from "@/src/features/registration/services";
 
 interface RegistrationStatusActionsProps {
   id: string;
-  status: string;
+  status: StatusPendaftaran;
 }
 
 export function RegistrationStatusActions({
@@ -19,7 +20,7 @@ export function RegistrationStatusActions({
   const [isLoading, setIsLoading] = useState(false);
 
   const updateStatus = async (
-    nextStatus: "DITERIMA" | "DITOLAK" | "DIVERIFIKASI",
+    nextStatus: StatusPendaftaran,
     successMessage: string,
   ) => {
     setIsLoading(true);

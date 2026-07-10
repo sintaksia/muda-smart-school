@@ -5,6 +5,7 @@ import { Badge } from "@/src/app/admin/_components/Badge";
 import { RegistrationActions } from "./RegistrationActions";
 import type { PendaftaranWithStudent } from "@/src/features/registration/services";
 import {
+  JENIS_KELAMIN_LABELS,
   PROGRAM_KEAHLIAN_LABELS,
   PROGRAM_KEAHLIAN_SHORT_LABELS,
   PROGRAM_KEAHLIAN_COLORS,
@@ -78,8 +79,11 @@ export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
     accessorKey: "jenisKelamin",
     header: "JK",
     cell: ({ row }) => (
-      <span className="text-sm">
-        {row.original.jenisKelamin === "LAKI_LAKI" ? "L" : "P"}
+      <span
+        className="text-sm"
+        title={JENIS_KELAMIN_LABELS[row.original.jenisKelamin]}
+      >
+        {JENIS_KELAMIN_LABELS[row.original.jenisKelamin]?.charAt(0) ?? "-"}
       </span>
     ),
   },
