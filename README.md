@@ -108,13 +108,34 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Available Scripts
 
-| Command              | Description              |
-| -------------------- | ------------------------ |
-| `pnpm dev`           | Start development server |
-| `pnpm build`         | Build for production     |
-| `pnpm start`         | Start production server  |
-| `pnpm lint`          | Run ESLint               |
-| `pnpm prisma studio` | Open Prisma database GUI |
+| Command              | Description                  |
+| -------------------- | ---------------------------- |
+| `pnpm dev`           | Start development server     |
+| `pnpm build`         | Build for production         |
+| `pnpm start`         | Start production server      |
+| `pnpm lint`          | Run ESLint                   |
+| `pnpm test`          | Run tests in watch mode      |
+| `pnpm test:run`      | Run tests once               |
+| `pnpm test:coverage` | Run tests with coverage gate |
+| `pnpm prisma studio` | Open Prisma database GUI     |
+
+### Testing & Coverage
+
+Unit tests use Vitest with per-file Prisma mocks. Coverage is measured on
+business logic only (`src/features/**`, `src/app/api/**`, `src/lib/**`) —
+UI components are excluded.
+
+Coverage thresholds in `vitest.config.ts` work as a **ratchet**: they are set
+slightly below the current measured coverage (≈44% lines as of Jul 2026,
+dragged down by untested `auth` and `cms` features) and CI fails if coverage
+drops below them. When you backfill tests, **raise the thresholds — never
+lower them**. Long-term target: 70–80% lines on business logic.
+
+### CI
+
+`.github/workflows/ci.yml` runs on every push/PR to `main`: install →
+lint → typecheck → tests with coverage gate. The production build is
+enforced locally by the husky pre-push hook instead (needs real env vars).
 
 ## Project Structure
 
