@@ -209,6 +209,14 @@ export function convertZodToPrisma(
   };
 }
 
+// Helper untuk konversi data form (RegistrasiFormData) menjadi input update
+export function convertZodToUpdateInput(
+  data: RegistrasiFormData,
+): UpdateRegistrationInput {
+  const created = convertZodToPrisma(data);
+  return created;
+}
+
 // ======================
 // 5. UPDATE OPERATIONS
 // ======================
@@ -271,6 +279,17 @@ export interface UpdateRegistrationInput {
   status?: StatusPendaftaran;
   catatanValidasi?: string;
   divalidasiOleh?: string;
+}
+
+// Update seluruh data pendaftaran (edit)
+export async function updateRegistration(
+  id: string,
+  data: UpdateRegistrationInput,
+) {
+  return prisma.pendaftaran.update({
+    where: { id },
+    data,
+  });
 }
 
 // Update status =

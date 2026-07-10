@@ -39,7 +39,7 @@ export function RegistrationActions({
 
   // Action: View Details
   const handleViewDetails = () => {
-    router.push(`/admin/cms/registrations/${registration.id}`);
+    router.push(`/admin/registrations/${registration.id}`);
   };
 
   // Action: Validate (accept)

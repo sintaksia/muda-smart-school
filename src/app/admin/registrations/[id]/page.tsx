@@ -38,7 +38,7 @@ export default async function RegistrationDetailPage({
       <div className="flex items-center justify-between">
         <div>
           <Button variant="ghost" size="sm" asChild className="mb-2">
-            <Link href="/admin/cms/registrations">
+            <Link href="/admin/registrations">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Kembali ke Daftar
             </Link>
@@ -64,7 +64,7 @@ export default async function RegistrationDetailPage({
             </Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href={`/admin/cms/registrations/${id}/edit`}>
+            <Link href={`/admin/registrations/${id}/edit`}>
               <Edit className="mr-2 h-4 w-4" />
               Edit
             </Link>
