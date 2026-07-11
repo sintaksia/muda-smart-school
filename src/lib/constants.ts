@@ -40,6 +40,10 @@ export const programKeahlianOptions = [
   },
 ] as const;
 
+export const PROGRAM_KEAHLIAN_VALUES = programKeahlianOptions.map(
+  (option) => option.value,
+);
+
 export const PROGRAM_KEAHLIAN_LABELS: Record<string, string> =
   Object.fromEntries(
     programKeahlianOptions.map((option) => [option.value, option.label]),

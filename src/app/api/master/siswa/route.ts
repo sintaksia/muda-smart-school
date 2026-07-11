@@ -2,33 +2,21 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import {
-  getSiswaDetail,
-  updateSiswa,
+  createSiswaManual,
+  getSiswaList,
 } from "@/src/features/master/services/siswa";
-import { updateSiswaCoreSchema } from "../SiswaSchema";
+import { createSiswaSchema } from "./SiswaSchema";
 
-interface RouteParams {
-  params: Promise<{ id: string }>;
-}
-
-// GET /api/master/siswa/[id] - full profile with activity history
-export async function GET(_request: Request, { params }: RouteParams) {
+// GET /api/master/siswa
+export async function GET() {
   try {
-    const { id } = await params;
     const currentUser = await getCurrentUser();
     if (!currentUser || !canAccessAdmin(currentUser.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
-    const detail = await getSiswaDetail(id);
-    if (!detail) {
-      return NextResponse.json(
-        { error: "Siswa tidak ditemukan" },
-        { status: 404 },
-      );
-    }
-    return NextResponse.json(detail);
+    return NextResponse.json(await getSiswaList());
   } catch (err: unknown) {
-    console.error("Get siswa detail error:", err);
+    console.error("List siswa error:", err);
     return NextResponse.json(
       { error: "Terjadi kesalahan server" },
       { status: 500 },
@@ -36,32 +24,34 @@ export async function GET(_request: Request, { params }: RouteParams) {
   }
 }
 
-// PATCH /api/master/siswa/[id] - update core data, class placement, status
-export async function PATCH(request: Request, { params }: RouteParams) {
+// POST /api/master/siswa - manually create a transfer student account
+export async function POST(request: Request) {
   try {
-    const { id } = await params;
     const currentUser = await getCurrentUser();
     if (!currentUser || !canAccessAdmin(currentUser.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     const body = await request.json();
-    const result = updateSiswaCoreSchema.safeParse(body);
+    const result = createSiswaSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },
         { status: 400 },
       );
     }
-    const { siswa, error } = await updateSiswa(id, result.data);
-    if (error || !siswa) {
+    const { student, error } = await createSiswaManual(
+      result.data,
+      currentUser.id,
+    );
+    if (error || !student) {
       return NextResponse.json(
-        { error: error ?? "Gagal memperbarui siswa" },
+        { error: error ?? "Gagal membuat akun siswa" },
         { status: 400 },
       );
     }
-    return NextResponse.json(siswa);
+    return NextResponse.json(student, { status: 201 });
   } catch (err: unknown) {
-    console.error("Update siswa error:", err);
+    console.error("Create siswa error:", err);
     return NextResponse.json(
       { error: "Terjadi kesalahan server" },
       { status: 500 },

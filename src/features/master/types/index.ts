@@ -48,4 +48,29 @@ export interface UpdateGuruInput {
 export interface UpdateSiswaInput {
   kelasId?: string | null;
   status?: StudentStatus;
+  nis?: string;
+  nisn?: string;
+  programKeahlian?: ProgramKeahlian;
+  angkatan?: number;
+  name?: string;
+  phone?: string | null;
+}
+
+export interface CreateSiswaManualInput {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  nis: string;
+  nisn: string;
+  programKeahlian: ProgramKeahlian;
+  angkatan: number;
+  kelasId?: string | null;
+  status?: StudentStatus;
+}
+
+export interface BulkSiswaInput {
+  action: "PROMOTE" | "GRADUATE";
+  studentIds: string[];
+  targetKelasId?: string;
 }

@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { PATCH } from "./route";
+import { GET, PATCH } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { updateSiswa } from "@/src/features/master/services/siswa";
+import {
+  getSiswaDetail,
+  updateSiswa,
+} from "@/src/features/master/services/siswa";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { Student } from "@prisma/client";
 
@@ -9,6 +12,7 @@ vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
 vi.mock("@/src/features/master/services/siswa", () => ({
+  getSiswaDetail: vi.fn(),
   updateSiswa: vi.fn(),
 }));
 
@@ -21,6 +25,49 @@ function buildRequest(body: unknown): Request {
     body: JSON.stringify(body),
   });
 }
+
+describe("GET /api/master/siswa/[id]", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns the student detail", async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue({
+      id: "admin-1",
+      role: "ADMIN",
+    } as SessionUser);
+    vi.mocked(getSiswaDetail).mockResolvedValue({
+      siswa: { id: "s1" },
+      absensiSummary: [],
+      creditEntries: [],
+      creditTotal: 100,
+      izinHistory: [],
+    } as never);
+
+    const response = await GET(
+      new Request("http://localhost/api/master/siswa/s1"),
+      routeParams,
+    );
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.siswa.id).toBe("s1");
+  });
+
+  it("returns 404 for a missing student", async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue({
+      id: "admin-1",
+      role: "ADMIN",
+    } as SessionUser);
+    vi.mocked(getSiswaDetail).mockResolvedValue(null);
+
+    const response = await GET(
+      new Request("http://localhost/api/master/siswa/s1"),
+      routeParams,
+    );
+    expect(response.status).toBe(404);
+  });
+});
 
 describe("PATCH /api/master/siswa/[id]", () => {
   beforeEach(() => {
