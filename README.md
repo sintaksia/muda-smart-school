@@ -137,6 +137,13 @@ lower them**. Long-term target: 70–80% lines on business logic.
 lint → typecheck → tests with coverage gate. The production build is
 enforced locally by the husky pre-push hook instead (needs real env vars).
 
+### Releases
+
+`.github/workflows/release-please.yml` maintains a Release PR from
+conventional commits merged to `main`. Merging that PR bumps
+`package.json`, tags the release (continuing from `v1.2.0`), creates a
+GitHub Release, and updates `CHANGELOG.md` automatically.
+
 ## Project Structure
 
 ```
