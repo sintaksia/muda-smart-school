@@ -14,6 +14,7 @@ import {
 import {
   STATUS_PENDAFTARAN_LABELS,
   STATUS_PENDAFTARAN_BADGES,
+  PROGRAM_KEAHLIAN_LABELS,
 } from "@/src/lib/constants";
 
 export default async function AdminPage() {
@@ -111,7 +112,9 @@ export default async function AdminPage() {
                       </p>
                       <p className="truncate text-xs text-muted-foreground">
                         {registration.nomorPendaftaran} &middot;{" "}
-                        {registration.programKeahlian}
+                        {PROGRAM_KEAHLIAN_LABELS[
+                          registration.programKeahlian
+                        ] ?? registration.programKeahlian}
                       </p>
                     </div>
                     <Badge
