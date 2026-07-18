@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getGalleryByCategory } from "@/src/features/cms/services/gallery";
 import { getActiveContacts } from "@/src/features/cms/services/contacts";
 import { getActiveSocialLinks } from "@/src/features/cms/services/social-links";
+import { getSettingsMap } from "@/src/features/cms/services/school-settings";
 import {
   SOCIAL_ICON_PATHS,
   SOCIAL_GRADIENTS,
@@ -16,12 +17,16 @@ export const metadata: Metadata = {
 };
 
 export default async function LocationInfo() {
-  const [locationImage, contacts, socialLinks] = await Promise.all([
+  const [locationImage, contacts, socialLinks, settings] = await Promise.all([
     getGalleryByCategory("FASILITAS"),
     getActiveContacts(),
     getActiveSocialLinks(),
+    getSettingsMap(["maps_url"]),
   ]);
   const emailContact = contacts.find((contact) => contact.type === "EMAIL");
+  const mapsUrl =
+    settings.maps_url ||
+    "https://maps.google.com/?q=SMK+Muhammadiyah+2+Cibiru+Bandung";
 
   return (
     <section className="py-16 md:py-24 bg-neutral-50">
@@ -78,7 +83,7 @@ export default async function LocationInfo() {
                   Kota Bandung, Jawa Barat 40615
                 </address>
                 <a
-                  href="https://maps.google.com/?q=SMK+Muhammadiyah+2+Cibiru+Bandung"
+                  href={mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold px-5 py-3 rounded-xl transition-colors"

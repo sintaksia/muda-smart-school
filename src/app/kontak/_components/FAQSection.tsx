@@ -23,9 +23,13 @@ const fallbackFaqItems: FaqItem[] = [
 
 interface FAQSectionProps {
   faqs?: FaqItem[];
+  whatsappHref?: string;
 }
 
-export default function FAQSection({ faqs }: FAQSectionProps) {
+export default function FAQSection({
+  faqs,
+  whatsappHref = "https://wa.me/6282120091616",
+}: FAQSectionProps) {
   const faqItems = faqs && faqs.length > 0 ? faqs : fallbackFaqItems;
 
   const faqJsonLd = {
@@ -81,7 +85,7 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
         <div className="text-center mt-10">
           <p className="text-neutral-600 mb-4">Masih punya pertanyaan lain?</p>
           <a
-            href="https://wa.me/6282120091616"
+            href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
