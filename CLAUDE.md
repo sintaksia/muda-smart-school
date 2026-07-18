@@ -97,6 +97,45 @@ src/
 
 ---
 
+## No Duplicate Code - STRICTLY FOLLOW (DRY)
+
+**Never write the same JSX, logic, values, or types in more than one place — including Next.js convention files (`loading.tsx`, `error.tsx`, `not-found.tsx`), API routes, and any other file.** If code is (or will be) needed in 2+ places, it MUST live in one shared, reusable place and be imported everywhere it's used.
+
+- **Before writing any component/markup/logic/value**, search the codebase for something that already does this or is close to it. If found, reuse or extend it — don't write a parallel copy.
+- **If you catch yourself writing code that looks like code you already wrote elsewhere in this session or that already exists in the repo**, stop and extract it into a shared component/util/const instead of duplicating it.
+- **Components:** any JSX/markup used (or reasonably likely to be reused) in 2+ places must be extracted into a component and placed per the Component Placement Rules above (`_components/` for page-only, `features/[feature]/components/` for feature-shared, `components/` for global-shared).
+- **Constants/enums/labels/config:** any literal value, options list, label map, or config used in 2+ places must live once in `src/lib/constants.ts` (or a feature-level `constants.ts`) and be imported — never re-declared or hardcoded locally. This includes the existing Enum/Status Single Source of Truth rule, but applies to ALL shared constants, not just Prisma-enum-backed ones.
+- **Utils/hooks/types:** any pure function, hook, or TypeScript type/interface used in 2+ places must be extracted to `utils/`, `hooks/`, or `types/` and imported — never copy-pasted or redefined.
+- **Route-convention files** (`loading.tsx`, `error.tsx`, `not-found.tsx`, etc.) must stay thin wrappers that render a shared component — never inline the same markup independently in multiple segments.
+
+```tsx
+// ✅ CORRECT - shared component, imported everywhere
+// src/app/admin/_components/AdminLoadingState.tsx
+export function AdminLoadingState() {
+  /* markup */
+}
+
+// src/app/admin/cms/loading.tsx
+import { AdminLoadingState } from "../_components/AdminLoadingState";
+export default function CmsLoading() {
+  return <AdminLoadingState />;
+}
+
+// ❌ WRONG - same markup/logic duplicated in a second file
+export default function CmsLoading() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
+      <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+      <p className="text-sm text-primary-700">Memuat data...</p>
+    </div>
+  );
+}
+```
+
+If you ever find existing duplicate code while working in a file, extract and consolidate it as part of the task rather than leaving it duplicated.
+
+---
+
 ## Technology Stack
 
 | Category        | Technology                          |
@@ -548,3 +587,47 @@ export async function POST(request: Request) {
   return NextResponse.json(news, { status: 201 });
 }
 ```
+
+---
+
+## World-Class Code Standards - STRICTLY FOLLOW
+
+Every change must meet these bars before it's considered done. This is not optional polish — it's the baseline.
+
+### 1. Performance & Rendering
+
+- **Default to Server Components.** Only add `"use client"` when the component needs interactivity (state, effects, browser APIs, event handlers). Push `"use client"` as far down the tree as possible — wrap just the interactive leaf, not the whole page.
+- **Fetch data where it's used, in parallel.** Use `Promise.all` for independent queries in a server component (see `AdminPage` pattern) instead of sequential `await`s.
+- **Every route segment that does async data fetching must have a `loading.tsx`** (reusing a shared loading component per the DRY rule) so navigation always gives instant feedback — never a silent, unresponsive gap.
+- **Memoize expensive client-side work.** Use `useMemo`/`useCallback` for derived data or callbacks passed to memoized children — but don't wrap trivial values/functions in them where the cost of memoizing exceeds the cost of recomputing.
+- **Avoid N+1 queries.** Use Prisma `include`/`select` to fetch related data in one query instead of looping and querying per-row.
+- **Paginate or limit any list that can grow unbounded** (tables, feeds) — never `findMany()` without a `take`/cursor on data that isn't inherently small and fixed.
+- **Images:** always use `next/image`, never a raw `<img>`, so sizing/lazy-loading/format optimization is automatic.
+
+### 2. Error Handling & Resilience
+
+- **Every async view has four states, not just the happy path:** loading (`loading.tsx` / skeleton), empty (explicit "no data" UI, not a blank table), error (`error.tsx` or inline error UI), and success.
+- **Every route segment with a real failure mode gets an `error.tsx`** (a Client Component) so a thrown error doesn't blank the whole app.
+- **Server actions and API routes must catch and translate errors**, never let a raw Prisma/DB error reach the client. Return a typed `{ error: string }` shape or throw a `NextResponse` with an appropriate status.
+- **Client-side async calls (mutations, fetches) must have both a loading state (disable the button / show a spinner) and a failure path (toast + don't silently swallow).** No fire-and-forget `.then()` without a `.catch` or try/catch.
+- **Never let a caught error be discarded silently** — at minimum log it; ideally surface it to the user via `toast.error`.
+
+### 3. Security & Data Validation
+
+- **Every API route and Server Action must validate its input with Zod before touching the database** — never trust `request.json()` or form data directly.
+- **Every API route and Server Action must check authentication/authorization first**, using `getCurrentUser()` / `canAccessAdmin()` (or the route's equivalent) before running any logic — never assume the UI already gated access, since the endpoint itself must not trust the caller.
+- **Never expose Prisma errors, stack traces, or internal messages to the client** — map them to a safe generic message.
+- **Never trust an ID from the client as authorization** — always scope queries to the authenticated user/role (e.g. don't fetch `prisma.registration.findUnique({ where: { id } })` for a mutation without also checking the requester is allowed to touch that record, if ownership matters for that resource).
+- **Secrets (API keys, DB URLs, service tokens) only ever live in environment variables**, never hardcoded, never logged, never sent to the client bundle unless prefixed `NEXT_PUBLIC_` and genuinely safe to expose.
+- **Sanitize/escape any user-supplied content rendered as HTML** (e.g. rich text from CMS fields) — never `dangerouslySetInnerHTML` on unsanitized input.
+
+### 4. Self-Review Checklist — run before marking any task complete
+
+1. **DRY check:** did I duplicate any component, constant, type, or util that already exists or that I just wrote elsewhere? Extract if so.
+2. **Types:** no `any`, all function params/returns typed, `catch` blocks typed `unknown`.
+3. **States covered:** loading / empty / error / success all handled for any new async UI.
+4. **Validation & auth:** every new API route / Server Action validates input with Zod and checks auth before mutating data.
+5. **Tests:** new files under `src/features/` or `src/app/api/` have a corresponding `.test.ts` with at least one happy-path and one error-case test.
+6. **Lint & types pass:** run `pnpm lint` and `pnpm test:run` (or the project's typecheck script) — don't hand off code that doesn't pass.
+7. **File size / structure:** no component over ~150 lines; sections split per Component Splitting Rules; files placed per Folder Structure and Component Placement Rules.
+8. **No dead code:** remove unused imports, commented-out blocks, and superseded duplicate helpers touched during the change.
