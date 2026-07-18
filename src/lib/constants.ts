@@ -243,3 +243,22 @@ export const HARI_VALUES = hariOptions.map((o) => o.value);
 export const HARI_LABELS: Record<string, string> = Object.fromEntries(
   hariOptions.map((o) => [o.value, o.label]),
 );
+
+export const testimonialTypeOptions = [
+  { value: "ALUMNI", label: "Alumni", badge: "info" as const },
+  { value: "ORANG_TUA", label: "Orang Tua", badge: "success" as const },
+  { value: "GURU", label: "Guru", badge: "warning" as const },
+  { value: "MITRA", label: "Mitra", badge: "secondary" as const },
+] as const;
+
+export const TESTIMONIAL_TYPE_VALUES = testimonialTypeOptions.map(
+  (o) => o.value,
+);
+
+export const TESTIMONIAL_TYPE_LABELS: Record<string, string> =
+  Object.fromEntries(testimonialTypeOptions.map((o) => [o.value, o.label]));
+
+export const TESTIMONIAL_TYPE_BADGES: Record<
+  string,
+  "info" | "success" | "warning" | "secondary"
+> = Object.fromEntries(testimonialTypeOptions.map((o) => [o.value, o.badge]));

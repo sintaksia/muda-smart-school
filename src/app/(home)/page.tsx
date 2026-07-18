@@ -7,6 +7,7 @@ import NewsSection from "./_components/NewsSection";
 import CTABanner from "./_components/CTABanner";
 import Footer from "./_components/Footer";
 import { getActiveHeroSlides } from "@/src/features/cms/services/hero-slides";
+import { getActiveTestimonials } from "@/src/features/cms/services/testimonials";
 
 export const metadata: Metadata = {
   title: {
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 
 export default async function Beranda() {
   const slides = await getActiveHeroSlides();
+  const testimonials = await getActiveTestimonials();
 
   return (
     <main className="pt-16">
@@ -27,7 +29,7 @@ export default async function Beranda() {
       <HeroBanner slides={slides} />
       <ProgramKeahlianSection />
       <AwardsSection />
-      <TestimonialsSection />
+      <TestimonialsSection testimonials={testimonials} />
       <NewsSection />
       <CTABanner />
       <Footer />
