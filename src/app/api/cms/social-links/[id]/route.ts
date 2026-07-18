@@ -41,6 +41,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
     const validated = socialLinkSchema.parse(body);
     const socialLink = await updateSocialLink(id, validated);
     revalidatePath("/admin/cms/social-links");
+    revalidatePath("/kontak");
+    revalidatePath("/", "layout");
     return NextResponse.json(socialLink);
   } catch (error) {
     console.error("Error updating social link:", error);
@@ -65,6 +67,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     if (typeof body.isActive === "boolean") {
       const socialLink = await toggleSocialLinkStatus(id, body.isActive);
       revalidatePath("/admin/cms/social-links");
+      revalidatePath("/kontak");
+      revalidatePath("/", "layout");
       return NextResponse.json(socialLink);
     }
 
@@ -84,6 +88,8 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     await deleteSocialLink(id);
 
     revalidatePath("/admin/cms/social-links");
+    revalidatePath("/kontak");
+    revalidatePath("/", "layout");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting social link:", error);

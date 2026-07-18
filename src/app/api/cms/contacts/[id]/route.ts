@@ -41,6 +41,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
     const validated = contactSchema.parse(body);
     const contact = await updateContact(id, validated);
     revalidatePath("/admin/cms/contacts");
+    revalidatePath("/kontak");
+    revalidatePath("/", "layout");
     return NextResponse.json(contact);
   } catch (error) {
     console.error("Error updating contact:", error);
@@ -66,6 +68,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     if (typeof body.isActive === "boolean") {
       const contact = await toggleContactStatus(id, body.isActive);
       revalidatePath("/admin/cms/contacts");
+      revalidatePath("/kontak");
+      revalidatePath("/", "layout");
       return NextResponse.json(contact);
     }
 
@@ -83,8 +87,10 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     await deleteContact(id);
-    
+
     revalidatePath("/admin/cms/contacts");
+    revalidatePath("/kontak");
+    revalidatePath("/", "layout");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting contact:", error);

@@ -26,6 +26,8 @@ export async function POST(request: Request) {
     const contact = await createContact(validated);
 
     revalidatePath("/admin/cms/contacts");
+    revalidatePath("/kontak");
+    revalidatePath("/", "layout");
     return NextResponse.json(contact, { status: 201 });
   } catch (error) {
     console.error("Error creating contact:", error);

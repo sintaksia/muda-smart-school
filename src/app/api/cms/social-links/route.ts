@@ -26,6 +26,8 @@ export async function POST(request: Request) {
     const socialLink = await createSocialLink(validated);
 
     revalidatePath("/admin/cms/social-links");
+    revalidatePath("/kontak");
+    revalidatePath("/", "layout");
     return NextResponse.json(socialLink, { status: 201 });
   } catch (error) {
     console.error("Error creating social link:", error);
