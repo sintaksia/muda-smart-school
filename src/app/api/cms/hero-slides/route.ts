@@ -6,6 +6,7 @@ import {
   createHeroSlide,
 } from "@/src/features/cms/services/hero-slides";
 import { heroSlideSchema } from "@/src/app/admin/cms/hero-slides/_components/HeroSlideSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,6 +25,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = heroSlideSchema.parse(body);
     const slide = await createHeroSlide(validated);

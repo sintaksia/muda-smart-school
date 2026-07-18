@@ -5,6 +5,7 @@ import {
   bulkUpsertSettings,
 } from "@/src/features/cms/services/school-settings";
 import { schoolProfileSchema } from "@/src/app/admin/cms/school-profile/_components/SchoolProfileSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET() {
   try {
@@ -21,6 +22,9 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = schoolProfileSchema.parse(body);
 

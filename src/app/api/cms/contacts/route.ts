@@ -5,6 +5,7 @@ import {
   createContact,
 } from "@/src/features/cms/services/contacts";
 import { contactSchema } from "@/src/app/admin/cms/contacts/_components/ContactsSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET() {
   try {
@@ -21,6 +22,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = contactSchema.parse(body);
     const contact = await createContact(validated);

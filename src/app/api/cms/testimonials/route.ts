@@ -5,6 +5,7 @@ import {
   createTestimonial,
 } from "@/src/features/cms/services/testimonials";
 import { testimonialSchema } from "@/src/app/admin/cms/testimonials/_components/TestimonialSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET() {
   try {
@@ -21,6 +22,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = testimonialSchema.parse(body);
     const testimonial = await createTestimonial(validated);

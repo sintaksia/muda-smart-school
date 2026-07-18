@@ -7,6 +7,7 @@ import {
   toggleTestimonialStatus,
 } from "@/src/features/cms/services/testimonials";
 import { testimonialSchema } from "@/src/app/admin/cms/testimonials/_components/TestimonialSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -36,6 +37,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const { id } = await params;
     const body = await request.json();
     const validated = testimonialSchema.parse(body);
@@ -60,6 +64,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const { id } = await params;
     const body = await request.json();
 
@@ -82,6 +89,9 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const { id } = await params;
     await deleteTestimonial(id);
     revalidatePath("/admin/cms/testimonials");

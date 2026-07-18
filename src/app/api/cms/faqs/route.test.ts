@@ -10,6 +10,11 @@ vi.mock("@/src/features/cms/services/faqs", () => ({
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
+vi.mock("@/src/features/auth/utils/api-auth", () => ({
+  requireCmsAccess: vi.fn().mockResolvedValue({
+    user: { id: "admin-1", role: "ADMIN" },
+  }),
+}));
 
 const mockFaq: Faq = {
   id: "faq-1",

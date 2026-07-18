@@ -6,6 +6,7 @@ import {
   updateAiChatSetting,
 } from "@/src/features/cms/services/ai-chat";
 import { aiChatSchema } from "@/src/app/admin/cms/ai-chat/_components/AiChatSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET() {
   try {
@@ -21,6 +22,9 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = aiChatSchema.parse(body);
     const setting = await updateAiChatSetting(validated);

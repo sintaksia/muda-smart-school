@@ -5,6 +5,7 @@ import {
   createSocialLink,
 } from "@/src/features/cms/services/social-links";
 import { socialLinkSchema } from "@/src/app/admin/cms/social-links/_components/SocialLinksSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET() {
   try {
@@ -21,6 +22,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = socialLinkSchema.parse(body);
     const socialLink = await createSocialLink(validated);

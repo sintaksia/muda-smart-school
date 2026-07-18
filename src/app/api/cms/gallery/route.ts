@@ -6,6 +6,7 @@ import {
   createGallery,
 } from "@/src/features/cms/services/gallery";
 import { gallerySchema } from "@/src/app/admin/cms/gallery/_components/GallerySchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,6 +25,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = gallerySchema.parse(body);
     const gallery = await createGallery(validated);

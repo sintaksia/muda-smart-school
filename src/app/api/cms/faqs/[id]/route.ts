@@ -7,6 +7,7 @@ import {
   toggleFaqStatus,
 } from "@/src/features/cms/services/faqs";
 import { faqSchema } from "@/src/app/admin/cms/faqs/_components/FaqSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -36,6 +37,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const { id } = await params;
     const body = await request.json();
     const validated = faqSchema.parse(body);
@@ -60,6 +64,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const { id } = await params;
     const body = await request.json();
 
@@ -82,6 +89,9 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const { id } = await params;
     await deleteFaq(id);
     revalidatePath("/admin/cms/faqs");

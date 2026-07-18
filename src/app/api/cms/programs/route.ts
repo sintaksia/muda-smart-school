@@ -5,6 +5,7 @@ import {
   createProgram,
 } from "@/src/features/cms/services/programs";
 import { programSchema } from "@/src/app/admin/cms/programs/_components/ProgramSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET() {
   try {
@@ -21,6 +22,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = programSchema.parse(body);
     const program = await createProgram(validated);

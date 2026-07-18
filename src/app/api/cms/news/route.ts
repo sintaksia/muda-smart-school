@@ -6,6 +6,7 @@ import {
   createNews,
 } from "@/src/features/cms/services/news";
 import { newsSchema } from "@/src/app/admin/cms/news/_components/NewsSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET(request: Request) {
   try {
@@ -27,6 +28,9 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = newsSchema.parse(body);
     const news = await createNews(validated);

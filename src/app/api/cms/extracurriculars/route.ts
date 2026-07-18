@@ -5,6 +5,7 @@ import {
   createExtracurricular,
 } from "@/src/features/cms/services/extracurriculars";
 import { extracurricularSchema } from "@/src/app/admin/cms/extracurriculars/_components/ExtracurricularSchema";
+import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET() {
   try {
@@ -21,6 +22,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const body = await request.json();
     const validated = extracurricularSchema.parse(body);
     const extracurricular = await createExtracurricular(validated);
