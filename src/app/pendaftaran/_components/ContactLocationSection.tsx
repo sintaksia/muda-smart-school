@@ -7,7 +7,13 @@ export default async function ContactLocationSection() {
   const [contacts, socialLinks, settings] = await Promise.all([
     getActiveContacts(),
     getActiveSocialLinks(),
-    getSettingsMap(["maps_url"]),
+    getSettingsMap([
+      "maps_url",
+      "address_line1",
+      "address_line2",
+      "address_line3",
+      "postal_code",
+    ]),
   ]);
 
   const whatsappContacts = contacts.filter(
@@ -22,6 +28,10 @@ export default async function ContactLocationSection() {
       mapImageSrc="/gambar-4.jpg"
       mapImageAlt="Lokasi Sekolah"
       mapsUrl={settings.maps_url || "https://maps.google.com"}
+      addressLine1={settings.address_line1 || undefined}
+      addressLine2={settings.address_line2 || undefined}
+      addressLine3={settings.address_line3 || undefined}
+      postalCode={settings.postal_code || undefined}
       whatsappContacts={whatsappContacts}
       instagramLink={instagramLink}
     />

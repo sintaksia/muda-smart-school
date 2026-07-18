@@ -21,12 +21,22 @@ export default async function LocationInfo() {
     getGalleryByCategory("FASILITAS"),
     getActiveContacts(),
     getActiveSocialLinks(),
-    getSettingsMap(["maps_url"]),
+    getSettingsMap([
+      "maps_url",
+      "address_line1",
+      "address_line2",
+      "address_line3",
+      "postal_code",
+    ]),
   ]);
   const emailContact = contacts.find((contact) => contact.type === "EMAIL");
   const mapsUrl =
     settings.maps_url ||
     "https://maps.google.com/?q=SMK+Muhammadiyah+2+Cibiru+Bandung";
+  const addressLine1 = settings.address_line1 || "Jl. Cilengkrang II No. 7";
+  const addressLine2 = settings.address_line2 || "Kel. Palasari, Kec. Cibiru";
+  const addressLine3 = settings.address_line3 || "Kota Bandung, Jawa Barat";
+  const postalCode = settings.postal_code || "40615";
 
   return (
     <section className="py-16 md:py-24 bg-neutral-50">
@@ -77,10 +87,11 @@ export default async function LocationInfo() {
                     SMK Muhammadiyah 2 Cibiru
                   </strong>
                   <br />
-                  Jl. Cilengkrang II No. 7<br />
-                  Kel. Palasari, Kec. Cibiru
+                  {addressLine1}
                   <br />
-                  Kota Bandung, Jawa Barat 40615
+                  {addressLine2}
+                  <br />
+                  {addressLine3} {postalCode}
                 </address>
                 <a
                   href={mapsUrl}

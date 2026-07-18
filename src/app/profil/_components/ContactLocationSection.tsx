@@ -9,7 +9,13 @@ export default async function ContactLocationSection() {
     getGalleryByCategory("FASILITAS"),
     getActiveContacts(),
     getActiveSocialLinks(),
-    getSettingsMap(["maps_url"]),
+    getSettingsMap([
+      "maps_url",
+      "address_line1",
+      "address_line2",
+      "address_line3",
+      "postal_code",
+    ]),
   ]);
 
   const image =
@@ -25,6 +31,10 @@ export default async function ContactLocationSection() {
       mapImageSrc={image?.image}
       mapImageAlt={image?.title}
       mapsUrl={settings.maps_url || "https://maps.app.goo.gl/KWVHqBTM4Ndg3uP17"}
+      addressLine1={settings.address_line1 || undefined}
+      addressLine2={settings.address_line2 || undefined}
+      addressLine3={settings.address_line3 || undefined}
+      postalCode={settings.postal_code || undefined}
       whatsappContacts={whatsappContacts}
       instagramLink={instagramLink}
     />

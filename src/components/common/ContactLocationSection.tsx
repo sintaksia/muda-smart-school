@@ -8,6 +8,10 @@ interface ContactLocationSectionProps {
   mapImageSrc?: string;
   mapImageAlt?: string;
   mapsUrl: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  addressLine3?: string;
+  postalCode?: string;
   whatsappContacts: Pick<Contact, "id" | "name" | "value">[];
   instagramLink?: Pick<SocialLink, "platform" | "url" | "username"> | null;
 }
@@ -17,6 +21,10 @@ export function ContactLocationSection({
   mapImageSrc,
   mapImageAlt,
   mapsUrl,
+  addressLine1 = "Jl. Cilengkrang II No. 7",
+  addressLine2 = "Kel. Palasari, Kec. Cibiru",
+  addressLine3 = "Kota Bandung, Jawa Barat",
+  postalCode = "40615",
   whatsappContacts,
   instagramLink,
 }: ContactLocationSectionProps) {
@@ -54,12 +62,13 @@ export function ContactLocationSection({
               Kunjungi <span className="text-green-400">Sekolah Kami</span>
             </h2>
             <address className="not-italic text-lg text-primary-200 leading-relaxed mb-8">
-              Jl. Cilengkrang II No. 7<br />
-              Kel. Palasari, Kec. Cibiru
+              {addressLine1}
               <br />
-              Kota Bandung, Jawa Barat
+              {addressLine2}
               <br />
-              40615
+              {addressLine3}
+              <br />
+              {postalCode}
             </address>
 
             {/* Map Placeholder */}

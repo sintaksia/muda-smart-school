@@ -2,14 +2,26 @@ import Image from "next/image";
 import { version } from "../../../../package.json";
 import { getActiveContacts } from "@/src/features/cms/services/contacts";
 import { getActiveSocialLinks } from "@/src/features/cms/services/social-links";
+import { getSettingsMap } from "@/src/features/cms/services/school-settings";
 import { CONTACT_ICON_PATHS, CONTACT_ICON_FILL } from "@/src/lib/contact-icons";
 import { SOCIAL_ICON_PATHS } from "@/src/lib/social-icons";
 
 export default async function Footer() {
-  const [contacts, socialLinks] = await Promise.all([
+  const [contacts, socialLinks, settings] = await Promise.all([
     getActiveContacts(),
     getActiveSocialLinks(),
+    getSettingsMap([
+      "address_line1",
+      "address_line2",
+      "address_line3",
+      "postal_code",
+    ]),
   ]);
+
+  const addressLine1 = settings.address_line1 || "Jl. Cilengkrang II No. 7";
+  const addressLine2 = settings.address_line2 || "Kel. Palasari, Kec. Cibiru";
+  const addressLine3 = settings.address_line3 || "Kota Bandung, Jawa Barat";
+  const postalCode = settings.postal_code || "40615";
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -61,13 +73,13 @@ export default async function Footer() {
               Lokasi
             </h4>
             <address className="text-gray-400 not-italic leading-relaxed">
-              Jl. Cilengkrang II No. 17
+              {addressLine1}
               <br />
-              Kel. Cipadung, Kec. Cibiru
+              {addressLine2}
               <br />
-              Kota Bandung, Jawa Barat
+              {addressLine3}
               <br />
-              40614
+              {postalCode}
             </address>
           </div>
 
