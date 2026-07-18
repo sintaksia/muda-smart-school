@@ -1,7 +1,5 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
 import { PageHeader } from "@/src/app/admin/_components/PageHeader";
+import { CreateButton } from "@/src/app/admin/_components/CreateButton";
 import { GalleryTable } from "./_components/GalleryTable";
 import { getGallery } from "@/src/features/cms/services/gallery";
 
@@ -14,12 +12,10 @@ export default async function GalleryPage() {
         title="Galeri"
         description="Kelola galeri foto sekolah"
         action={
-          <Button asChild>
-            <Link href="/admin/cms/gallery/create">
-              <Plus className="mr-2 h-4 w-4" />
-              Tambah Galeri
-            </Link>
-          </Button>
+          <CreateButton
+            href="/admin/cms/gallery/create"
+            label="Tambah Galeri"
+          />
         }
       />
       <GalleryTable data={gallery} />

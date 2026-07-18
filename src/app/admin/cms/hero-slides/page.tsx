@@ -1,7 +1,5 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
 import { PageHeader } from "@/src/app/admin/_components/PageHeader";
+import { CreateButton } from "@/src/app/admin/_components/CreateButton";
 import { HeroSlideTable } from "./_components/HeroSlideTable";
 import { getHeroSlides } from "@/src/features/cms/services/hero-slides";
 
@@ -14,12 +12,10 @@ export default async function HeroSlidesPage() {
         title="Hero Slider"
         description="Kelola slide hero banner homepage"
         action={
-          <Button asChild>
-            <Link href="/admin/cms/hero-slides/create">
-              <Plus className="mr-2 h-4 w-4" />
-              Tambah Slide
-            </Link>
-          </Button>
+          <CreateButton
+            href="/admin/cms/hero-slides/create"
+            label="Tambah Slide"
+          />
         }
       />
       <HeroSlideTable data={slides} />
