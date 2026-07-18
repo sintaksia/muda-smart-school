@@ -10,7 +10,9 @@ interface EditAchievementPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function EditAchievementPage({ params }: EditAchievementPageProps) {
+export default async function EditAchievementPage({
+  params,
+}: EditAchievementPageProps) {
   const { id } = await params;
   const achievement = await getAchievementById(id);
 
@@ -27,6 +29,7 @@ export default async function EditAchievementPage({ params }: EditAchievementPag
     image: achievement.image || "",
     order: achievement.order,
     isActive: achievement.isActive,
+    isHighlight: achievement.isHighlight,
   };
 
   return (
