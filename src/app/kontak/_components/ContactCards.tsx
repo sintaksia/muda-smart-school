@@ -1,33 +1,20 @@
-const whatsappContacts = [
-  {
-    name: "Admin Sekolah",
-    number: "0821-2009-1616",
-    link: "https://wa.me/6282120091616",
-    description: "Informasi umum & pendaftaran",
-  },
-  {
-    name: "Kesiswaan",
-    number: "0896-6990-7509",
-    link: "https://wa.me/6289669907509",
-    description: "Kegiatan siswa & konseling",
-  },
-  {
-    name: "Hubungan Masyarakat",
-    number: "0852-2148-2520",
-    link: "https://wa.me/6285221482520",
-    description: "Kerjasama & kemitraan",
-  },
-];
+import { getActiveContacts } from "@/src/features/cms/services/contacts";
+import { toWhatsAppLink } from "@/src/lib/contact-icons";
 
-export default function ContactCards() {
+export default async function ContactCards() {
+  const contacts = await getActiveContacts();
+  const whatsappContacts = contacts.filter(
+    (contact) => contact.type === "WHATSAPP",
+  );
+
   return (
     <section className="py-16 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 -mt-32 relative z-20">
-          {whatsappContacts.map((contact, index) => (
+          {whatsappContacts.map((contact) => (
             <a
-              key={index}
-              href={contact.link}
+              key={contact.id}
+              href={toWhatsAppLink(contact.value)}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 group border border-neutral-100 hover:border-green-500"
@@ -47,7 +34,7 @@ export default function ContactCards() {
                     {contact.name}
                   </h3>
                   <p className="text-2xl font-bold text-green-600 mt-1">
-                    {contact.number}
+                    {contact.value}
                   </p>
                   <p className="text-sm text-neutral-500 mt-2">
                     {contact.description}
