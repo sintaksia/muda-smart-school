@@ -139,7 +139,7 @@ export const achievementColumns: ColumnDef<Achievement>[] = [
   },
   {
     accessorKey: "isHighlight",
-    header: "Beranda",
+    header: ({ column }) => <SortableHeader column={column} label="Beranda" />,
     cell: ({ row }) =>
       row.original.isHighlight ? (
         <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-700">
