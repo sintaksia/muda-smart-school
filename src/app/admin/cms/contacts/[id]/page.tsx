@@ -10,7 +10,9 @@ interface EditContactPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function EditContactPage({ params }: EditContactPageProps) {
+export default async function EditContactPage({
+  params,
+}: EditContactPageProps) {
   const { id } = await params;
   const contact = await getContactById(id);
 
@@ -30,11 +32,11 @@ export default async function EditContactPage({ params }: EditContactPageProps) 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Edit Prestasi"
-        description={`Ubah data prestasi ${contact.name}`}
+        title="Edit Kontak"
+        description={`Ubah data kontak ${contact.name}`}
         action={
           <Button variant="outline" asChild>
-            <Link href="/admin/cms/achievements">
+            <Link href="/admin/cms/contacts">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Kembali
             </Link>

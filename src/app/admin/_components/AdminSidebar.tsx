@@ -24,6 +24,7 @@ import {
   Activity,
   UserCog,
   Bot,
+  Share2,
 } from "lucide-react";
 
 import {
@@ -105,9 +106,14 @@ const cmsMenuItems = [
     icon: HelpCircle,
   },
   {
-    title: "Kontak & Sosmed",
+    title: "Kontak",
     url: "/admin/cms/contacts",
     icon: Phone,
+  },
+  {
+    title: "Sosial Media",
+    url: "/admin/cms/social-links",
+    icon: Share2,
   },
   {
     title: "Profil Sekolah",
