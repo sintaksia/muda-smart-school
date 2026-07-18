@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +25,7 @@ import {
 import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
 import { ImageUpload } from "@/src/app/admin/_components/ImageUpload";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import {
   gallerySchema,
   galleryCategories,
@@ -40,8 +39,18 @@ interface GalleryFormProps {
 
 export function GalleryForm({ defaultValues, galleryId }: GalleryFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!galleryId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<GalleryFormData>({
+    apiPath: "/api/cms/gallery",
+    id: galleryId,
+    listPath: "/admin/cms/gallery",
+    createdMessage: "Galeri berhasil dibuat",
+    updatedMessage: "Galeri berhasil diperbarui",
+    errorMessage: "Gagal menyimpan galeri",
+  });
 
   const form = useForm<GalleryFormData>({
     resolver: zodResolver(gallerySchema) as Resolver<GalleryFormData>,
@@ -55,36 +64,6 @@ export function GalleryForm({ defaultValues, galleryId }: GalleryFormProps) {
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: GalleryFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing
-        ? `/api/cms/gallery/${galleryId}`
-        : "/api/cms/gallery";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan galeri");
-      }
-
-      toast.success(
-        isEditing ? "Galeri berhasil diperbarui" : "Galeri berhasil dibuat",
-      );
-      router.push("/admin/cms/gallery");
-      router.refresh();
-    } catch {
-      toast.error("Gagal menyimpan galeri");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

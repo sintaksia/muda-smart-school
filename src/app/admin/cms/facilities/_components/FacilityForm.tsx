@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +19,7 @@ import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
 import { GalleryMultiPicker } from "@/src/app/admin/_components/GalleryMultiPicker";
 import { IconPicker } from "@/src/app/admin/_components/IconPicker";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import { facilitySchema, type FacilityFormData } from "./FacilitySchema";
 
 interface FacilityFormProps {
@@ -30,8 +29,18 @@ interface FacilityFormProps {
 
 export function FacilityForm({ defaultValues, facilityId }: FacilityFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!facilityId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<FacilityFormData>({
+    apiPath: "/api/cms/facilities",
+    id: facilityId,
+    listPath: "/admin/cms/facilities",
+    createdMessage: "Fasilitas berhasil dibuat",
+    updatedMessage: "Fasilitas berhasil diperbarui",
+    errorMessage: "Gagal menyimpan fasilitas",
+  });
 
   const form = useForm<FacilityFormData>({
     resolver: zodResolver(facilitySchema) as Resolver<FacilityFormData>,
@@ -45,38 +54,6 @@ export function FacilityForm({ defaultValues, facilityId }: FacilityFormProps) {
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: FacilityFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing
-        ? `/api/cms/facilities/${facilityId}`
-        : "/api/cms/facilities";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan fasilitas");
-      }
-
-      toast.success(
-        isEditing
-          ? "Fasilitas berhasil diperbarui"
-          : "Fasilitas berhasil dibuat",
-      );
-      router.push("/admin/cms/facilities");
-      router.refresh();
-    } catch {
-      toast.error("Gagal menyimpan fasilitas");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

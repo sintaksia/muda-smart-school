@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +17,7 @@ import {
 } from "@/src/components/ui/form";
 import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import { faqSchema, type FaqFormData } from "./FaqSchema";
 
 interface FaqFormProps {
@@ -28,8 +27,18 @@ interface FaqFormProps {
 
 export function FaqForm({ defaultValues, faqId }: FaqFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!faqId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<FaqFormData>({
+    apiPath: "/api/cms/faqs",
+    id: faqId,
+    listPath: "/admin/cms/faqs",
+    createdMessage: "FAQ berhasil dibuat",
+    updatedMessage: "FAQ berhasil diperbarui",
+    errorMessage: "Gagal menyimpan FAQ",
+  });
 
   const form = useForm<FaqFormData>({
     resolver: zodResolver(faqSchema) as Resolver<FaqFormData>,
@@ -41,34 +50,6 @@ export function FaqForm({ defaultValues, faqId }: FaqFormProps) {
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: FaqFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing ? `/api/cms/faqs/${faqId}` : "/api/cms/faqs";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan FAQ");
-      }
-
-      toast.success(
-        isEditing ? "FAQ berhasil diperbarui" : "FAQ berhasil dibuat",
-      );
-      router.push("/admin/cms/faqs");
-      router.refresh();
-    } catch {
-      toast.error("Gagal menyimpan FAQ");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

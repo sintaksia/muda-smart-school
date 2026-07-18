@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +18,7 @@ import {
 import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
 import { GalleryPicker } from "@/src/app/admin/_components/GalleryPicker";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import { heroSlideSchema, type HeroSlideFormData } from "./HeroSlideSchema";
 
 interface HeroSlideFormProps {
@@ -32,8 +31,18 @@ export function HeroSlideForm({
   heroSlideId,
 }: HeroSlideFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!heroSlideId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<HeroSlideFormData>({
+    apiPath: "/api/cms/hero-slides",
+    id: heroSlideId,
+    listPath: "/admin/cms/hero-slides",
+    createdMessage: "Hero slide berhasil dibuat",
+    updatedMessage: "Hero slide berhasil diperbarui",
+    errorMessage: "Gagal menyimpan hero slide",
+  });
 
   const form = useForm<HeroSlideFormData>({
     resolver: zodResolver(heroSlideSchema) as Resolver<HeroSlideFormData>,
@@ -48,38 +57,6 @@ export function HeroSlideForm({
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: HeroSlideFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing
-        ? `/api/cms/hero-slides/${heroSlideId}`
-        : "/api/cms/hero-slides";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan hero slide");
-      }
-
-      toast.success(
-        isEditing
-          ? "Hero slide berhasil diperbarui"
-          : "Hero slide berhasil dibuat",
-      );
-      router.push("/admin/cms/hero-slides");
-      router.refresh();
-    } catch {
-      toast.error("Gagal menyimpan hero slide");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

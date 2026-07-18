@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +24,7 @@ import {
 import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
 import { GalleryPicker } from "@/src/app/admin/_components/GalleryPicker";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import {
   achievementSchema,
   achievementLevels,
@@ -43,8 +42,18 @@ export function AchievementForm({
   achievementId,
 }: AchievementFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!achievementId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<AchievementFormData>({
+    apiPath: "/api/cms/achievements",
+    id: achievementId,
+    listPath: "/admin/cms/achievements",
+    createdMessage: "Prestasi berhasil dibuat",
+    updatedMessage: "Prestasi berhasil diperbarui",
+    errorMessage: "Gagal menyimpan prestasi",
+  });
 
   const form = useForm<AchievementFormData>({
     resolver: zodResolver(achievementSchema) as Resolver<AchievementFormData>,
@@ -61,36 +70,6 @@ export function AchievementForm({
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: AchievementFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing
-        ? `/api/cms/achievements/${achievementId}`
-        : "/api/cms/achievements";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan prestasi");
-      }
-
-      toast.success(
-        isEditing ? "Prestasi berhasil diperbarui" : "Prestasi berhasil dibuat",
-      );
-      router.push("/admin/cms/achievements");
-      router.refresh();
-    } catch (error) {
-      toast.error("Gagal menyimpan prestasi");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

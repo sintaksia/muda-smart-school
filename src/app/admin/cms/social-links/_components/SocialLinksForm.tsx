@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,7 +23,7 @@ import {
 } from "@/src/components/ui/select";
 import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import {
   socialLinkSchema,
   socialPlatforms,
@@ -41,8 +40,18 @@ export function SocialLinksForm({
   socialLinkId,
 }: SocialLinkFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!socialLinkId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<SocialLinkFormData>({
+    apiPath: "/api/cms/social-links",
+    id: socialLinkId,
+    listPath: "/admin/cms/social-links",
+    createdMessage: "Tautan sosial berhasil dibuat",
+    updatedMessage: "Tautan sosial berhasil diperbarui",
+    errorMessage: "Gagal menyimpan tautan sosial",
+  });
 
   const form = useForm<SocialLinkFormData>({
     resolver: zodResolver(socialLinkSchema) as Resolver<SocialLinkFormData>,
@@ -55,38 +64,6 @@ export function SocialLinksForm({
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: SocialLinkFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing
-        ? `/api/cms/social-links/${socialLinkId}`
-        : "/api/cms/social-links";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan tautan sosial");
-      }
-
-      toast.success(
-        isEditing
-          ? "Tautan sosial berhasil diperbarui"
-          : "Tautan sosial berhasil dibuat",
-      );
-      router.push("/admin/cms/social-links");
-      router.refresh();
-    } catch (error) {
-      toast.error("Gagal menyimpan tautan sosial");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

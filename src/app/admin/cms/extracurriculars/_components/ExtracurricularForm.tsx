@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +25,7 @@ import {
 import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
 import { GalleryPicker } from "@/src/app/admin/_components/GalleryPicker";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import {
   extracurricularSchema,
   ekskulCategories,
@@ -43,8 +42,18 @@ export function ExtracurricularForm({
   extracurricularId,
 }: ExtracurricularFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!extracurricularId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<ExtracurricularFormData>({
+    apiPath: "/api/cms/extracurriculars",
+    id: extracurricularId,
+    listPath: "/admin/cms/extracurriculars",
+    createdMessage: "Ekstrakurikuler berhasil dibuat",
+    updatedMessage: "Ekstrakurikuler berhasil diperbarui",
+    errorMessage: "Gagal menyimpan ekstrakurikuler",
+  });
 
   const form = useForm<ExtracurricularFormData>({
     resolver: zodResolver(
@@ -61,38 +70,6 @@ export function ExtracurricularForm({
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: ExtracurricularFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing
-        ? `/api/cms/extracurriculars/${extracurricularId}`
-        : "/api/cms/extracurriculars";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan ekstrakurikuler");
-      }
-
-      toast.success(
-        isEditing
-          ? "Ekstrakurikuler berhasil diperbarui"
-          : "Ekstrakurikuler berhasil dibuat",
-      );
-      router.push("/admin/cms/extracurriculars");
-      router.refresh();
-    } catch {
-      toast.error("Gagal menyimpan ekstrakurikuler");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

@@ -26,7 +26,7 @@ import {
 import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
 import { GalleryPicker } from "@/src/app/admin/_components/GalleryPicker";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import { programSchema, type ProgramFormData } from "./ProgramSchema";
 
 interface ProgramFormProps {
@@ -36,8 +36,18 @@ interface ProgramFormProps {
 
 export function ProgramForm({ defaultValues, programId }: ProgramFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!programId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<ProgramFormData>({
+    apiPath: "/api/cms/programs",
+    id: programId,
+    listPath: "/admin/cms/programs",
+    createdMessage: "Program berhasil dibuat",
+    updatedMessage: "Program berhasil diperbarui",
+    errorMessage: "Gagal menyimpan program",
+  });
 
   const form = useForm<ProgramFormData>({
     resolver: zodResolver(programSchema) as Resolver<ProgramFormData>,
@@ -55,36 +65,6 @@ export function ProgramForm({ defaultValues, programId }: ProgramFormProps) {
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: ProgramFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing
-        ? `/api/cms/programs/${programId}`
-        : "/api/cms/programs";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan program");
-      }
-
-      toast.success(
-        isEditing ? "Program berhasil diperbarui" : "Program berhasil dibuat",
-      );
-      router.push("/admin/cms/programs");
-      router.refresh();
-    } catch (error) {
-      toast.error("Gagal menyimpan program");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

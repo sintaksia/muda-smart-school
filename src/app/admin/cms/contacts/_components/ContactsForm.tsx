@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +24,7 @@ import {
 import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
 import { GalleryPicker } from "@/src/app/admin/_components/GalleryPicker";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import {
   contactSchema,
   contactTypes,
@@ -39,8 +38,18 @@ interface ContactFormProps {
 
 export function ContactsForm({ defaultValues, contactId }: ContactFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!contactId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<ContactFormData>({
+    apiPath: "/api/cms/contacts",
+    id: contactId,
+    listPath: "/admin/cms/contacts",
+    createdMessage: "Kontak berhasil dibuat",
+    updatedMessage: "Kontak berhasil diperbarui",
+    errorMessage: "Gagal menyimpan kontak",
+  });
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema) as Resolver<ContactFormData>,
@@ -54,36 +63,6 @@ export function ContactsForm({ defaultValues, contactId }: ContactFormProps) {
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: ContactFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing
-        ? `/api/cms/contacts/${contactId}`
-        : "/api/cms/contacts";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan kontak");
-      }
-
-      toast.success(
-        isEditing ? "Kontak berhasil diperbarui" : "Kontak berhasil dibuat",
-      );
-      router.push("/admin/cms/contacts");
-      router.refresh();
-    } catch (error) {
-      toast.error("Gagal menyimpan kontak");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

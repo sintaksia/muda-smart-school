@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,7 +26,7 @@ import {
 import { FormCard } from "@/src/app/admin/_components/FormCard";
 import { GalleryPicker } from "@/src/app/admin/_components/GalleryPicker";
 import { TiptapEditor } from "@/src/app/admin/_components/TiptapEditor";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import { newsSchema, type NewsFormData } from "./NewsSchema";
 import { generateSlug } from "@/src/features/cms/utils/slug";
 
@@ -38,8 +37,18 @@ interface NewsFormProps {
 
 export function NewsForm({ defaultValues, newsId }: NewsFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!newsId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<NewsFormData>({
+    apiPath: "/api/cms/news",
+    id: newsId,
+    listPath: "/admin/cms/news",
+    createdMessage: "Berita berhasil dibuat",
+    updatedMessage: "Berita berhasil diperbarui",
+    errorMessage: "Gagal menyimpan berita",
+  });
 
   const form = useForm<NewsFormData>({
     resolver: zodResolver(newsSchema) as Resolver<NewsFormData>,
@@ -55,34 +64,6 @@ export function NewsForm({ defaultValues, newsId }: NewsFormProps) {
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: NewsFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing ? `/api/cms/news/${newsId}` : "/api/cms/news";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan berita");
-      }
-
-      toast.success(
-        isEditing ? "Berita berhasil diperbarui" : "Berita berhasil dibuat",
-      );
-      router.push("/admin/cms/news");
-      router.refresh();
-    } catch {
-      toast.error("Gagal menyimpan berita");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>

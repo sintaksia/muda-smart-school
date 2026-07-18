@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +24,7 @@ import {
 } from "@/src/components/ui/select";
 import { Switch } from "@/src/components/ui/switch";
 import { FormCard } from "@/src/app/admin/_components/FormCard";
-import { toast } from "sonner";
+import { useCmsFormSubmit } from "@/src/app/admin/_components/useCmsFormSubmit";
 import { testimonialTypeOptions } from "@/src/lib/constants";
 import {
   testimonialSchema,
@@ -42,8 +41,18 @@ export function TestimonialForm({
   testimonialId,
 }: TestimonialFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const isEditing = !!testimonialId;
+  const {
+    submit: onSubmit,
+    isLoading,
+    isEditing,
+  } = useCmsFormSubmit<TestimonialFormData>({
+    apiPath: "/api/cms/testimonials",
+    id: testimonialId,
+    listPath: "/admin/cms/testimonials",
+    createdMessage: "Testimoni berhasil dibuat",
+    updatedMessage: "Testimoni berhasil diperbarui",
+    errorMessage: "Gagal menyimpan testimoni",
+  });
 
   const form = useForm<TestimonialFormData>({
     resolver: zodResolver(testimonialSchema) as Resolver<TestimonialFormData>,
@@ -58,38 +67,6 @@ export function TestimonialForm({
       ...defaultValues,
     },
   });
-
-  const onSubmit = async (data: TestimonialFormData) => {
-    setIsLoading(true);
-    try {
-      const url = isEditing
-        ? `/api/cms/testimonials/${testimonialId}`
-        : "/api/cms/testimonials";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Gagal menyimpan testimoni");
-      }
-
-      toast.success(
-        isEditing
-          ? "Testimoni berhasil diperbarui"
-          : "Testimoni berhasil dibuat",
-      );
-      router.push("/admin/cms/testimonials");
-      router.refresh();
-    } catch {
-      toast.error("Gagal menyimpan testimoni");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Form {...form}>
