@@ -1,4 +1,9 @@
-const faqItems = [
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+const fallbackFaqItems: FaqItem[] = [
   {
     question: "Bagaimana cara mendaftar di SMK Muhammadiyah 2 Cibiru?",
     answer:
@@ -16,20 +21,26 @@ const faqItems = [
   },
 ];
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqItems.map((item) => ({
-    "@type": "Question",
-    name: item.question,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: item.answer,
-    },
-  })),
-};
+interface FAQSectionProps {
+  faqs?: FaqItem[];
+}
 
-export default function FAQSection() {
+export default function FAQSection({ faqs }: FAQSectionProps) {
+  const faqItems = faqs && faqs.length > 0 ? faqs : fallbackFaqItems;
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+
   return (
     <section className="py-16 md:py-24 bg-white">
       <script
