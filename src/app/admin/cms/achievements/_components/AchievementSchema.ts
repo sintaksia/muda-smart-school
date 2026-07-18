@@ -21,29 +21,22 @@ export const medalTypes = [
   { value: "HARAPAN_3", label: "Harapan 3" },
 ] as const;
 
+const achievementLevelValues = achievementLevels.map((l) => l.value) as [
+  (typeof achievementLevels)[number]["value"],
+  ...(typeof achievementLevels)[number]["value"][],
+];
+const medalTypeValues = medalTypes.map((m) => m.value) as [
+  (typeof medalTypes)[number]["value"],
+  ...(typeof medalTypes)[number]["value"][],
+];
+
 export const achievementSchema = z.object({
   title: z.string().min(1, "Judul prestasi wajib diisi"),
   event: z.string().min(1, "Nama event/kompetisi wajib diisi"),
-  level: z.enum(
-    ["INTERNASIONAL", "NASIONAL", "PROVINSI", "KOTA", "KECAMATAN", "SEKOLAH"],
-    {
-      message: "Tingkat wajib dipilih",
-    },
-  ),
-  medalType: z
-    .enum([
-      "GOLD",
-      "SILVER",
-      "BRONZE",
-      "JUARA_1",
-      "JUARA_2",
-      "JUARA_3",
-      "HARAPAN_1",
-      "HARAPAN_2",
-      "HARAPAN_3",
-    ])
-    .nullable()
-    .optional(),
+  level: z.enum(achievementLevelValues, {
+    message: "Tingkat wajib dipilih",
+  }),
+  medalType: z.enum(medalTypeValues).nullable().optional(),
   year: z
     .number()
     .int()

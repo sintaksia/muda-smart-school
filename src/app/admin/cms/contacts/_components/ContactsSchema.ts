@@ -7,10 +7,15 @@ export const contactTypes = [
   { value: "EMAIL", label: "Email", icon: Mail },
 ] as const;
 
+const contactTypeValues = contactTypes.map((t) => t.value) as [
+  (typeof contactTypes)[number]["value"],
+  ...(typeof contactTypes)[number]["value"][],
+];
+
 export const contactSchema = z.object({
   name: z.string().min(1, "Nama Kontak wajib diisi"),
   value: z.string().min(1, "Nomer / Email wajib diisi"),
-  type: z.enum(["WHATSAPP", "PHONE", "EMAIL"]),
+  type: z.enum(contactTypeValues),
   description: z.string().optional(),
   order: z.number().int().min(0),
   isActive: z.boolean(),

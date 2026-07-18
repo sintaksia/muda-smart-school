@@ -17,16 +17,13 @@ export const socialPlatforms = [
   { value: "WEBSITE", label: "Website", icon: LinkIcon },
 ] as const;
 
+const socialPlatformValues = socialPlatforms.map((p) => p.value) as [
+  (typeof socialPlatforms)[number]["value"],
+  ...(typeof socialPlatforms)[number]["value"][],
+];
+
 export const socialLinkSchema = z.object({
-  platform: z.enum([
-    "INSTAGRAM",
-    "FACEBOOK",
-    "YOUTUBE",
-    "TWITTER",
-    "TIKTOK",
-    "LINKEDIN",
-    "WEBSITE",
-  ]),
+  platform: z.enum(socialPlatformValues),
   url: z.string().min(1, "URL wajib diisi").url("URL tidak valid"),
   username: z.string().optional(),
   order: z.number().int().min(0),

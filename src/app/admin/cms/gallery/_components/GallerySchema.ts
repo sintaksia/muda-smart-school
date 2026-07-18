@@ -8,11 +8,16 @@ export const galleryCategories = [
   { value: "LAINNYA", label: "Lainnya" },
 ] as const;
 
+const galleryCategoryValues = galleryCategories.map((c) => c.value) as [
+  (typeof galleryCategories)[number]["value"],
+  ...(typeof galleryCategories)[number]["value"][],
+];
+
 export const gallerySchema = z.object({
   title: z.string().min(1, "Judul galeri wajib diisi"),
   description: z.string().nullable().optional(),
   image: z.string().min(1, "Gambar wajib diunggah"),
-  category: z.enum(["FASILITAS", "KEGIATAN", "PRESTASI", "EKSKUL", "LAINNYA"], {
+  category: z.enum(galleryCategoryValues, {
     message: "Kategori wajib dipilih",
   }),
   order: z.number().int().min(0),
