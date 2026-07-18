@@ -114,21 +114,39 @@ export default async function AwardsSection() {
 
           {/* Photo Grid */}
           {achievementsWithImage.length > 0 && (
-            <div className="lg:col-span-2 grid grid-cols-2 gap-2">
-              {achievementsWithImage.slice(0, 4).map((item: Achievement) => (
-                <div
-                  key={item.id}
-                  className="group relative aspect-[4/3] rounded-lg overflow-hidden"
-                >
-                  <Image
-                    src={item.image!}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 20vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ))}
+            <div
+              className={`lg:col-span-2 grid gap-2 ${
+                achievementsWithImage.length === 1
+                  ? "grid-cols-1"
+                  : "grid-cols-2"
+              }`}
+            >
+              {achievementsWithImage
+                .slice(0, 4)
+                .map((item: Achievement, index: number) => {
+                  const total = Math.min(achievementsWithImage.length, 4);
+                  const isLastOdd = total === 3 && index === 2;
+                  return (
+                    <div
+                      key={item.id}
+                      className={`group relative rounded-lg overflow-hidden ${
+                        total === 1
+                          ? "aspect-[16/9]"
+                          : isLastOdd
+                            ? "col-span-2 aspect-[16/9]"
+                            : "aspect-[4/3]"
+                      }`}
+                    >
+                      <Image
+                        src={item.image!}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 1024px) 50vw, 20vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  );
+                })}
             </div>
           )}
         </div>
