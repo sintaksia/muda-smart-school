@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";
 import { StatusBadge } from "@/src/app/admin/_components/StatusBadge";
 import { SocialLinkActions } from "./SocialLinksActions";
+import { indexColumn } from "@/src/app/admin/_components/indexColumn";
 import { socialPlatforms } from "./SocialLinksSchema";
 import type { SocialLink } from "@/src/features/cms/services/social-links";
 
@@ -41,20 +42,7 @@ const getPlatformColor = (platform: string | null) => {
 };
 
 export const socialLinksColumns: ColumnDef<SocialLink>[] = [
-  {
-    id: "no",
-    header: "No",
-    cell: ({ row, table }) => {
-      const { pageIndex, pageSize } = table.getState().pagination;
-      const pageRows = table.getRowModel().rows;
-      const visualIndex = pageRows.findIndex((r) => r.id === row.id);
-      return (
-        <span className="text-muted-foreground">
-          {pageIndex * pageSize + visualIndex + 1}
-        </span>
-      );
-    },
-  },
+  indexColumn<SocialLink>(),
   {
     accessorKey: "platform",
     header: ({ column }) => <SortableHeader column={column} label="Platform" />,

@@ -1,18 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { MoreHorizontal, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
-import { DeleteDialog } from "@/src/app/admin/_components/DeleteDialog";
-import { toast } from "sonner";
+import { CmsRowActions } from "@/src/app/admin/_components/CmsRowActions";
 import type { Extracurricular } from "@/src/features/cms/services/extracurriculars";
 
 interface ExtracurricularActionsProps {
@@ -22,108 +10,21 @@ interface ExtracurricularActionsProps {
 export function ExtracurricularActions({
   extracurricular,
 }: ExtracurricularActionsProps) {
-  const router = useRouter();
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleDelete = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `/api/cms/extracurriculars/${extracurricular.id}`,
-        { method: "DELETE" },
-      );
-
-      if (!response.ok) {
-        throw new Error("Gagal menghapus ekstrakurikuler");
-      }
-
-      toast.success("Ekstrakurikuler berhasil dihapus");
-      router.refresh();
-    } catch {
-      toast.error("Gagal menghapus ekstrakurikuler");
-    } finally {
-      setIsLoading(false);
-      setShowDeleteDialog(false);
-    }
-  };
-
-  const handleToggleStatus = async () => {
-    try {
-      const response = await fetch(
-        `/api/cms/extracurriculars/${extracurricular.id}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ isActive: !extracurricular.isActive }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Gagal mengubah status");
-      }
-
-      toast.success(
-        extracurricular.isActive
-          ? "Ekstrakurikuler dinonaktifkan"
-          : "Ekstrakurikuler diaktifkan",
-      );
-      router.refresh();
-    } catch {
-      toast.error("Gagal mengubah status");
-    }
-  };
-
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <MoreHorizontal className="h-4 w-4" />
-            <span className="sr-only">Menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() =>
-              router.push(`/admin/cms/extracurriculars/${extracurricular.id}`)
-            }
-          >
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleToggleStatus}>
-            {extracurricular.isActive ? (
-              <>
-                <EyeOff className="mr-2 h-4 w-4" />
-                Nonaktifkan
-              </>
-            ) : (
-              <>
-                <Eye className="mr-2 h-4 w-4" />
-                Aktifkan
-              </>
-            )}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => setShowDeleteDialog(true)}
-            className="text-red-600 focus:text-red-600"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Hapus
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DeleteDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        onConfirm={handleDelete}
-        isLoading={isLoading}
-        title="Hapus Ekstrakurikuler"
-        description={`Apakah Anda yakin ingin menghapus ekstrakurikuler "${extracurricular.name}"?`}
-      />
-    </>
+    <CmsRowActions
+      id={extracurricular.id}
+      editHref={`/admin/cms/extracurriculars/${extracurricular.id}`}
+      apiPath="/api/cms/extracurriculars"
+      isActive={extracurricular.isActive}
+      statusField="isActive"
+      activateLabel="Aktifkan"
+      deactivateLabel="Nonaktifkan"
+      activatedMessage="Ekstrakurikuler diaktifkan"
+      deactivatedMessage="Ekstrakurikuler dinonaktifkan"
+      deleteSuccessMessage="Ekstrakurikuler berhasil dihapus"
+      deleteErrorMessage="Gagal menghapus ekstrakurikuler"
+      deleteDialogTitle="Hapus Ekstrakurikuler"
+      deleteDialogDescription={`Apakah Anda yakin ingin menghapus ekstrakurikuler "${extracurricular.name}"?`}
+    />
   );
 }

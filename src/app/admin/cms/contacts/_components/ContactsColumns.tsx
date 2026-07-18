@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";
 import { StatusBadge } from "@/src/app/admin/_components/StatusBadge";
 import { ContactActions } from "./ContactsActions";
+import { indexColumn } from "@/src/app/admin/_components/indexColumn";
 import { contactTypes } from "./ContactsSchema";
 import type { Contact } from "@/src/features/cms/services/contacts";
 
@@ -35,20 +36,7 @@ const getContactColor = (contactType: string | null) => {
 };
 
 export const contactsColumns: ColumnDef<Contact>[] = [
-  {
-    id: "no",
-    header: "No",
-    cell: ({ row, table }) => {
-      const { pageIndex, pageSize } = table.getState().pagination;
-      const pageRows = table.getRowModel().rows;
-      const visualIndex = pageRows.findIndex((r) => r.id === row.id);
-      return (
-        <span className="text-muted-foreground">
-          {pageIndex * pageSize + visualIndex + 1}
-        </span>
-      );
-    },
-  },
+  indexColumn<Contact>(),
   {
     accessorKey: "name",
     header: ({ column }) => <SortableHeader column={column} label="Nama" />,

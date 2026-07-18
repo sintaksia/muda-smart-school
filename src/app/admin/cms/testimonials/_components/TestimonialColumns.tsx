@@ -5,6 +5,7 @@ import { Quote } from "lucide-react";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";
 import { StatusBadge } from "@/src/app/admin/_components/StatusBadge";
 import { Badge } from "@/src/app/admin/_components/Badge";
+import { indexColumn } from "@/src/app/admin/_components/indexColumn";
 import {
   TESTIMONIAL_TYPE_LABELS,
   TESTIMONIAL_TYPE_BADGES,
@@ -13,20 +14,7 @@ import { TestimonialActions } from "./TestimonialActions";
 import type { Testimonial } from "@/src/features/cms/services/testimonials";
 
 export const testimonialColumns: ColumnDef<Testimonial>[] = [
-  {
-    id: "no",
-    header: "No",
-    cell: ({ row, table }) => {
-      const { pageIndex, pageSize } = table.getState().pagination;
-      const pageRows = table.getRowModel().rows;
-      const visualIndex = pageRows.findIndex((r) => r.id === row.id);
-      return (
-        <span className="text-muted-foreground">
-          {pageIndex * pageSize + visualIndex + 1}
-        </span>
-      );
-    },
-  },
+  indexColumn<Testimonial>(),
   {
     accessorKey: "name",
     header: ({ column }) => <SortableHeader column={column} label="Nama" />,

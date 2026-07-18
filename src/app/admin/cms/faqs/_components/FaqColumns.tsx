@@ -5,23 +5,11 @@ import { HelpCircle } from "lucide-react";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";
 import { StatusBadge } from "@/src/app/admin/_components/StatusBadge";
 import { FaqActions } from "./FaqActions";
+import { indexColumn } from "@/src/app/admin/_components/indexColumn";
 import type { Faq } from "@/src/features/cms/services/faqs";
 
 export const faqColumns: ColumnDef<Faq>[] = [
-  {
-    id: "no",
-    header: "No",
-    cell: ({ row, table }) => {
-      const { pageIndex, pageSize } = table.getState().pagination;
-      const pageRows = table.getRowModel().rows;
-      const visualIndex = pageRows.findIndex((r) => r.id === row.id);
-      return (
-        <span className="text-muted-foreground">
-          {pageIndex * pageSize + visualIndex + 1}
-        </span>
-      );
-    },
-  },
+  indexColumn<Faq>(),
   {
     accessorKey: "question",
     header: ({ column }) => (

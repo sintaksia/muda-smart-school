@@ -5,6 +5,7 @@ import { Activity } from "lucide-react";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";
 import { StatusBadge } from "@/src/app/admin/_components/StatusBadge";
 import { ExtracurricularActions } from "./ExtracurricularActions";
+import { indexColumn } from "@/src/app/admin/_components/indexColumn";
 import { ekskulCategories } from "./ExtracurricularSchema";
 import type { Extracurricular } from "@/src/features/cms/services/extracurriculars";
 
@@ -36,20 +37,7 @@ const getCategoryColor = (category: string): string => {
 };
 
 export const extracurricularColumns: ColumnDef<Extracurricular>[] = [
-  {
-    id: "no",
-    header: "No",
-    cell: ({ row, table }) => {
-      const { pageIndex, pageSize } = table.getState().pagination;
-      const pageRows = table.getRowModel().rows;
-      const visualIndex = pageRows.findIndex((r) => r.id === row.id);
-      return (
-        <span className="text-muted-foreground">
-          {pageIndex * pageSize + visualIndex + 1}
-        </span>
-      );
-    },
-  },
+  indexColumn<Extracurricular>(),
   {
     accessorKey: "name",
     header: ({ column }) => (

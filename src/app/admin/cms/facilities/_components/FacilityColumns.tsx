@@ -5,24 +5,12 @@ import { Building2 } from "lucide-react";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";
 import { StatusBadge } from "@/src/app/admin/_components/StatusBadge";
 import { FacilityActions } from "./FacilityActions";
+import { indexColumn } from "@/src/app/admin/_components/indexColumn";
 import type { Facility } from "@/src/features/cms/services/facilities";
 import { ICON_MAP } from "@/src/lib/icons";
 
 export const facilityColumns: ColumnDef<Facility>[] = [
-  {
-    id: "no",
-    header: "No",
-    cell: ({ row, table }) => {
-      const { pageIndex, pageSize } = table.getState().pagination;
-      const pageRows = table.getRowModel().rows;
-      const visualIndex = pageRows.findIndex((r) => r.id === row.id);
-      return (
-        <span className="text-muted-foreground">
-          {pageIndex * pageSize + visualIndex + 1}
-        </span>
-      );
-    },
-  },
+  indexColumn<Facility>(),
   {
     accessorKey: "name",
     header: ({ column }) => (

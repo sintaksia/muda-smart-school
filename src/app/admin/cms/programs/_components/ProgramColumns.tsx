@@ -4,23 +4,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";
 import { StatusBadge } from "@/src/app/admin/_components/StatusBadge";
 import { ProgramActions } from "./ProgramActions";
+import { indexColumn } from "@/src/app/admin/_components/indexColumn";
 import type { ProgramWithRelations } from "@/src/features/cms/services/programs";
 
 export const programColumns: ColumnDef<ProgramWithRelations>[] = [
-  {
-    id: "no",
-    header: "No",
-    cell: ({ row, table }) => {
-      const { pageIndex, pageSize } = table.getState().pagination;
-      const pageRows = table.getRowModel().rows;
-      const visualIndex = pageRows.findIndex((r) => r.id === row.id);
-      return (
-        <span className="text-muted-foreground">
-          {pageIndex * pageSize + visualIndex + 1}
-        </span>
-      );
-    },
-  },
+  indexColumn<ProgramWithRelations>(),
   {
     accessorKey: "abbreviation",
     header: ({ column }) => (

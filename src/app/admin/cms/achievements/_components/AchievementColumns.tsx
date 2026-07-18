@@ -5,6 +5,7 @@ import { Medal, Trophy, Star } from "lucide-react";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";
 import { StatusBadge } from "@/src/app/admin/_components/StatusBadge";
 import { AchievementActions } from "./AchievementActions";
+import { indexColumn } from "@/src/app/admin/_components/indexColumn";
 import { achievementLevels, medalTypes } from "./AchievementSchema";
 import type { Achievement } from "@/src/features/cms/services/achievements";
 
@@ -60,20 +61,7 @@ const getLevelColor = (level: string) => {
 };
 
 export const achievementColumns: ColumnDef<Achievement>[] = [
-  {
-    id: "no",
-    header: "No",
-    cell: ({ row, table }) => {
-      const { pageIndex, pageSize } = table.getState().pagination;
-      const pageRows = table.getRowModel().rows;
-      const visualIndex = pageRows.findIndex((r) => r.id === row.id);
-      return (
-        <span className="text-muted-foreground">
-          {pageIndex * pageSize + visualIndex + 1}
-        </span>
-      );
-    },
-  },
+  indexColumn<Achievement>(),
   {
     accessorKey: "title",
     header: ({ column }) => <SortableHeader column={column} label="Prestasi" />,
