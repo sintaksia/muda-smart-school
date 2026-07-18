@@ -8,6 +8,7 @@ import {
 } from "@/src/features/cms/services/testimonials";
 import { testimonialSchema } from "@/src/app/admin/cms/testimonials/_components/TestimonialSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -48,16 +49,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
     revalidatePath("/");
     return NextResponse.json(testimonial);
   } catch (error) {
-    console.error("Error updating testimonial:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal memperbarui testimoni" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error updating testimonial:",
+      "Gagal memperbarui testimoni",
     );
   }
 }

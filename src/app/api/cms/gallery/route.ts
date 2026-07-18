@@ -7,6 +7,7 @@ import {
 } from "@/src/features/cms/services/gallery";
 import { gallerySchema } from "@/src/app/admin/cms/gallery/_components/GallerySchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,16 +35,10 @@ export async function POST(request: Request) {
     revalidatePath("/admin/cms/gallery");
     return NextResponse.json(gallery, { status: 201 });
   } catch (error) {
-    console.error("Error creating gallery:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal membuat galeri" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error creating gallery:",
+      "Gagal membuat galeri",
     );
   }
 }

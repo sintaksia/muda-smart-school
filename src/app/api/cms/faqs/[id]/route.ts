@@ -8,6 +8,7 @@ import {
 } from "@/src/features/cms/services/faqs";
 import { faqSchema } from "@/src/app/admin/cms/faqs/_components/FaqSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -48,16 +49,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
     revalidatePath("/kontak");
     return NextResponse.json(faq);
   } catch (error) {
-    console.error("Error updating faq:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal memperbarui FAQ" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error updating faq:",
+      "Gagal memperbarui FAQ",
     );
   }
 }

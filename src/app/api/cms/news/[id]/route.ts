@@ -8,6 +8,7 @@ import {
 } from "@/src/features/cms/services/news";
 import { newsSchema } from "@/src/app/admin/cms/news/_components/NewsSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -49,16 +50,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
     revalidatePath("/");
     return NextResponse.json(news);
   } catch (error) {
-    console.error("Error updating news:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal memperbarui berita" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error updating news:",
+      "Gagal memperbarui berita",
     );
   }
 }

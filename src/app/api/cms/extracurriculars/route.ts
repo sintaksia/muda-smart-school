@@ -6,6 +6,7 @@ import {
 } from "@/src/features/cms/services/extracurriculars";
 import { extracurricularSchema } from "@/src/app/admin/cms/extracurriculars/_components/ExtracurricularSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 export async function GET() {
   try {
@@ -32,16 +33,10 @@ export async function POST(request: Request) {
     revalidatePath("/profil");
     return NextResponse.json(extracurricular, { status: 201 });
   } catch (error) {
-    console.error("Error creating extracurricular:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal membuat ekstrakurikuler" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error creating extracurricular:",
+      "Gagal membuat ekstrakurikuler",
     );
   }
 }

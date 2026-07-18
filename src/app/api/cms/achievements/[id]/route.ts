@@ -9,6 +9,7 @@ import {
 } from "@/src/features/cms/services/achievements";
 import { achievementSchema } from "@/src/app/admin/cms/achievements/_components/AchievementSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -50,16 +51,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
     revalidatePath("/profil");
     return NextResponse.json(achievement);
   } catch (error) {
-    console.error("Error updating achievement:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal memperbarui prestasi" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error updating achievement:",
+      "Gagal memperbarui prestasi",
     );
   }
 }

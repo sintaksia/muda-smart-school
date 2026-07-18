@@ -7,6 +7,7 @@ import {
 } from "@/src/features/cms/services/hero-slides";
 import { heroSlideSchema } from "@/src/app/admin/cms/hero-slides/_components/HeroSlideSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 export async function GET(request: NextRequest) {
   try {
@@ -35,16 +36,10 @@ export async function POST(request: Request) {
     revalidatePath("/");
     return NextResponse.json(slide, { status: 201 });
   } catch (error) {
-    console.error("Error creating hero slide:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal membuat hero slide" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error creating hero slide:",
+      "Gagal membuat hero slide",
     );
   }
 }

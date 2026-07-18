@@ -8,6 +8,7 @@ import {
 } from "@/src/features/cms/services/contacts";
 import { contactSchema } from "@/src/app/admin/cms/contacts/_components/ContactsSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -49,16 +50,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
     revalidatePath("/", "layout");
     return NextResponse.json(contact);
   } catch (error) {
-    console.error("Error updating contact:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal memperbarui kontak" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error updating contact:",
+      "Gagal memperbarui kontak",
     );
   }
 }

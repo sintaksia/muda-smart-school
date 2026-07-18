@@ -6,6 +6,7 @@ import {
 } from "@/src/features/cms/services/achievements";
 import { achievementSchema } from "@/src/app/admin/cms/achievements/_components/AchievementSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 export async function GET() {
   try {
@@ -33,16 +34,10 @@ export async function POST(request: Request) {
     revalidatePath("/profil");
     return NextResponse.json(achievement, { status: 201 });
   } catch (error) {
-    console.error("Error creating achievement:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal membuat prestasi" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error creating achievement:",
+      "Gagal membuat prestasi",
     );
   }
 }

@@ -6,6 +6,7 @@ import {
 } from "@/src/features/cms/services/school-settings";
 import { schoolProfileSchema } from "@/src/app/admin/cms/school-profile/_components/SchoolProfileSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 export async function GET() {
   try {
@@ -126,16 +127,10 @@ export async function PUT(request: Request) {
     revalidatePath("/");
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error updating school settings:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal memperbarui pengaturan sekolah" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error updating school settings:",
+      "Gagal memperbarui pengaturan sekolah",
     );
   }
 }

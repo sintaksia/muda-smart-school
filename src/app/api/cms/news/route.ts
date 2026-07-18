@@ -7,6 +7,7 @@ import {
 } from "@/src/features/cms/services/news";
 import { newsSchema } from "@/src/app/admin/cms/news/_components/NewsSchema";
 import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
+import { handleApiError } from "@/src/lib/api-error";
 
 export async function GET(request: Request) {
   try {
@@ -39,16 +40,10 @@ export async function POST(request: Request) {
     revalidatePath("/");
     return NextResponse.json(news, { status: 201 });
   } catch (error) {
-    console.error("Error creating news:", error);
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { error: "Data tidak valid", details: error },
-        { status: 400 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Gagal membuat berita" },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "Error creating news:",
+      "Gagal membuat berita",
     );
   }
 }
