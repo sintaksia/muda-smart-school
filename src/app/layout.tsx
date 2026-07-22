@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/src/components/ui/sonner";
+import { GoogleAnalytics } from "@/src/components/common/GoogleAnalytics";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -111,6 +112,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
   return (
     <html lang="id">
       <body className={`${inter.variable} antialiased font-sans`}>
@@ -120,6 +123,7 @@ export default function RootLayout({
             __html: JSON.stringify(organizationJsonLd),
           }}
         />
+        {gaId && <GoogleAnalytics gaId={gaId} />}
         {children}
         <Toaster position="top-center" richColors />
       </body>
