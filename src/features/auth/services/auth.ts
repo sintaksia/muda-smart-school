@@ -108,6 +108,67 @@ export async function login(
 }
 
 /**
+ * Exchange an OAuth callback code for a session, then verify the signed-in
+ * Supabase user has an active Prisma User record. Rejects (and signs out)
+ * sign-ins for emails that have no pre-provisioned account.
+ */
+export async function handleOAuthCallback(
+  code: string,
+): Promise<{ user: AuthUser | null; error: string | null }> {
+  try {
+    const supabase = await createServerClient();
+
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      return { user: null, error: error.message };
+    }
+
+    if (!data.user) {
+      return { user: null, error: "Login failed" };
+    }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { id: data.user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        status: true,
+        avatar: true,
+      },
+    });
+
+    if (!dbUser) {
+      await supabase.auth.signOut();
+      return {
+        user: null,
+        error: "Akun tidak terdaftar. Hubungi administrator.",
+      };
+    }
+
+    if (dbUser.status !== "ACTIVE") {
+      await supabase.auth.signOut();
+      return {
+        user: null,
+        error: "Akun Anda tidak aktif. Hubungi administrator.",
+      };
+    }
+
+    await prisma.user.update({
+      where: { id: dbUser.id },
+      data: { lastLoginAt: new Date() },
+    });
+
+    return { user: dbUser, error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "An error occurred";
+    return { user: null, error: message };
+  }
+}
+
+/**
  * Logout current user
  */
 export async function logout(): Promise<{ error: string | null }> {

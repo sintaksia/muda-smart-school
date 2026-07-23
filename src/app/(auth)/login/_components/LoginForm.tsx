@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,27 +17,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/src/components/ui/form";
-import type { UserRole } from "@prisma/client";
 import type { AuthUser } from "@/src/features/auth/types";
+import { getHomeRouteForRole } from "@/src/features/auth/utils/getHomeRouteForRole";
 import { loginSchema, type LoginFormData } from "./LoginSchema";
+import { GoogleLoginButton } from "./GoogleLoginButton";
 
 interface LoginResponse {
   user?: AuthUser;
   error?: string;
-}
-
-function getHomeRouteForRole(role: UserRole): string {
-  switch (role) {
-    case "STUDENT":
-      return "/siswa";
-    case "TEACHER":
-      return "/guru";
-    case "ADMIN":
-    case "SUPER_ADMIN":
-      return "/admin";
-    default:
-      return "/login";
-  }
 }
 
 export function LoginForm() {
@@ -45,6 +32,13 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
+  const errorParam = searchParams.get("error");
+
+  useEffect(() => {
+    if (errorParam) {
+      toast.error(errorParam);
+    }
+  }, [errorParam]);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -136,6 +130,17 @@ export function LoginForm() {
             "Masuk"
           )}
         </Button>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-card px-2 text-muted-foreground">Atau</span>
+          </div>
+        </div>
+
+        <GoogleLoginButton disabled={isLoading} redirectTo={redirectParam} />
       </form>
     </Form>
   );
