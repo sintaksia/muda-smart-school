@@ -14,7 +14,7 @@ const manualEntrySchema = z.object({
     message: "Tipe pemilik wajib dipilih",
   }),
   ownerId: z.string({ message: "Pemilik wajib dipilih" }).min(1),
-  type: z.enum(["PRESTASI", "PELANGGARAN"], {
+  type: z.enum(["ACHIEVEMENT", "VIOLATION"], {
     message: "Tipe entri wajib dipilih",
   }),
   category: z.string({ message: "Kategori wajib dipilih" }).min(1),
@@ -83,14 +83,14 @@ export async function GET(request: Request) {
     const where =
       ownerType === "STUDENT"
         ? { ownerType, studentId: ownerId }
-        : { ownerType, guruId: ownerId };
+        : { ownerType, teacherId: ownerId };
     const entries = await prisma.creditScore.findMany({
       where,
       include: {
         reportedBy: { select: { name: true } },
         refSesi: {
           select: {
-            tanggal: true,
+            date: true,
             jadwal: { select: { mataPelajaran: { select: { name: true } } } },
           },
         },

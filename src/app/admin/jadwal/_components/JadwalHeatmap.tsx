@@ -1,6 +1,6 @@
 "use client";
 
-import { HARI_LABELS, HARI_VALUES } from "@/src/lib/constants";
+import { DAY_OF_WEEK_LABELS, DAY_OF_WEEK_VALUES } from "@/src/lib/constants";
 import {
   summarizeByEntity,
   type JadwalEntry,
@@ -28,7 +28,7 @@ export function JadwalHeatmap({
   entityOptions,
   onSelectEntity,
 }: JadwalHeatmapProps) {
-  const entityKey = mode === "kelas" ? "kelasId" : "guruId";
+  const entityKey = mode === "kelas" ? "classId" : "teacherId";
   const summary = summarizeByEntity(entries, entityKey);
 
   return (
@@ -39,12 +39,12 @@ export function JadwalHeatmap({
             <th className="text-ink-muted w-40 px-3 py-2 text-left text-xs font-medium">
               {mode === "kelas" ? "Kelas" : "Guru"}
             </th>
-            {HARI_VALUES.map((hari) => (
+            {DAY_OF_WEEK_VALUES.map((dayOfWeek) => (
               <th
-                key={hari}
+                key={dayOfWeek}
                 className="text-ink border-hairline border-l px-3 py-2 text-left text-xs font-semibold"
               >
-                {HARI_LABELS[hari]}
+                {DAY_OF_WEEK_LABELS[dayOfWeek]}
               </th>
             ))}
           </tr>
@@ -63,19 +63,19 @@ export function JadwalHeatmap({
                     {entity.nama}
                   </button>
                 </td>
-                {HARI_VALUES.map((hari) => {
-                  const day = days?.get(hari);
+                {DAY_OF_WEEK_VALUES.map((dayOfWeek) => {
+                  const day = days?.get(dayOfWeek);
                   if (!day) {
                     return (
                       <td
-                        key={hari}
+                        key={dayOfWeek}
                         className="border-hairline text-ink-muted border-l px-3 py-2 text-xs"
                       />
                     );
                   }
                   return (
                     <td
-                      key={hari}
+                      key={dayOfWeek}
                       className={`border-l px-3 py-2 text-xs tabular-nums ${
                         day.hasConflict
                           ? "border-danger/40 bg-danger/10 text-danger font-semibold"

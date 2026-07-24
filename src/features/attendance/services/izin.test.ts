@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
-import { submitIzin, reviewIzin } from "./izin";
+import { submitLeaveRequest, reviewLeaveRequest } from "./izin";
 import { getAttendanceSettings } from "./settings";
 import { reverseAutoDeduction } from "./credit";
 import {
@@ -9,13 +9,13 @@ import {
   notifyUsers,
 } from "./notifications";
 import type { AttendanceSettings } from "../types";
-import type { AbsensiSiswa, PengajuanIzin, Student } from "@prisma/client";
+import type { StudentAttendance, LeaveRequest, Student } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
     student: { findUnique: vi.fn() },
-    pengajuanIzin: { create: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
-    absensiSiswa: { findMany: vi.fn(), update: vi.fn() },
+    leaveRequest: { create: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
+    studentAttendance: { findMany: vi.fn(), update: vi.fn() },
   },
 }));
 
@@ -35,34 +35,34 @@ beforeEach(() => {
   } as AttendanceSettings);
   vi.mocked(prisma.student.findUnique).mockResolvedValue({
     id: "s1",
-    kelasId: "k1",
+    classId: "k1",
     userId: "student-user",
     user: { name: "Budi" },
   } as unknown as Student);
   vi.mocked(getWaliKelasUserId).mockResolvedValue("wali-user");
 });
 
-describe("submitIzin", () => {
+describe("submitLeaveRequest", () => {
   it("creates a PENDING submission and notifies the wali kelas", async () => {
-    vi.mocked(prisma.pengajuanIzin.create).mockResolvedValue({
+    vi.mocked(prisma.leaveRequest.create).mockResolvedValue({
       id: "izin-1",
-      jenis: "SAKIT",
-    } as PengajuanIzin);
+      type: "SICK",
+    } as LeaveRequest);
 
-    const result = await submitIzin({
+    const result = await submitLeaveRequest({
       studentId: "s1",
-      jenis: "SAKIT",
-      tanggal: "2026-07-09",
-      alasan: "Demam",
+      type: "SICK",
+      date: "2026-07-09",
+      reason: "Demam",
     });
 
     expect(result.error).toBeNull();
     expect(
-      vi.mocked(prisma.pengajuanIzin.create).mock.calls[0][0].data.status,
+      vi.mocked(prisma.leaveRequest.create).mock.calls[0][0].data.status,
     ).toBe("PENDING");
     expect(notifyUsers).toHaveBeenCalledWith(
       ["wali-user"],
-      expect.objectContaining({ type: "IZIN_STATUS" }),
+      expect.objectContaining({ type: "LEAVE_STATUS" }),
     );
   });
 
@@ -70,62 +70,66 @@ describe("submitIzin", () => {
     vi.mocked(getAttendanceSettings).mockResolvedValue({
       izinSakitApprovalRequired: false,
     } as AttendanceSettings);
-    vi.mocked(prisma.pengajuanIzin.create).mockResolvedValue({
+    vi.mocked(prisma.leaveRequest.create).mockResolvedValue({
       id: "izin-1",
-      jenis: "IZIN",
-    } as PengajuanIzin);
+      type: "PERMISSION",
+    } as LeaveRequest);
 
-    await submitIzin({
+    await submitLeaveRequest({
       studentId: "s1",
-      jenis: "IZIN",
-      tanggal: "2026-07-09",
-      alasan: "Acara keluarga",
+      type: "PERMISSION",
+      date: "2026-07-09",
+      reason: "Acara keluarga",
     });
 
     expect(
-      vi.mocked(prisma.pengajuanIzin.create).mock.calls[0][0].data.status,
+      vi.mocked(prisma.leaveRequest.create).mock.calls[0][0].data.status,
     ).toBe("APPROVED");
   });
 
   it("errors for an unknown student", async () => {
     vi.mocked(prisma.student.findUnique).mockResolvedValue(null);
-    const result = await submitIzin({
+    const result = await submitLeaveRequest({
       studentId: "missing",
-      jenis: "IZIN",
-      tanggal: "2026-07-09",
-      alasan: "x",
+      type: "PERMISSION",
+      date: "2026-07-09",
+      reason: "x",
     });
     expect(result.error).toBe("Siswa tidak ditemukan");
   });
 });
 
-describe("reviewIzin", () => {
+describe("reviewLeaveRequest", () => {
   const pending = {
     id: "izin-1",
     studentId: "s1",
-    jenis: "SAKIT",
-    tanggal: new Date("2026-07-09T00:00:00.000Z"),
-    jadwalId: null,
+    type: "SICK",
+    date: new Date("2026-07-09T00:00:00.000Z"),
+    scheduleId: null,
     status: "PENDING",
     student: { userId: "student-user" },
-  } as unknown as PengajuanIzin;
+  } as unknown as LeaveRequest;
 
   it("late approval fixes Alpa records and reverses deductions", async () => {
-    vi.mocked(prisma.pengajuanIzin.findUnique).mockResolvedValue(pending);
-    vi.mocked(prisma.pengajuanIzin.update).mockResolvedValue({
+    vi.mocked(prisma.leaveRequest.findUnique).mockResolvedValue(pending);
+    vi.mocked(prisma.leaveRequest.update).mockResolvedValue({
       ...pending,
       status: "APPROVED",
-    } as PengajuanIzin);
-    vi.mocked(prisma.absensiSiswa.findMany).mockResolvedValue([
-      { id: "abs-1", sesiId: "sesi-1", status: "ALPHA" } as AbsensiSiswa,
+    } as LeaveRequest);
+    vi.mocked(prisma.studentAttendance.findMany).mockResolvedValue([
+      {
+        id: "abs-1",
+        sessionId: "sesi-1",
+        status: "ABSENT",
+      } as StudentAttendance,
     ]);
 
-    const result = await reviewIzin("izin-1", "APPROVED", "wali-user");
+    const result = await reviewLeaveRequest("izin-1", "APPROVED", "wali-user");
 
     expect(result.error).toBeNull();
-    expect(prisma.absensiSiswa.update).toHaveBeenCalledWith(
+    expect(prisma.studentAttendance.update).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ status: "SAKIT" }),
+        data: expect.objectContaining({ status: "SICK" }),
       }),
     );
     expect(reverseAutoDeduction).toHaveBeenCalledWith(
@@ -139,13 +143,13 @@ describe("reviewIzin", () => {
   });
 
   it("rejection keeps the original record and notifies with the reason", async () => {
-    vi.mocked(prisma.pengajuanIzin.findUnique).mockResolvedValue(pending);
-    vi.mocked(prisma.pengajuanIzin.update).mockResolvedValue({
+    vi.mocked(prisma.leaveRequest.findUnique).mockResolvedValue(pending);
+    vi.mocked(prisma.leaveRequest.update).mockResolvedValue({
       ...pending,
       status: "REJECTED",
-    } as PengajuanIzin);
+    } as LeaveRequest);
 
-    const result = await reviewIzin(
+    const result = await reviewLeaveRequest(
       "izin-1",
       "REJECTED",
       "wali-user",
@@ -153,7 +157,7 @@ describe("reviewIzin", () => {
     );
 
     expect(result.error).toBeNull();
-    expect(prisma.absensiSiswa.findMany).not.toHaveBeenCalled();
+    expect(prisma.studentAttendance.findMany).not.toHaveBeenCalled();
     expect(reverseAutoDeduction).not.toHaveBeenCalled();
     expect(createNotification).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -163,12 +167,12 @@ describe("reviewIzin", () => {
   });
 
   it("refuses to re-process a reviewed submission", async () => {
-    vi.mocked(prisma.pengajuanIzin.findUnique).mockResolvedValue({
+    vi.mocked(prisma.leaveRequest.findUnique).mockResolvedValue({
       ...pending,
       status: "APPROVED",
-    } as PengajuanIzin);
+    } as LeaveRequest);
 
-    const result = await reviewIzin("izin-1", "APPROVED", "wali-user");
+    const result = await reviewLeaveRequest("izin-1", "APPROVED", "wali-user");
     expect(result.error).toBe("Pengajuan sudah diproses");
   });
 });

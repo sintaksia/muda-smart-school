@@ -4,8 +4,8 @@ import { toast } from "sonner";
 import { MapPinOff } from "lucide-react";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import {
-  ABSENSI_STATUS_BADGES,
-  ABSENSI_STATUS_LABELS,
+  ATTENDANCE_STATUS_BADGES,
+  ATTENDANCE_STATUS_LABELS,
 } from "@/src/lib/constants";
 
 export interface SessionDetail {
@@ -13,15 +13,15 @@ export interface SessionDetail {
   status: string;
   qrToken: string | null;
   jadwal: {
-    jamMulai: string;
-    jamSelesai: string;
+    startTime: string;
+    endTime: string;
     kelas: {
       name: string;
       students: { id: string; nis: string; user: { name: string } }[];
     };
     mataPelajaran: { name: string };
   };
-  absensiSiswa: {
+  studentAttendance: {
     id: string;
     studentId: string;
     status: string;
@@ -38,7 +38,7 @@ interface AttendanceRosterProps {
 
 export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
   const recordByStudent = new Map(
-    sesi.absensiSiswa.map((record) => [record.studentId, record]),
+    sesi.studentAttendance.map((record) => [record.studentId, record]),
   );
   const isOpen = sesi.status === "OPEN";
 
@@ -76,7 +76,7 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
       <header className="border-hairline flex items-center justify-between border-b px-5 py-4">
         <h3 className="text-ink text-base font-semibold">Daftar Siswa</h3>
         <span className="text-ink-muted text-xs font-medium tabular-nums">
-          {sesi.absensiSiswa.length}/{sesi.jadwal.kelas.students.length}{" "}
+          {sesi.studentAttendance.length}/{sesi.jadwal.kelas.students.length}{" "}
           tercatat
         </span>
       </header>
@@ -113,8 +113,8 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
                   </button>
                 )}
                 {record ? (
-                  <Badge variant={ABSENSI_STATUS_BADGES[record.status]}>
-                    {ABSENSI_STATUS_LABELS[record.status]}
+                  <Badge variant={ATTENDANCE_STATUS_BADGES[record.status]}>
+                    {ATTENDANCE_STATUS_LABELS[record.status]}
                   </Badge>
                 ) : isOpen ? (
                   <select
@@ -129,9 +129,9 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
                     <option value="" disabled>
                       Tandai…
                     </option>
-                    <option value="HADIR">Hadir</option>
-                    <option value="IZIN">Izin</option>
-                    <option value="SAKIT">Sakit</option>
+                    <option value="PRESENT">Hadir</option>
+                    <option value="EXCUSED">Izin</option>
+                    <option value="SICK">Sakit</option>
                   </select>
                 ) : (
                   <span className="text-ink-muted text-xs">—</span>

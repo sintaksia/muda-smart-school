@@ -70,7 +70,7 @@ export function ScanCard() {
         throw new Error(data.error ?? "Gagal mencatat presensi");
       }
       toast.success(
-        data.status === "HADIR"
+        data.status === "PRESENT"
           ? "Presensi tercatat: Hadir"
           : `Presensi tercatat: ${data.status}`,
       );

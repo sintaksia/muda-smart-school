@@ -4,12 +4,12 @@ import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { reportTeacherAbsence } from "@/src/features/attendance/services/teacher-attendance";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { AbsensiGuru, Teacher } from "@prisma/client";
+import type { TeacherAttendance, Teacher } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
     teacher: { findUnique: vi.fn() },
-    absensiGuru: { findMany: vi.fn() },
+    teacherAttendance: { findMany: vi.fn() },
   },
 }));
 vi.mock("@/src/features/auth/services/auth", () => ({
@@ -41,21 +41,21 @@ describe("POST /api/attendance/teacher-absence", () => {
       id: "guru-1",
     } as Teacher);
     vi.mocked(reportTeacherAbsence).mockResolvedValue({
-      records: [{ id: "ag-1" } as AbsensiGuru],
+      records: [{ id: "ag-1" } as TeacherAttendance],
       error: null,
     });
 
     const response = await POST(
       buildRequest({
-        guruId: "someone-else",
-        tanggal: "2026-07-09",
-        status: "IZIN",
+        teacherId: "someone-else",
+        date: "2026-07-09",
+        status: "EXCUSED",
       }),
     );
 
     expect(response.status).toBe(201);
     expect(reportTeacherAbsence).toHaveBeenCalledWith(
-      expect.objectContaining({ guruId: "guru-1", reportedById: "u1" }),
+      expect.objectContaining({ teacherId: "guru-1", reportedById: "u1" }),
     );
   });
 
@@ -69,7 +69,7 @@ describe("POST /api/attendance/teacher-absence", () => {
     } as Teacher);
 
     const response = await POST(
-      buildRequest({ tanggal: "2026-07-09", status: "ALPHA" }),
+      buildRequest({ date: "2026-07-09", status: "ABSENT" }),
     );
 
     expect(response.status).toBe(403);
@@ -83,7 +83,7 @@ describe("POST /api/attendance/teacher-absence", () => {
     } as SessionUser);
 
     const response = await POST(
-      buildRequest({ tanggal: "2026-07-09", status: "SAKIT" }),
+      buildRequest({ date: "2026-07-09", status: "SICK" }),
     );
     const data = await response.json();
 

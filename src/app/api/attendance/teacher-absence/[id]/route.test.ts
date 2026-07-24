@@ -3,7 +3,7 @@ import { PATCH } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { assignSubstitute } from "@/src/features/attendance/services/teacher-attendance";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { AbsensiGuru } from "@prisma/client";
+import type { TeacherAttendance } from "@prisma/client";
 
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
@@ -34,7 +34,7 @@ describe("PATCH /api/attendance/teacher-absence/[id]", () => {
     } as SessionUser);
 
     const response = await PATCH(
-      buildRequest({ substituteGuruId: "guru-2" }),
+      buildRequest({ substituteTeacherId: "guru-2" }),
       routeParams,
     );
     expect(response.status).toBe(403);
@@ -47,18 +47,21 @@ describe("PATCH /api/attendance/teacher-absence/[id]", () => {
       role: "ADMIN",
     } as SessionUser);
     vi.mocked(assignSubstitute).mockResolvedValue({
-      record: { id: "ag-1", substituteGuruId: "guru-2" } as AbsensiGuru,
+      record: {
+        id: "ag-1",
+        substituteTeacherId: "guru-2",
+      } as TeacherAttendance,
       error: null,
     });
 
     const response = await PATCH(
-      buildRequest({ substituteGuruId: "guru-2" }),
+      buildRequest({ substituteTeacherId: "guru-2" }),
       routeParams,
     );
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.substituteGuruId).toBe("guru-2");
+    expect(data.substituteTeacherId).toBe("guru-2");
     expect(assignSubstitute).toHaveBeenCalledWith("ag-1", "guru-2");
   });
 
@@ -73,7 +76,7 @@ describe("PATCH /api/attendance/teacher-absence/[id]", () => {
     });
 
     const response = await PATCH(
-      buildRequest({ substituteGuruId: "guru-1" }),
+      buildRequest({ substituteTeacherId: "guru-1" }),
       routeParams,
     );
     expect(response.status).toBe(400);

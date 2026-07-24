@@ -22,7 +22,7 @@ vi.mock("@/src/lib/prisma", () => ({
       findFirst: vi.fn(),
     },
     student: { findUnique: vi.fn() },
-    guru: { findUnique: vi.fn() },
+    teacher: { findUnique: vi.fn() },
   },
 }));
 
@@ -82,11 +82,11 @@ describe("createCreditEntry", () => {
     const entry = await createCreditEntry({
       ownerType: "STUDENT",
       studentId: "s1",
-      type: "PELANGGARAN",
+      type: "VIOLATION",
       category: "Kedisiplinan",
       points: -3,
       source: "AUTO",
-      refSesiId: "sesi-1",
+      refSessionId: "sesi-1",
     });
 
     expect(entry.id).toBe("c1");
@@ -102,7 +102,7 @@ describe("createCreditEntry", () => {
       id: "c2",
     } as CreditScore);
     vi.mocked(prisma.student.findUnique).mockResolvedValue({
-      kelasId: "k1",
+      classId: "k1",
       userId: "student-user",
       user: { name: "Budi" },
     } as unknown as Student);
@@ -111,7 +111,7 @@ describe("createCreditEntry", () => {
     await createCreditEntry({
       ownerType: "STUDENT",
       studentId: "s1",
-      type: "PELANGGARAN",
+      type: "VIOLATION",
       category: "Kedisiplinan",
       points: -3,
       source: "AUTO",
@@ -132,7 +132,7 @@ describe("createCreditEntry", () => {
       id: "c3",
     } as CreditScore);
     vi.mocked(prisma.student.findUnique).mockResolvedValue({
-      kelasId: "k1",
+      classId: "k1",
       userId: "student-user",
       user: { name: "Budi" },
     } as unknown as Student);
@@ -142,7 +142,7 @@ describe("createCreditEntry", () => {
     await createCreditEntry({
       ownerType: "STUDENT",
       studentId: "s1",
-      type: "PELANGGARAN",
+      type: "VIOLATION",
       category: "Kedisiplinan",
       points: -10,
       source: "AUTO",
@@ -158,7 +158,7 @@ describe("createCreditEntry", () => {
     await expect(
       createCreditEntry({
         ownerType: "STUDENT",
-        type: "PRESTASI",
+        type: "ACHIEVEMENT",
         category: "Akademik",
         points: 5,
         source: "MANUAL",
@@ -168,7 +168,7 @@ describe("createCreditEntry", () => {
 });
 
 describe("reverseAutoDeduction", () => {
-  it("creates an offsetting KOREKSI entry for the original deduction", async () => {
+  it("creates an offsetting CORRECTION entry for the original deduction", async () => {
     vi.mocked(prisma.creditScore.findFirst)
       .mockResolvedValueOnce({
         id: "orig",
@@ -188,12 +188,12 @@ describe("reverseAutoDeduction", () => {
     expect(result?.id).toBe("koreksi");
     expect(prisma.creditScore.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ type: "KOREKSI", points: 10 }),
+        data: expect.objectContaining({ type: "CORRECTION", points: 10 }),
       }),
     );
   });
 
-  it("is idempotent when a KOREKSI already exists", async () => {
+  it("is idempotent when a CORRECTION already exists", async () => {
     vi.mocked(prisma.creditScore.findFirst)
       .mockResolvedValueOnce({ id: "orig", points: -10 } as CreditScore)
       .mockResolvedValueOnce({ id: "existing-koreksi" } as CreditScore);

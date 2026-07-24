@@ -1,4 +1,4 @@
-import type { HariEnum } from "@prisma/client";
+import type { DayOfWeek } from "@prisma/client";
 
 /**
  * All schedule times are wall-clock in the school's timezone (WIB, UTC+7 —
@@ -6,14 +6,14 @@ import type { HariEnum } from "@prisma/client";
  */
 export const WIB_OFFSET_MINUTES = 7 * 60;
 
-const HARI_BY_JS_DAY: Record<number, HariEnum | null> = {
+const DAY_OF_WEEK_BY_JS_DAY: Record<number, DayOfWeek | null> = {
   0: null, // Minggu — no schedule
-  1: "SENIN",
-  2: "SELASA",
-  3: "RABU",
-  4: "KAMIS",
-  5: "JUMAT",
-  6: "SABTU",
+  1: "MONDAY",
+  2: "TUESDAY",
+  3: "WEDNESDAY",
+  4: "THURSDAY",
+  5: "FRIDAY",
+  6: "SATURDAY",
 };
 
 /** Parse "HH:mm" into minutes since midnight. Throws on malformed input. */
@@ -53,12 +53,16 @@ export function rangeDurationHours(start: string, end: string): number {
 export function toWibParts(instant: Date): {
   dateISO: string;
   minutesOfDay: number;
-  hari: HariEnum | null;
+  dayOfWeek: DayOfWeek | null;
 } {
   const shifted = new Date(instant.getTime() + WIB_OFFSET_MINUTES * 60 * 1000);
   const dateISO = shifted.toISOString().slice(0, 10);
   const minutesOfDay = shifted.getUTCHours() * 60 + shifted.getUTCMinutes();
-  return { dateISO, minutesOfDay, hari: HARI_BY_JS_DAY[shifted.getUTCDay()] };
+  return {
+    dateISO,
+    minutesOfDay,
+    dayOfWeek: DAY_OF_WEEK_BY_JS_DAY[shifted.getUTCDay()],
+  };
 }
 
 /** UTC-midnight Date for a WIB calendar date "YYYY-MM-DD" (storage form). */
@@ -76,7 +80,7 @@ export function wibInstant(dateISO: string, time: string): Date {
   return new Date(base + (minutes - WIB_OFFSET_MINUTES) * 60 * 1000);
 }
 
-/** HariEnum for a WIB calendar date. */
-export function hariFromDateISO(dateISO: string): HariEnum | null {
-  return HARI_BY_JS_DAY[dateOnlyUtc(dateISO).getUTCDay()];
+/** DayOfWeek for a WIB calendar date. */
+export function dayOfWeekFromDateISO(dateISO: string): DayOfWeek | null {
+  return DAY_OF_WEEK_BY_JS_DAY[dateOnlyUtc(dateISO).getUTCDay()];
 }

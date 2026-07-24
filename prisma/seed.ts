@@ -130,32 +130,32 @@ const ATTENDANCE_SETTINGS: {
 
 const CREDIT_CATEGORIES: {
   ownerType: "STUDENT" | "TEACHER";
-  type: "PRESTASI" | "PELANGGARAN";
-  nama: string;
+  type: "ACHIEVEMENT" | "VIOLATION";
+  name: string;
 }[] = [
-  { ownerType: "STUDENT", type: "PELANGGARAN", nama: "Kedisiplinan" },
-  { ownerType: "STUDENT", type: "PELANGGARAN", nama: "Akademik" },
-  { ownerType: "STUDENT", type: "PELANGGARAN", nama: "Etika/Perilaku" },
-  { ownerType: "STUDENT", type: "PELANGGARAN", nama: "Seragam/Atribut" },
-  { ownerType: "STUDENT", type: "PRESTASI", nama: "Akademik" },
-  { ownerType: "STUDENT", type: "PRESTASI", nama: "Non-akademik/Lomba" },
-  { ownerType: "STUDENT", type: "PRESTASI", nama: "Ekstrakurikuler" },
-  { ownerType: "STUDENT", type: "PRESTASI", nama: "Kepemimpinan" },
-  { ownerType: "TEACHER", type: "PELANGGARAN", nama: "Kedisiplinan" },
+  { ownerType: "STUDENT", type: "VIOLATION", name: "Kedisiplinan" },
+  { ownerType: "STUDENT", type: "VIOLATION", name: "Akademik" },
+  { ownerType: "STUDENT", type: "VIOLATION", name: "Etika/Perilaku" },
+  { ownerType: "STUDENT", type: "VIOLATION", name: "Seragam/Atribut" },
+  { ownerType: "STUDENT", type: "ACHIEVEMENT", name: "Akademik" },
+  { ownerType: "STUDENT", type: "ACHIEVEMENT", name: "Non-akademik/Lomba" },
+  { ownerType: "STUDENT", type: "ACHIEVEMENT", name: "Ekstrakurikuler" },
+  { ownerType: "STUDENT", type: "ACHIEVEMENT", name: "Kepemimpinan" },
+  { ownerType: "TEACHER", type: "VIOLATION", name: "Kedisiplinan" },
   {
     ownerType: "TEACHER",
-    type: "PELANGGARAN",
-    nama: "Administrasi (jurnal/RPP)",
+    type: "VIOLATION",
+    name: "Administrasi (jurnal/RPP)",
   },
-  { ownerType: "TEACHER", type: "PELANGGARAN", nama: "Komplain" },
-  { ownerType: "TEACHER", type: "PRESTASI", nama: "Kehadiran Sempurna" },
+  { ownerType: "TEACHER", type: "VIOLATION", name: "Komplain" },
+  { ownerType: "TEACHER", type: "ACHIEVEMENT", name: "Kehadiran Sempurna" },
   {
     ownerType: "TEACHER",
-    type: "PRESTASI",
-    nama: "Pembinaan Siswa Berprestasi",
+    type: "ACHIEVEMENT",
+    name: "Pembinaan Siswa Berprestasi",
   },
-  { ownerType: "TEACHER", type: "PRESTASI", nama: "Sertifikasi/Pelatihan" },
-  { ownerType: "TEACHER", type: "PRESTASI", nama: "Inovasi Pengajaran" },
+  { ownerType: "TEACHER", type: "ACHIEVEMENT", name: "Sertifikasi/Pelatihan" },
+  { ownerType: "TEACHER", type: "ACHIEVEMENT", name: "Inovasi Pengajaran" },
 ];
 
 async function seedAttendanceSettings() {
@@ -180,10 +180,10 @@ async function seedCreditCategories() {
   for (const [index, category] of CREDIT_CATEGORIES.entries()) {
     await prisma.creditCategory.upsert({
       where: {
-        ownerType_type_nama: {
+        ownerType_type_name: {
           ownerType: category.ownerType,
           type: category.type,
-          nama: category.nama,
+          name: category.name,
         },
       },
       update: {},

@@ -1,6 +1,6 @@
 import { prisma } from "@/src/lib/prisma";
-import type { PengajuanIzin } from "@prisma/client";
-import type { SubmitIzinInput } from "../types";
+import type { LeaveRequest } from "@prisma/client";
+import type { SubmitLeaveRequestInput } from "../types";
 import { reverseAutoDeduction } from "./credit";
 import {
   createNotification,
@@ -15,9 +15,9 @@ import { dateOnlyUtc } from "../utils/time";
  * Process 5 — izin/sakit submission by student or parent, before or during
  * a session. Routed to Wali Kelas (or Admin) while approval is required.
  */
-export async function submitIzin(
-  input: SubmitIzinInput,
-): Promise<{ izin: PengajuanIzin | null; error: string | null }> {
+export async function submitLeaveRequest(
+  input: SubmitLeaveRequestInput,
+): Promise<{ izin: LeaveRequest | null; error: string | null }> {
   const student = await prisma.student.findUnique({
     where: { id: input.studentId },
     include: { user: { select: { name: true } } },
@@ -27,14 +27,14 @@ export async function submitIzin(
   }
 
   const settings = await getAttendanceSettings();
-  const izin = await prisma.pengajuanIzin.create({
+  const izin = await prisma.leaveRequest.create({
     data: {
       studentId: input.studentId,
-      jenis: input.jenis,
-      tanggal: dateOnlyUtc(input.tanggal),
-      jadwalId: input.jadwalId,
-      alasan: input.alasan,
-      lampiran: input.lampiran,
+      type: input.type,
+      date: dateOnlyUtc(input.date),
+      scheduleId: input.scheduleId,
+      reason: input.reason,
+      attachment: input.attachment,
       submittedById: input.submittedById,
       status: settings.izinSakitApprovalRequired ? "PENDING" : "APPROVED",
     },
@@ -44,8 +44,8 @@ export async function submitIzin(
   const reviewers = waliUserId ? [waliUserId] : await getAdminUserIds();
   await notifyUsers(reviewers, {
     title: "Pengajuan izin/sakit baru",
-    body: `${student.user.name} mengajukan ${izin.jenis.toLowerCase()} untuk ${input.tanggal}.`,
-    type: "IZIN_STATUS",
+    body: `${student.user.name} mengajukan ${izin.type.toLowerCase()} untuk ${input.date}.`,
+    type: "LEAVE_STATUS",
     refId: izin.id,
   });
 
@@ -57,13 +57,13 @@ export async function submitIzin(
  * after an Alpa deduction triggers the Process 3 reversal rule; rejection
  * leaves the original record standing.
  */
-export async function reviewIzin(
+export async function reviewLeaveRequest(
   izinId: string,
   decision: "APPROVED" | "REJECTED",
   reviewedById: string,
   reviewNote?: string,
-): Promise<{ izin: PengajuanIzin | null; error: string | null }> {
-  const existing = await prisma.pengajuanIzin.findUnique({
+): Promise<{ izin: LeaveRequest | null; error: string | null }> {
+  const existing = await prisma.leaveRequest.findUnique({
     where: { id: izinId },
     include: { student: true },
   });
@@ -74,7 +74,7 @@ export async function reviewIzin(
     return { izin: existing, error: "Pengajuan sudah diproses" };
   }
 
-  const izin = await prisma.pengajuanIzin.update({
+  const izin = await prisma.leaveRequest.update({
     where: { id: izinId },
     data: {
       status: decision,
@@ -86,27 +86,27 @@ export async function reviewIzin(
 
   if (decision === "APPROVED") {
     // Late approval: fix any Alpa already recorded for the covered
-    // sessions and reverse its deduction (audit-safe KOREKSI entry).
-    const alphaRecords = await prisma.absensiSiswa.findMany({
+    // sessions and reverse its deduction (audit-safe CORRECTION entry).
+    const absentRecords = await prisma.studentAttendance.findMany({
       where: {
         studentId: existing.studentId,
-        tanggal: existing.tanggal,
-        status: "ALPHA",
-        ...(existing.jadwalId ? { jadwalId: existing.jadwalId } : {}),
+        date: existing.date,
+        status: "ABSENT",
+        ...(existing.scheduleId ? { scheduleId: existing.scheduleId } : {}),
       },
     });
-    for (const record of alphaRecords) {
-      await prisma.absensiSiswa.update({
+    for (const record of absentRecords) {
+      await prisma.studentAttendance.update({
         where: { id: record.id },
         data: {
-          status: existing.jenis === "SAKIT" ? "SAKIT" : "IZIN",
-          catatan: "Izin/sakit disetujui setelah sesi ditutup",
+          status: existing.type === "SICK" ? "SICK" : "EXCUSED",
+          note: "Izin/sakit disetujui setelah sesi ditutup",
         },
       });
-      if (record.sesiId) {
+      if (record.sessionId) {
         await reverseAutoDeduction(
           existing.studentId,
-          record.sesiId,
+          record.sessionId,
           reviewedById,
         );
       }
@@ -121,9 +121,9 @@ export async function reviewIzin(
         : "Pengajuan izin ditolak",
     body:
       decision === "APPROVED"
-        ? `Pengajuan ${existing.jenis.toLowerCase()} Anda telah disetujui.`
-        : `Pengajuan ${existing.jenis.toLowerCase()} Anda ditolak.${reviewNote ? ` Alasan: ${reviewNote}` : ""}`,
-    type: "IZIN_STATUS",
+        ? `Pengajuan ${existing.type.toLowerCase()} Anda telah disetujui.`
+        : `Pengajuan ${existing.type.toLowerCase()} Anda ditolak.${reviewNote ? ` Alasan: ${reviewNote}` : ""}`,
+    type: "LEAVE_STATUS",
     refId: izin.id,
   });
 

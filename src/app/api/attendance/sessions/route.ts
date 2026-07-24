@@ -19,12 +19,12 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { dateISO, hari } = toWibParts(new Date());
-    if (!hari) {
+    const { dateISO, dayOfWeek } = toWibParts(new Date());
+    if (!dayOfWeek) {
       return NextResponse.json({ date: dateISO, jadwal: [] });
     }
 
-    let guruFilter: { guruId?: string } = {};
+    let guruFilter: { teacherId?: string } = {};
     if (!canAccessAdmin(currentUser.role)) {
       const guru = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
@@ -32,18 +32,18 @@ export async function GET() {
       if (!guru) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
-      guruFilter = { guruId: guru.id };
+      guruFilter = { teacherId: guru.id };
     }
 
-    const jadwal = await prisma.jadwal.findMany({
-      where: { hari, isActive: true, ...guruFilter },
+    const jadwal = await prisma.schedule.findMany({
+      where: { dayOfWeek, isActive: true, ...guruFilter },
       include: {
         kelas: { select: { id: true, name: true } },
         mataPelajaran: { select: { id: true, name: true } },
         guru: { select: { id: true, user: { select: { name: true } } } },
-        sesi: { where: { tanggal: dateOnlyUtc(dateISO) } },
+        sessions: { where: { date: dateOnlyUtc(dateISO) } },
       },
-      orderBy: { jamMulai: "asc" },
+      orderBy: { startTime: "asc" },
     });
 
     return NextResponse.json({ date: dateISO, jadwal });
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       if (!guru) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
-      const jadwal = await prisma.jadwal.findUnique({
+      const jadwal = await prisma.schedule.findUnique({
         where: { id: result.data.jadwalId },
       });
       if (!jadwal) {
@@ -91,12 +91,12 @@ export async function POST(request: Request) {
         );
       }
       // The scheduled teacher — or the assigned substitute — may open.
-      if (jadwal.guruId !== guru.id) {
-        const substitution = await prisma.absensiGuru.findFirst({
+      if (jadwal.teacherId !== guru.id) {
+        const substitution = await prisma.teacherAttendance.findFirst({
           where: {
-            jadwalId: jadwal.id,
-            tanggal: dateOnlyUtc(toWibParts(new Date()).dateISO),
-            substituteGuruId: guru.id,
+            scheduleId: jadwal.id,
+            date: dateOnlyUtc(toWibParts(new Date()).dateISO),
+            substituteTeacherId: guru.id,
           },
         });
         if (!substitution) {
@@ -105,16 +105,16 @@ export async function POST(request: Request) {
       }
     }
 
-    const { sesi, error } = await openSession(result.data.jadwalId, {
-      byGuruId: guru?.id,
+    const { session, error } = await openSession(result.data.jadwalId, {
+      byTeacherId: guru?.id,
     });
-    if (error || !sesi) {
+    if (error || !session) {
       return NextResponse.json(
-        { error: error ?? "Gagal membuka sesi", sesi },
+        { error: error ?? "Gagal membuka sesi", sesi: session },
         { status: 400 },
       );
     }
-    return NextResponse.json(sesi, { status: 201 });
+    return NextResponse.json(session, { status: 201 });
   } catch (err: unknown) {
     console.error("Open session error:", err);
     return NextResponse.json(

@@ -8,12 +8,12 @@ import {
 } from "@/src/features/attendance/services/session";
 import { markManualAttendance } from "@/src/features/attendance/services/scan";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { AbsensiSiswa, Sesi } from "@prisma/client";
+import type { StudentAttendance, Session } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
     teacher: { findUnique: vi.fn() },
-    sesi: { findUnique: vi.fn() },
+    session: { findUnique: vi.fn() },
   },
 }));
 vi.mock("@/src/features/auth/services/auth", () => ({
@@ -48,7 +48,7 @@ describe("PATCH /api/attendance/sessions/[id]", () => {
 
   it("closes the session", async () => {
     vi.mocked(closeSession).mockResolvedValue({
-      sesi: { id: "sesi-1", status: "CLOSED" } as Sesi,
+      session: { id: "sesi-1", status: "CLOSED" } as Session,
       error: null,
     });
 
@@ -67,7 +67,7 @@ describe("PATCH /api/attendance/sessions/[id]", () => {
     vi.mocked(refreshQrToken).mockResolvedValue({
       id: "sesi-1",
       qrToken: "new",
-    } as Sesi);
+    } as Session);
 
     const response = await PATCH(
       buildRequest({ action: "refresh-qr" }),
@@ -80,7 +80,7 @@ describe("PATCH /api/attendance/sessions/[id]", () => {
 
   it("records manual attendance", async () => {
     vi.mocked(markManualAttendance).mockResolvedValue({
-      record: { id: "abs-1" } as AbsensiSiswa,
+      record: { id: "abs-1" } as StudentAttendance,
       error: null,
     });
 
@@ -88,7 +88,7 @@ describe("PATCH /api/attendance/sessions/[id]", () => {
       buildRequest({
         action: "manual-attendance",
         studentId: "s1",
-        status: "IZIN",
+        status: "EXCUSED",
       }),
       routeParams,
     );
@@ -97,7 +97,7 @@ describe("PATCH /api/attendance/sessions/[id]", () => {
     expect(markManualAttendance).toHaveBeenCalledWith(
       "sesi-1",
       "s1",
-      "IZIN",
+      "EXCUSED",
       undefined,
     );
   });
@@ -118,11 +118,11 @@ describe("PATCH /api/attendance/sessions/[id]", () => {
     vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
     } as never);
-    vi.mocked(prisma.sesi.findUnique).mockResolvedValue({
+    vi.mocked(prisma.session.findUnique).mockResolvedValue({
       id: "sesi-1",
-      actualGuruId: "other",
-      jadwal: { guruId: "other" },
-    } as unknown as Sesi);
+      actualTeacherId: "other",
+      jadwal: { teacherId: "other" },
+    } as unknown as Session);
 
     const response = await PATCH(
       buildRequest({ action: "close" }),

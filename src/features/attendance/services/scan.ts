@@ -1,5 +1,5 @@
 import { prisma } from "@/src/lib/prisma";
-import type { AbsensiSiswa, AbsensiStatus } from "@prisma/client";
+import type { StudentAttendance, AttendanceStatus } from "@prisma/client";
 import type { ScanInput, ScanResult } from "../types";
 import { getAttendanceSettings } from "./settings";
 import { createNotification } from "./notifications";
@@ -18,15 +18,15 @@ export async function recordScan(
   const settings = await getAttendanceSettings();
 
   // 1. Token check
-  const sesi = await prisma.sesi.findUnique({
+  const session = await prisma.session.findUnique({
     where: { qrToken: input.token },
     include: { jadwal: true },
   });
   if (
-    !sesi ||
+    !session ||
     isQrTokenExpired(
       settings.qrMode,
-      sesi.qrTokenIssuedAt,
+      session.qrTokenIssuedAt,
       settings.qrTokenTtlSeconds,
       now,
     )
@@ -35,7 +35,7 @@ export async function recordScan(
   }
 
   // 2. Session check
-  if (sesi.status !== "OPEN") {
+  if (session.status !== "OPEN") {
     return { ok: false, error: "Tidak ada sesi aktif" };
   }
 
@@ -43,17 +43,17 @@ export async function recordScan(
   const student = await prisma.student.findUnique({
     where: { userId: input.studentUserId },
   });
-  if (!student || student.classId !== sesi.jadwal.kelasId) {
+  if (!student || student.classId !== session.jadwal.classId) {
     return { ok: false, error: "Tidak terdaftar di kelas ini" };
   }
 
   // 4. Duplicate check — idempotent no-op, not an error.
-  const existing = await prisma.absensiSiswa.findUnique({
+  const existing = await prisma.studentAttendance.findUnique({
     where: {
-      jadwalId_studentId_tanggal: {
-        jadwalId: sesi.jadwalId,
+      scheduleId_studentId_date: {
+        scheduleId: session.scheduleId,
         studentId: student.id,
-        tanggal: sesi.tanggal,
+        date: session.date,
       },
     },
   });
@@ -62,12 +62,12 @@ export async function recordScan(
   }
 
   // 5. Time evaluation
-  const dateISO = sesi.tanggal.toISOString().slice(0, 10);
+  const dateISO = session.date.toISOString().slice(0, 10);
   const graceCutoff = new Date(
-    wibInstant(dateISO, sesi.jadwal.jamMulai).getTime() +
+    wibInstant(dateISO, session.jadwal.startTime).getTime() +
       settings.sessionGracePeriodMinutes * 60 * 1000,
   );
-  const status: AbsensiStatus = now <= graceCutoff ? "HADIR" : "TERLAMBAT";
+  const status: AttendanceStatus = now <= graceCutoff ? "PRESENT" : "LATE";
 
   // 6. GPS evaluation — soft check, never blocks.
   const gps = evaluateGps(
@@ -78,12 +78,12 @@ export async function recordScan(
     settings.gpsRadiusMeters,
   );
 
-  await prisma.absensiSiswa.create({
+  await prisma.studentAttendance.create({
     data: {
-      jadwalId: sesi.jadwalId,
+      scheduleId: session.scheduleId,
       studentId: student.id,
-      sesiId: sesi.id,
-      tanggal: sesi.tanggal,
+      sessionId: session.id,
+      date: session.date,
       status,
       scanTime: now,
       gpsLat: input.gpsLat,
@@ -95,9 +95,9 @@ export async function recordScan(
   });
 
   // Process 7 — GPS-flagged scans notify the session's teacher.
-  if (gps.needsReview && sesi.actualGuruId) {
+  if (gps.needsReview && session.actualTeacherId) {
     const guru = await prisma.teacher.findUnique({
-      where: { id: sesi.actualGuruId },
+      where: { id: session.actualTeacherId },
       select: { userId: true },
     });
     if (guru) {
@@ -106,7 +106,7 @@ export async function recordScan(
         title: "Scan perlu ditinjau",
         body: "Ada presensi dengan GPS di luar radius sekolah. Mohon konfirmasi di layar sesi.",
         type: "GPS_REVIEW",
-        refId: sesi.id,
+        refId: session.id,
       });
     }
   }
@@ -120,19 +120,23 @@ export async function recordScan(
  */
 export async function overrideAttendance(
   absensiId: string,
-  update: { status?: AbsensiStatus; catatan?: string; clearReview?: boolean },
-): Promise<AbsensiSiswa | null> {
-  const record = await prisma.absensiSiswa.findUnique({
+  update: {
+    status?: AttendanceStatus;
+    note?: string;
+    clearReview?: boolean;
+  },
+): Promise<StudentAttendance | null> {
+  const record = await prisma.studentAttendance.findUnique({
     where: { id: absensiId },
   });
   if (!record) {
     return null;
   }
-  return prisma.absensiSiswa.update({
+  return prisma.studentAttendance.update({
     where: { id: absensiId },
     data: {
       status: update.status ?? record.status,
-      catatan: update.catatan ?? record.catatan,
+      note: update.note ?? record.note,
       needsReview: update.clearReview ? false : record.needsReview,
     },
   });
@@ -140,35 +144,37 @@ export async function overrideAttendance(
 
 /** Teacher marks a non-scanner manually (e.g. verbal izin) while open. */
 export async function markManualAttendance(
-  sesiId: string,
+  sessionId: string,
   studentId: string,
-  status: AbsensiStatus,
-  catatan?: string,
-): Promise<{ record: AbsensiSiswa | null; error: string | null }> {
-  const sesi = await prisma.sesi.findUnique({ where: { id: sesiId } });
-  if (!sesi || sesi.status !== "OPEN") {
+  status: AttendanceStatus,
+  note?: string,
+): Promise<{ record: StudentAttendance | null; error: string | null }> {
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+  });
+  if (!session || session.status !== "OPEN") {
     return { record: null, error: "Tidak ada sesi aktif" };
   }
-  const existing = await prisma.absensiSiswa.findUnique({
+  const existing = await prisma.studentAttendance.findUnique({
     where: {
-      jadwalId_studentId_tanggal: {
-        jadwalId: sesi.jadwalId,
+      scheduleId_studentId_date: {
+        scheduleId: session.scheduleId,
         studentId,
-        tanggal: sesi.tanggal,
+        date: session.date,
       },
     },
   });
   if (existing) {
     return { record: existing, error: "Sudah tercatat" };
   }
-  const record = await prisma.absensiSiswa.create({
+  const record = await prisma.studentAttendance.create({
     data: {
-      jadwalId: sesi.jadwalId,
+      scheduleId: session.scheduleId,
       studentId,
-      sesiId: sesi.id,
-      tanggal: sesi.tanggal,
+      sessionId: session.id,
+      date: session.date,
       status,
-      catatan,
+      note,
       method: "MANUAL",
     },
   });

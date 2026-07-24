@@ -3,29 +3,29 @@ import { PageHeader } from "../_components/PageHeader";
 import { Badge } from "../_components/Badge";
 import { dateOnlyUtc, toWibParts } from "@/src/features/attendance/utils/time";
 import {
-  HARI_LABELS,
-  SESI_STATUS_BADGES,
-  SESI_STATUS_LABELS,
+  DAY_OF_WEEK_LABELS,
+  SESSION_STATUS_BADGES,
+  SESSION_STATUS_LABELS,
 } from "@/src/lib/constants";
 
 export const dynamic = "force-dynamic";
 
 export default async function AbsensiMonitorPage() {
-  const { dateISO, hari } = toWibParts(new Date());
+  const { dateISO, dayOfWeek } = toWibParts(new Date());
 
-  const jadwal = hari
-    ? await prisma.jadwal.findMany({
-        where: { hari, isActive: true },
+  const jadwal = dayOfWeek
+    ? await prisma.schedule.findMany({
+        where: { dayOfWeek, isActive: true },
         include: {
           kelas: { select: { name: true } },
           mataPelajaran: { select: { name: true } },
           guru: { select: { user: { select: { name: true } } } },
-          sesi: {
-            where: { tanggal: dateOnlyUtc(dateISO) },
-            include: { absensiSiswa: { select: { status: true } } },
+          sessions: {
+            where: { date: dateOnlyUtc(dateISO) },
+            include: { studentAttendance: { select: { status: true } } },
           },
         },
-        orderBy: { jamMulai: "asc" },
+        orderBy: { startTime: "asc" },
       })
     : [];
 
@@ -33,7 +33,7 @@ export default async function AbsensiMonitorPage() {
     <div className="space-y-6">
       <PageHeader
         title="Sesi Hari Ini"
-        description={`Pemantauan sesi kelas ${hari ? HARI_LABELS[hari] : "Minggu"}, ${dateISO}`}
+        description={`Pemantauan sesi kelas ${dayOfWeek ? DAY_OF_WEEK_LABELS[dayOfWeek] : "Minggu"}, ${dateISO}`}
       />
 
       <section className="border-hairline rounded-card border bg-white">
@@ -51,9 +51,9 @@ export default async function AbsensiMonitorPage() {
             </thead>
             <tbody>
               {jadwal.map((row) => {
-                const sesi = row.sesi[0];
-                const hadir = sesi?.absensiSiswa.filter(
-                  (a) => a.status === "HADIR" || a.status === "TERLAMBAT",
+                const session = row.sessions[0];
+                const hadir = session?.studentAttendance.filter(
+                  (a) => a.status === "PRESENT" || a.status === "LATE",
                 ).length;
                 return (
                   <tr
@@ -61,7 +61,7 @@ export default async function AbsensiMonitorPage() {
                     className="border-hairline border-b last:border-b-0"
                   >
                     <td className="text-ink px-5 py-3 font-semibold tabular-nums">
-                      {row.jamMulai}–{row.jamSelesai}
+                      {row.startTime}–{row.endTime}
                     </td>
                     <td className="text-ink px-4 py-3">{row.kelas.name}</td>
                     <td className="text-ink-secondary px-4 py-3">
@@ -71,16 +71,16 @@ export default async function AbsensiMonitorPage() {
                       {row.guru.user.name}
                     </td>
                     <td className="px-4 py-3">
-                      {sesi ? (
-                        <Badge variant={SESI_STATUS_BADGES[sesi.status]}>
-                          {SESI_STATUS_LABELS[sesi.status]}
+                      {session ? (
+                        <Badge variant={SESSION_STATUS_BADGES[session.status]}>
+                          {SESSION_STATUS_LABELS[session.status]}
                         </Badge>
                       ) : (
                         <Badge variant="outline">Belum dibuka</Badge>
                       )}
                     </td>
                     <td className="text-ink px-4 py-3 text-right font-semibold tabular-nums">
-                      {sesi ? (hadir ?? 0) : "—"}
+                      {session ? (hadir ?? 0) : "—"}
                     </td>
                   </tr>
                 );

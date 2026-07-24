@@ -21,7 +21,7 @@ export default async function MapelPage() {
           specialization: mapel.specialization,
           gradeLevel: mapel.gradeLevel,
           jumlahGuru: mapel._count.teacherSubjects,
-          jumlahJadwal: mapel._count.jadwal,
+          jumlahJadwal: mapel._count.schedules,
         }))}
       />
     </div>

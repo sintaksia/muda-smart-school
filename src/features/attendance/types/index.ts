@@ -1,8 +1,8 @@
 import type {
-  AbsensiStatus,
+  AttendanceStatus,
   CreditEntryType,
   CreditOwnerType,
-  HariEnum,
+  DayOfWeek,
 } from "@prisma/client";
 
 /**
@@ -30,17 +30,17 @@ export interface AttendanceSettings {
   maxWeeklyHours: number;
 }
 
-export interface JadwalInput {
-  kelasId: string;
-  mataPelajaranId: string;
-  guruId: string;
-  hari: HariEnum;
-  jamMulai: string;
-  jamSelesai: string;
-  tahunAjaran?: string;
+export interface ScheduleInput {
+  classId: string;
+  subjectId: string;
+  teacherId: string;
+  dayOfWeek: DayOfWeek;
+  startTime: string;
+  endTime: string;
+  academicYear?: string;
 }
 
-export interface JadwalValidationResult {
+export interface ScheduleValidationResult {
   valid: boolean;
   errors: string[];
   warnings: string[];
@@ -55,7 +55,7 @@ export interface ScanInput {
 
 export interface ScanResult {
   ok: boolean;
-  status?: AbsensiStatus;
+  status?: AttendanceStatus;
   needsReview?: boolean;
   error?: string;
 }
@@ -63,7 +63,7 @@ export interface ScanResult {
 export interface ManualCreditInput {
   ownerType: CreditOwnerType;
   ownerId: string;
-  type: Extract<CreditEntryType, "PRESTASI" | "PELANGGARAN">;
+  type: Extract<CreditEntryType, "ACHIEVEMENT" | "VIOLATION">;
   category: string;
   points: number;
   note?: string;
@@ -71,21 +71,21 @@ export interface ManualCreditInput {
   reportedById: string;
 }
 
-export interface SubmitIzinInput {
+export interface SubmitLeaveRequestInput {
   studentId: string;
-  jenis: "IZIN" | "SAKIT";
-  tanggal: string; // YYYY-MM-DD (WIB)
-  jadwalId?: string;
-  alasan: string;
-  lampiran?: string;
+  type: "PERMISSION" | "SICK";
+  date: string; // YYYY-MM-DD (WIB)
+  scheduleId?: string;
+  reason: string;
+  attachment?: string;
   submittedById?: string;
 }
 
 export interface ReportTeacherAbsenceInput {
-  guruId: string;
-  tanggal: string; // YYYY-MM-DD (WIB)
-  status: "IZIN" | "SAKIT" | "ALPHA";
-  catatan?: string;
+  teacherId: string;
+  date: string; // YYYY-MM-DD (WIB)
+  status: "EXCUSED" | "SICK" | "ABSENT";
+  note?: string;
   reportedById?: string;
-  jadwalIds?: string[]; // default: all schedules of that teacher on that day
+  scheduleIds?: string[]; // default: all schedules of that teacher on that day
 }

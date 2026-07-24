@@ -6,9 +6,9 @@ import { toast } from "sonner";
 import { Check, X } from "lucide-react";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import {
-  IZIN_JENIS_LABELS,
-  IZIN_STATUS_BADGES,
-  IZIN_STATUS_LABELS,
+  LEAVE_TYPE_LABELS,
+  LEAVE_STATUS_BADGES,
+  LEAVE_STATUS_LABELS,
 } from "@/src/lib/constants";
 
 interface IzinRow {
@@ -86,7 +86,7 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
                 </td>
                 <td className="text-ink-secondary px-4 py-3">{izin.kelas}</td>
                 <td className="text-ink-secondary px-4 py-3">
-                  {IZIN_JENIS_LABELS[izin.jenis]}
+                  {LEAVE_TYPE_LABELS[izin.jenis]}
                 </td>
                 <td className="text-ink px-4 py-3 tabular-nums">
                   {izin.tanggal}
@@ -95,8 +95,8 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
                   {izin.alasan}
                 </td>
                 <td className="px-4 py-3">
-                  <Badge variant={IZIN_STATUS_BADGES[izin.status]}>
-                    {IZIN_STATUS_LABELS[izin.status]}
+                  <Badge variant={LEAVE_STATUS_BADGES[izin.status]}>
+                    {LEAVE_STATUS_LABELS[izin.status]}
                   </Badge>
                 </td>
                 <td className="px-4 py-3">

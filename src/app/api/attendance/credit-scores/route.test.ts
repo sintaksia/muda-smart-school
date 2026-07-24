@@ -96,7 +96,7 @@ describe("POST /api/attendance/credit-scores", () => {
       buildPost({
         ownerType: "STUDENT",
         ownerId: "s1",
-        type: "PRESTASI",
+        type: "ACHIEVEMENT",
         category: "Akademik",
         points: 10,
       }),
@@ -118,7 +118,7 @@ describe("POST /api/attendance/credit-scores", () => {
       buildPost({
         ownerType: "TEACHER",
         ownerId: "g1",
-        type: "PELANGGARAN",
+        type: "VIOLATION",
         category: "Komplain",
         points: -5,
       }),
@@ -138,7 +138,7 @@ describe("POST /api/attendance/credit-scores", () => {
       buildPost({
         ownerType: "STUDENT",
         ownerId: "s1",
-        type: "PRESTASI",
+        type: "ACHIEVEMENT",
         category: "Akademik",
         points: 0,
       }),

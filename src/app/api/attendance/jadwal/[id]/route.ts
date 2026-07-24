@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import {
-  updateJadwal,
-  deactivateJadwal,
+  updateSchedule,
+  deactivateSchedule,
 } from "@/src/features/attendance/services/schedule";
 import { jadwalSchema } from "../JadwalSchema";
 
@@ -29,14 +29,17 @@ export async function PUT(request: Request, { params }: RouteParams) {
       );
     }
 
-    const { jadwal, errors, warnings } = await updateJadwal(id, result.data);
-    if (!jadwal) {
+    const { schedule, errors, warnings } = await updateSchedule(
+      id,
+      result.data,
+    );
+    if (!schedule) {
       return NextResponse.json(
         { error: errors.join("; "), errors },
         { status: 400 },
       );
     }
-    return NextResponse.json({ jadwal, warnings });
+    return NextResponse.json({ jadwal: schedule, warnings });
   } catch (err: unknown) {
     console.error("Update jadwal error:", err);
     return NextResponse.json(
@@ -55,7 +58,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const jadwal = await deactivateJadwal(id);
+    const jadwal = await deactivateSchedule(id);
     if (!jadwal) {
       return NextResponse.json(
         { error: "Jadwal tidak ditemukan" },

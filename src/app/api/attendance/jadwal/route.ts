@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { createJadwal } from "@/src/features/attendance/services/schedule";
+import { createSchedule } from "@/src/features/attendance/services/schedule";
 import { jadwalSchema } from "./JadwalSchema";
 
 // GET /api/attendance/jadwal - active timetable
@@ -12,14 +12,14 @@ export async function GET() {
     if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const jadwal = await prisma.jadwal.findMany({
+    const jadwal = await prisma.schedule.findMany({
       where: { isActive: true },
       include: {
         kelas: { select: { id: true, name: true } },
         mataPelajaran: { select: { id: true, name: true } },
         guru: { select: { id: true, user: { select: { name: true } } } },
       },
-      orderBy: [{ hari: "asc" }, { jamMulai: "asc" }],
+      orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
     });
     return NextResponse.json(jadwal);
   } catch (err: unknown) {
@@ -48,8 +48,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const { jadwal, errors, warnings } = await createJadwal(result.data);
-    if (!jadwal) {
+    const { schedule, errors, warnings } = await createSchedule(result.data);
+    if (!schedule) {
       return NextResponse.json(
         { error: errors.join("; "), errors },
         {
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
         },
       );
     }
-    return NextResponse.json({ jadwal, warnings }, { status: 201 });
+    return NextResponse.json({ jadwal: schedule, warnings }, { status: 201 });
   } catch (err: unknown) {
     console.error("Create jadwal error:", err);
     return NextResponse.json(

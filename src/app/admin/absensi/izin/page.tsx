@@ -5,7 +5,7 @@ import { IzinReviewTable } from "./_components/IzinReviewTable";
 export const dynamic = "force-dynamic";
 
 export default async function IzinAdminPage() {
-  const submissions = await prisma.pengajuanIzin.findMany({
+  const submissions = await prisma.leaveRequest.findMany({
     include: {
       student: {
         select: {
@@ -31,9 +31,9 @@ export default async function IzinAdminPage() {
           id: izin.id,
           nama: izin.student.user.name,
           kelas: izin.student.schoolClass?.name ?? "—",
-          jenis: izin.jenis,
-          tanggal: izin.tanggal.toISOString().slice(0, 10),
-          alasan: izin.alasan,
+          jenis: izin.type,
+          tanggal: izin.date.toISOString().slice(0, 10),
+          alasan: izin.reason,
           status: izin.status,
           reviewedBy: izin.reviewedBy?.name ?? null,
         }))}

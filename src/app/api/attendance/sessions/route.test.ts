@@ -4,13 +4,13 @@ import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { openSession } from "@/src/features/attendance/services/session";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { Teacher, Jadwal, Sesi } from "@prisma/client";
+import type { Teacher, Schedule, Session } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
     teacher: { findUnique: vi.fn() },
-    jadwal: { findMany: vi.fn(), findUnique: vi.fn() },
-    absensiGuru: { findFirst: vi.fn() },
+    schedule: { findMany: vi.fn(), findUnique: vi.fn() },
+    teacherAttendance: { findFirst: vi.fn() },
   },
 }));
 vi.mock("@/src/features/auth/services/auth", () => ({
@@ -47,11 +47,11 @@ describe("POST /api/attendance/sessions", () => {
     vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
     } as Teacher);
-    vi.mocked(prisma.jadwal.findUnique).mockResolvedValue({
+    vi.mocked(prisma.schedule.findUnique).mockResolvedValue({
       id: "j1",
-      guruId: "other-guru",
-    } as Jadwal);
-    vi.mocked(prisma.absensiGuru.findFirst).mockResolvedValue(null);
+      teacherId: "other-guru",
+    } as Schedule);
+    vi.mocked(prisma.teacherAttendance.findFirst).mockResolvedValue(null);
 
     const response = await POST(buildRequest({ jadwalId: "j1" }));
 
@@ -67,12 +67,12 @@ describe("POST /api/attendance/sessions", () => {
     vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
     } as Teacher);
-    vi.mocked(prisma.jadwal.findUnique).mockResolvedValue({
+    vi.mocked(prisma.schedule.findUnique).mockResolvedValue({
       id: "j1",
-      guruId: "guru-1",
-    } as Jadwal);
+      teacherId: "guru-1",
+    } as Schedule);
     vi.mocked(openSession).mockResolvedValue({
-      sesi: { id: "sesi-1", status: "OPEN" } as Sesi,
+      session: { id: "sesi-1", status: "OPEN" } as Session,
       error: null,
     });
 
@@ -81,7 +81,7 @@ describe("POST /api/attendance/sessions", () => {
 
     expect(response.status).toBe(201);
     expect(data.id).toBe("sesi-1");
-    expect(openSession).toHaveBeenCalledWith("j1", { byGuruId: "guru-1" });
+    expect(openSession).toHaveBeenCalledWith("j1", { byTeacherId: "guru-1" });
   });
 
   it("returns 400 when the service reports an error", async () => {
@@ -91,7 +91,7 @@ describe("POST /api/attendance/sessions", () => {
     } as SessionUser);
     vi.mocked(prisma.teacher.findUnique).mockResolvedValue(null);
     vi.mocked(openSession).mockResolvedValue({
-      sesi: null,
+      session: null,
       error: "Jadwal bukan untuk hari ini",
     });
 

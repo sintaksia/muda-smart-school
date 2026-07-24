@@ -18,12 +18,12 @@ vi.mock("xlsx", () => ({
 
 function entry(overrides: Partial<JadwalEntry> & { id: string }): JadwalEntry {
   return {
-    hari: "SENIN",
-    jamMulai: "07:00",
-    jamSelesai: "08:30",
-    kelasId: "k1",
+    dayOfWeek: "MONDAY",
+    startTime: "07:00",
+    endTime: "08:30",
+    classId: "k1",
     kelas: "X-A",
-    guruId: "g1",
+    teacherId: "g1",
     guru: "Budi",
     mataPelajaran: "Matematika",
     ...overrides,
@@ -33,8 +33,8 @@ function entry(overrides: Partial<JadwalEntry> & { id: string }): JadwalEntry {
 describe("buildFlatRows", () => {
   it("sorts by day then start time with a header row", () => {
     const rows = buildFlatRows([
-      entry({ id: "a", hari: "SELASA" }),
-      entry({ id: "b", jamMulai: "09:00", jamSelesai: "10:00" }),
+      entry({ id: "a", dayOfWeek: "TUESDAY" }),
+      entry({ id: "b", startTime: "09:00", endTime: "10:00" }),
       entry({ id: "c" }),
     ]);
     expect(rows[0]).toEqual([
@@ -64,9 +64,9 @@ describe("buildKelasMatrix", () => {
       entry({ id: "a" }),
       entry({
         id: "b",
-        hari: "SELASA",
-        jamMulai: "09:00",
-        jamSelesai: "10:00",
+        dayOfWeek: "TUESDAY",
+        startTime: "09:00",
+        endTime: "10:00",
         mataPelajaran: "Fisika",
         guru: "Sari",
       }),
@@ -100,7 +100,7 @@ describe("exportJadwalToExcel", () => {
     const xlsx = await import("xlsx");
     exportJadwalToExcel([
       entry({ id: "a" }),
-      entry({ id: "b", kelasId: "k2", kelas: "X-B" }),
+      entry({ id: "b", classId: "k2", kelas: "X-B" }),
     ]);
     const appendCalls = vi.mocked(xlsx.utils.book_append_sheet).mock.calls;
     expect(appendCalls.map((call) => call[2])).toEqual([

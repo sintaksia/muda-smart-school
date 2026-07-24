@@ -1,6 +1,6 @@
 import { prisma } from "@/src/lib/prisma";
-import type { Jadwal } from "@prisma/client";
-import type { JadwalInput, JadwalValidationResult } from "../types";
+import type { Schedule } from "@prisma/client";
+import type { ScheduleInput, ScheduleValidationResult } from "../types";
 import { getAttendanceSettings } from "./settings";
 import {
   parseTimeToMinutes,
@@ -12,16 +12,16 @@ import {
  * Process 0 — validate a Schedule entry before save. Returns every violated
  * rule with its specific message; soft warnings never block.
  */
-export async function validateJadwal(
-  input: JadwalInput,
-  excludeJadwalId?: string,
-): Promise<JadwalValidationResult> {
+export async function validateSchedule(
+  input: ScheduleInput,
+  excludeScheduleId?: string,
+): Promise<ScheduleValidationResult> {
   const errors: string[] = [];
   const warnings: string[] = [];
 
   try {
-    const start = parseTimeToMinutes(input.jamMulai);
-    const end = parseTimeToMinutes(input.jamSelesai);
+    const start = parseTimeToMinutes(input.startTime);
+    const end = parseTimeToMinutes(input.endTime);
     if (end <= start) {
       errors.push("Jam selesai harus setelah jam mulai");
     }
@@ -34,8 +34,8 @@ export async function validateJadwal(
   const qualification = await prisma.teacherSubject.findUnique({
     where: {
       teacherId_subjectId: {
-        teacherId: input.guruId,
-        subjectId: input.mataPelajaranId,
+        teacherId: input.teacherId,
+        subjectId: input.subjectId,
       },
     },
   });
@@ -44,45 +44,44 @@ export async function validateJadwal(
   }
 
   // Clash checks against active entries on the same day.
-  const sameDay = await prisma.jadwal.findMany({
+  const sameDay = await prisma.schedule.findMany({
     where: {
-      hari: input.hari,
+      dayOfWeek: input.dayOfWeek,
       isActive: true,
-      ...(excludeJadwalId ? { id: { not: excludeJadwalId } } : {}),
-      OR: [{ guruId: input.guruId }, { kelasId: input.kelasId }],
+      ...(excludeScheduleId ? { id: { not: excludeScheduleId } } : {}),
+      OR: [{ teacherId: input.teacherId }, { classId: input.classId }],
     },
   });
   const overlapping = sameDay.filter((entry) =>
     timeRangesOverlap(
-      entry.jamMulai,
-      entry.jamSelesai,
-      input.jamMulai,
-      input.jamSelesai,
+      entry.startTime,
+      entry.endTime,
+      input.startTime,
+      input.endTime,
     ),
   );
-  if (overlapping.some((entry) => entry.guruId === input.guruId)) {
+  if (overlapping.some((entry) => entry.teacherId === input.teacherId)) {
     errors.push("Guru bentrok jadwal");
   }
-  if (overlapping.some((entry) => entry.kelasId === input.kelasId)) {
+  if (overlapping.some((entry) => entry.classId === input.classId)) {
     errors.push("Kelas bentrok jadwal");
   }
 
   // Soft warning: weekly teaching load above MAX_WEEKLY_HOURS.
   const settings = await getAttendanceSettings();
-  const weekly = await prisma.jadwal.findMany({
+  const weekly = await prisma.schedule.findMany({
     where: {
-      guruId: input.guruId,
+      teacherId: input.teacherId,
       isActive: true,
-      ...(excludeJadwalId ? { id: { not: excludeJadwalId } } : {}),
+      ...(excludeScheduleId ? { id: { not: excludeScheduleId } } : {}),
     },
-    select: { jamMulai: true, jamSelesai: true },
+    select: { startTime: true, endTime: true },
   });
   const totalHours =
     weekly.reduce(
-      (sum, entry) =>
-        sum + rangeDurationHours(entry.jamMulai, entry.jamSelesai),
+      (sum, entry) => sum + rangeDurationHours(entry.startTime, entry.endTime),
       0,
-    ) + rangeDurationHours(input.jamMulai, input.jamSelesai);
+    ) + rangeDurationHours(input.startTime, input.endTime);
   if (totalHours > settings.maxWeeklyHours) {
     warnings.push(
       `Total jam mengajar mingguan guru (${totalHours} jam) melebihi batas ${settings.maxWeeklyHours} jam`,
@@ -92,52 +91,58 @@ export async function validateJadwal(
   return { valid: errors.length === 0, errors, warnings };
 }
 
-export async function createJadwal(
-  input: JadwalInput,
-): Promise<{ jadwal: Jadwal | null; warnings: string[]; errors: string[] }> {
-  const validation = await validateJadwal(input);
+export async function createSchedule(input: ScheduleInput): Promise<{
+  schedule: Schedule | null;
+  warnings: string[];
+  errors: string[];
+}> {
+  const validation = await validateSchedule(input);
   if (!validation.valid) {
     return {
-      jadwal: null,
+      schedule: null,
       warnings: validation.warnings,
       errors: validation.errors,
     };
   }
-  const jadwal = await prisma.jadwal.create({ data: input });
-  return { jadwal, warnings: validation.warnings, errors: [] };
+  const schedule = await prisma.schedule.create({ data: input });
+  return { schedule, warnings: validation.warnings, errors: [] };
 }
 
 /**
  * Mid-term change — never mutate the timetable row past records point to:
  * deactivate the old entry and create a new effective version.
  */
-export async function updateJadwal(
+export async function updateSchedule(
   id: string,
-  input: JadwalInput,
-): Promise<{ jadwal: Jadwal | null; warnings: string[]; errors: string[] }> {
-  const existing = await prisma.jadwal.findUnique({ where: { id } });
+  input: ScheduleInput,
+): Promise<{
+  schedule: Schedule | null;
+  warnings: string[];
+  errors: string[];
+}> {
+  const existing = await prisma.schedule.findUnique({ where: { id } });
   if (!existing || !existing.isActive) {
-    return { jadwal: null, warnings: [], errors: ["Jadwal tidak ditemukan"] };
+    return { schedule: null, warnings: [], errors: ["Jadwal tidak ditemukan"] };
   }
-  const validation = await validateJadwal(input, id);
+  const validation = await validateSchedule(input, id);
   if (!validation.valid) {
     return {
-      jadwal: null,
+      schedule: null,
       warnings: validation.warnings,
       errors: validation.errors,
     };
   }
-  const [, jadwal] = await prisma.$transaction([
-    prisma.jadwal.update({ where: { id }, data: { isActive: false } }),
-    prisma.jadwal.create({ data: input }),
+  const [, schedule] = await prisma.$transaction([
+    prisma.schedule.update({ where: { id }, data: { isActive: false } }),
+    prisma.schedule.create({ data: input }),
   ]);
-  return { jadwal, warnings: validation.warnings, errors: [] };
+  return { schedule, warnings: validation.warnings, errors: [] };
 }
 
-export async function deactivateJadwal(id: string): Promise<Jadwal | null> {
-  const existing = await prisma.jadwal.findUnique({ where: { id } });
+export async function deactivateSchedule(id: string): Promise<Schedule | null> {
+  const existing = await prisma.schedule.findUnique({ where: { id } });
   if (!existing) {
     return null;
   }
-  return prisma.jadwal.update({ where: { id }, data: { isActive: false } });
+  return prisma.schedule.update({ where: { id }, data: { isActive: false } });
 }

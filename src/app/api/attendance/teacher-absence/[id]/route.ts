@@ -9,7 +9,7 @@ interface RouteParams {
 }
 
 const assignSchema = z.object({
-  substituteGuruId: z
+  substituteTeacherId: z
     .string({ message: "Guru pengganti wajib dipilih" })
     .min(1),
 });
@@ -34,7 +34,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
     const { record, error } = await assignSubstitute(
       id,
-      result.data.substituteGuruId,
+      result.data.substituteTeacherId,
     );
     if (error || !record) {
       return NextResponse.json(

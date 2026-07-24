@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import {
-  ABSENSI_STATUS_BADGES,
-  ABSENSI_STATUS_LABELS,
+  ATTENDANCE_STATUS_BADGES,
+  ATTENDANCE_STATUS_LABELS,
 } from "@/src/lib/constants";
 import { TeacherAbsenceForm } from "./TeacherAbsenceForm";
 
@@ -35,9 +35,9 @@ export function TeacherAbsenceManager({
 
   async function assignSubstitute(
     absensiGuruId: string,
-    substituteGuruId: string,
+    substituteTeacherId: string,
   ): Promise<void> {
-    if (!substituteGuruId) {
+    if (!substituteTeacherId) {
       return;
     }
     setBusyId(absensiGuruId);
@@ -47,7 +47,7 @@ export function TeacherAbsenceManager({
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ substituteGuruId }),
+          body: JSON.stringify({ substituteTeacherId }),
         },
       );
       const data = await response.json();
@@ -99,8 +99,8 @@ export function TeacherAbsenceManager({
                     {record.kelas} · {record.mapel}
                   </td>
                   <td className="px-4 py-3">
-                    <Badge variant={ABSENSI_STATUS_BADGES[record.status]}>
-                      {ABSENSI_STATUS_LABELS[record.status]}
+                    <Badge variant={ATTENDANCE_STATUS_BADGES[record.status]}>
+                      {ATTENDANCE_STATUS_LABELS[record.status]}
                     </Badge>
                   </td>
                   <td className="px-4 py-3">

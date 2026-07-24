@@ -1,7 +1,7 @@
 import { Badge } from "@/src/app/admin/_components/Badge";
 import {
-  ABSENSI_STATUS_BADGES,
-  ABSENSI_STATUS_LABELS,
+  ATTENDANCE_STATUS_BADGES,
+  ATTENDANCE_STATUS_LABELS,
 } from "@/src/lib/constants";
 
 interface AttendanceRecord {
@@ -33,8 +33,8 @@ export function AttendanceHistory({ records }: AttendanceHistoryProps) {
                 {record.tanggal}
               </p>
             </div>
-            <Badge variant={ABSENSI_STATUS_BADGES[record.status]}>
-              {ABSENSI_STATUS_LABELS[record.status]}
+            <Badge variant={ATTENDANCE_STATUS_BADGES[record.status]}>
+              {ATTENDANCE_STATUS_LABELS[record.status]}
             </Badge>
           </li>
         ))}

@@ -17,14 +17,14 @@ import {
 export interface CreditEntryInput {
   ownerType: CreditOwnerType;
   studentId?: string;
-  guruId?: string;
+  teacherId?: string;
   type: CreditEntryType;
   category: string;
   points: number;
   note?: string;
   evidence?: string;
   source: CreditSource;
-  refSesiId?: string;
+  refSessionId?: string;
   reportedById?: string;
 }
 
@@ -38,7 +38,7 @@ export async function getCreditTotal(
   const where =
     ownerType === "STUDENT"
       ? { ownerType, studentId: ownerId }
-      : { ownerType, guruId: ownerId };
+      : { ownerType, teacherId: ownerId };
   const aggregate = await prisma.creditScore.aggregate({
     where,
     _sum: { points: true },
@@ -121,7 +121,7 @@ async function checkThresholds(
 
 /**
  * Append-only write. CreditScore rows are immutable (cross-cutting rule);
- * corrections are new KOREKSI entries, never edits or deletes.
+ * corrections are new CORRECTION entries, never edits or deletes.
  */
 export async function createCreditEntry(
   input: CreditEntryInput,
@@ -129,29 +129,29 @@ export async function createCreditEntry(
   if (input.ownerType === "STUDENT" && !input.studentId) {
     throw new Error("studentId wajib untuk ownerType STUDENT");
   }
-  if (input.ownerType === "TEACHER" && !input.guruId) {
-    throw new Error("guruId wajib untuk ownerType TEACHER");
+  if (input.ownerType === "TEACHER" && !input.teacherId) {
+    throw new Error("teacherId wajib untuk ownerType TEACHER");
   }
 
   const settings = await getAttendanceSettings();
   const ownerId =
     input.ownerType === "STUDENT"
       ? (input.studentId as string)
-      : (input.guruId as string);
+      : (input.teacherId as string);
   const totalBefore = await getCreditTotal(input.ownerType, ownerId, settings);
 
   const entry = await prisma.creditScore.create({
     data: {
       ownerType: input.ownerType,
       studentId: input.ownerType === "STUDENT" ? input.studentId : null,
-      guruId: input.ownerType === "TEACHER" ? input.guruId : null,
+      teacherId: input.ownerType === "TEACHER" ? input.teacherId : null,
       type: input.type,
       category: input.category,
       points: input.points,
       note: input.note,
       evidence: input.evidence,
       source: input.source,
-      refSesiId: input.refSesiId,
+      refSessionId: input.refSessionId,
       reportedById: input.reportedById,
     },
   });
@@ -175,7 +175,7 @@ export async function createManualCreditEntry(
   return createCreditEntry({
     ownerType: input.ownerType,
     studentId: input.ownerType === "STUDENT" ? input.ownerId : undefined,
-    guruId: input.ownerType === "TEACHER" ? input.ownerId : undefined,
+    teacherId: input.ownerType === "TEACHER" ? input.ownerId : undefined,
     type: input.type,
     category: input.category,
     points: input.points,
@@ -187,41 +187,41 @@ export async function createManualCreditEntry(
 }
 
 /**
- * Process 3 reversal rule — offset an auto deduction with a KOREKSI entry
+ * Process 3 reversal rule — offset an auto deduction with a CORRECTION entry
  * (+points of the original), preserving the audit trail. Idempotent: a
- * second call for the same sesi/student is a no-op.
+ * second call for the same session/student is a no-op.
  */
 export async function reverseAutoDeduction(
   studentId: string,
-  sesiId: string,
+  sessionId: string,
   reportedById?: string,
 ): Promise<CreditScore | null> {
   const original = await prisma.creditScore.findFirst({
     where: {
       studentId,
-      refSesiId: sesiId,
+      refSessionId: sessionId,
       source: "AUTO",
-      type: "PELANGGARAN",
+      type: "VIOLATION",
     },
   });
   if (!original) {
     return null;
   }
-  const existingKoreksi = await prisma.creditScore.findFirst({
-    where: { studentId, refSesiId: sesiId, type: "KOREKSI" },
+  const existingCorrection = await prisma.creditScore.findFirst({
+    where: { studentId, refSessionId: sessionId, type: "CORRECTION" },
   });
-  if (existingKoreksi) {
+  if (existingCorrection) {
     return null;
   }
   return createCreditEntry({
     ownerType: "STUDENT",
     studentId,
-    type: "KOREKSI",
+    type: "CORRECTION",
     category: original.category,
     points: -original.points,
     note: "Koreksi: izin/sakit disetujui setelah sesi ditutup",
     source: "AUTO",
-    refSesiId: sesiId,
+    refSessionId: sessionId,
     reportedById,
   });
 }

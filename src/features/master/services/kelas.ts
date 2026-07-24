@@ -54,12 +54,12 @@ export async function deleteKelas(
 ): Promise<{ ok: boolean; error: string | null }> {
   const usage = await prisma.schoolClass.findUnique({
     where: { id },
-    include: { _count: { select: { students: true, jadwal: true } } },
+    include: { _count: { select: { students: true, schedules: true } } },
   });
   if (!usage) {
     return { ok: false, error: "Kelas tidak ditemukan" };
   }
-  if (usage._count.students > 0 || usage._count.jadwal > 0) {
+  if (usage._count.students > 0 || usage._count.schedules > 0) {
     return {
       ok: false,
       error: "Kelas masih memiliki siswa atau jadwal — tidak dapat dihapus",

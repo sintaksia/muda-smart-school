@@ -53,7 +53,7 @@ describe("POST /api/attendance/scan", () => {
     } as SessionUser);
     vi.mocked(recordScan).mockResolvedValue({
       ok: true,
-      status: "HADIR",
+      status: "PRESENT",
       needsReview: false,
     });
 
@@ -63,7 +63,7 @@ describe("POST /api/attendance/scan", () => {
     const data = await response.json();
 
     expect(response.status).toBe(201);
-    expect(data.status).toBe("HADIR");
+    expect(data.status).toBe("PRESENT");
     expect(recordScan).toHaveBeenCalledWith({
       token: "tok",
       studentUserId: "u1",

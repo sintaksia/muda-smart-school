@@ -20,7 +20,7 @@ import {
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
-import { hariOptions } from "@/src/lib/constants";
+import { dayOfWeekOptions } from "@/src/lib/constants";
 import {
   jadwalSchema,
   type JadwalFormData,
@@ -48,7 +48,7 @@ export function JadwalForm({
   const router = useRouter();
   const form = useForm<JadwalFormData>({
     resolver: zodResolver(jadwalSchema),
-    defaultValues: { jamMulai: "07:00", jamSelesai: "08:30" },
+    defaultValues: { startTime: "07:00", endTime: "08:30" },
   });
 
   async function onSubmit(values: JadwalFormData): Promise<void> {
@@ -76,21 +76,21 @@ export function JadwalForm({
 
   const selectFields = [
     {
-      name: "kelasId" as const,
+      name: "classId" as const,
       label: "Kelas",
       options: toSelectOptions(kelasOptions),
     },
     {
-      name: "mataPelajaranId" as const,
+      name: "subjectId" as const,
       label: "Mata Pelajaran",
       options: toSelectOptions(mapelOptions),
     },
     {
-      name: "guruId" as const,
+      name: "teacherId" as const,
       label: "Guru",
       options: toSelectOptions(guruOptions),
     },
-    { name: "hari" as const, label: "Hari", options: hariOptions },
+    { name: "dayOfWeek" as const, label: "Hari", options: dayOfWeekOptions },
   ];
 
   return (
@@ -112,7 +112,7 @@ export function JadwalForm({
             ))}
 
             <div className="grid grid-cols-2 gap-4">
-              {(["jamMulai", "jamSelesai"] as const).map((name) => (
+              {(["startTime", "endTime"] as const).map((name) => (
                 <FormField
                   key={name}
                   control={form.control}
@@ -120,7 +120,7 @@ export function JadwalForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {name === "jamMulai" ? "Jam Mulai" : "Jam Selesai"}
+                        {name === "startTime" ? "Jam Mulai" : "Jam Selesai"}
                       </FormLabel>
                       <FormControl>
                         <Input

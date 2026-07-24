@@ -6,14 +6,14 @@ export const dynamic = "force-dynamic";
 
 export default async function JadwalPage() {
   const [jadwal, kelasList, mapelList, guruList] = await Promise.all([
-    prisma.jadwal.findMany({
+    prisma.schedule.findMany({
       where: { isActive: true },
       include: {
         kelas: { select: { id: true, name: true } },
         mataPelajaran: { select: { id: true, name: true } },
         guru: { select: { id: true, user: { select: { name: true } } } },
       },
-      orderBy: [{ hari: "asc" }, { jamMulai: "asc" }],
+      orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
     }),
     prisma.schoolClass.findMany({
       select: { id: true, name: true },
@@ -38,12 +38,12 @@ export default async function JadwalPage() {
       <JadwalManager
         jadwal={jadwal.map((j) => ({
           id: j.id,
-          hari: j.hari,
-          jamMulai: j.jamMulai,
-          jamSelesai: j.jamSelesai,
-          kelasId: j.kelas.id,
+          dayOfWeek: j.dayOfWeek,
+          startTime: j.startTime,
+          endTime: j.endTime,
+          classId: j.kelas.id,
           kelas: j.kelas.name,
-          guruId: j.guru.id,
+          teacherId: j.guru.id,
           guru: j.guru.user.name,
           mataPelajaran: j.mataPelajaran.name,
         }))}

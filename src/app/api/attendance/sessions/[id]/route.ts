@@ -8,7 +8,7 @@ import {
   refreshQrToken,
 } from "@/src/features/attendance/services/session";
 import { markManualAttendance } from "@/src/features/attendance/services/scan";
-import { ABSENSI_STATUS_VALUES } from "@/src/lib/constants";
+import { ATTENDANCE_STATUS_VALUES } from "@/src/lib/constants";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -21,7 +21,13 @@ const patchSchema = z.discriminatedUnion("action", [
     action: z.literal("manual-attendance"),
     studentId: z.string().min(1),
     status: z.enum(
-      ABSENSI_STATUS_VALUES as ["HADIR", "TERLAMBAT", "IZIN", "SAKIT", "ALPHA"],
+      ATTENDANCE_STATUS_VALUES as [
+        "PRESENT",
+        "LATE",
+        "EXCUSED",
+        "SICK",
+        "ABSENT",
+      ],
       { message: "Status tidak valid" },
     ),
     catatan: z.string().optional(),
@@ -44,15 +50,15 @@ async function authorizeSessionAccess(
   if (!guru) {
     return { status: 403, error: "Unauthorized" };
   }
-  const sesi = await prisma.sesi.findUnique({
+  const session = await prisma.session.findUnique({
     where: { id: sesiId },
-    include: { jadwal: { select: { guruId: true } } },
+    include: { jadwal: { select: { teacherId: true } } },
   });
-  if (!sesi) {
+  if (!session) {
     return { status: 404, error: "Sesi tidak ditemukan" };
   }
   const isOwner =
-    sesi.jadwal.guruId === guru.id || sesi.actualGuruId === guru.id;
+    session.jadwal.teacherId === guru.id || session.actualTeacherId === guru.id;
   return isOwner ? { status: 200 } : { status: 403, error: "Unauthorized" };
 }
 
@@ -65,7 +71,7 @@ export async function GET(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
-    const sesi = await prisma.sesi.findUnique({
+    const session = await prisma.session.findUnique({
       where: { id },
       include: {
         jadwal: {
@@ -82,16 +88,16 @@ export async function GET(request: Request, { params }: RouteParams) {
             mataPelajaran: { select: { name: true } },
           },
         },
-        absensiSiswa: true,
+        studentAttendance: true,
       },
     });
-    if (!sesi) {
+    if (!session) {
       return NextResponse.json(
         { error: "Sesi tidak ditemukan" },
         { status: 404 },
       );
     }
-    return NextResponse.json(sesi);
+    return NextResponse.json(session);
   } catch (err: unknown) {
     console.error("Get session error:", err);
     return NextResponse.json(
@@ -120,22 +126,22 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     if (result.data.action === "close") {
-      const { sesi, error } = await closeSession(id);
+      const { session, error } = await closeSession(id);
       if (error) {
         return NextResponse.json({ error }, { status: 400 });
       }
-      return NextResponse.json(sesi);
+      return NextResponse.json(session);
     }
 
     if (result.data.action === "refresh-qr") {
-      const sesi = await refreshQrToken(id);
-      if (!sesi) {
+      const session = await refreshQrToken(id);
+      if (!session) {
         return NextResponse.json(
           { error: "Sesi tidak aktif" },
           { status: 400 },
         );
       }
-      return NextResponse.json(sesi);
+      return NextResponse.json(session);
     }
 
     const { record, error } = await markManualAttendance(

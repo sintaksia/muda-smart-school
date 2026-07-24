@@ -41,7 +41,7 @@ export default async function CreditAdminPage() {
         categories={categories.map((c) => ({
           ownerType: c.ownerType,
           type: c.type,
-          nama: c.nama,
+          nama: c.name,
         }))}
       />
     </div>

@@ -9,17 +9,17 @@ export interface DeductionSummary {
   izinSakit: number;
 }
 
-/** Idempotency guard (cross-cutting rule): one auto deduction per sesi+student. */
+/** Idempotency guard (cross-cutting rule): one auto deduction per session+student. */
 async function hasAutoDeduction(
   studentId: string,
-  sesiId: string,
+  sessionId: string,
 ): Promise<boolean> {
   const existing = await prisma.creditScore.findFirst({
     where: {
       studentId,
-      refSesiId: sesiId,
+      refSessionId: sessionId,
       source: "AUTO",
-      type: "PELANGGARAN",
+      type: "VIOLATION",
     },
     select: { id: true },
   });
@@ -31,7 +31,7 @@ async function hasAutoDeduction(
  * closes. Safe to re-run: existing deductions are never duplicated.
  */
 export async function processSessionDeductions(
-  sesiId: string,
+  sessionId: string,
 ): Promise<DeductionSummary> {
   const summary: DeductionSummary = {
     processed: false,
@@ -40,8 +40,8 @@ export async function processSessionDeductions(
     izinSakit: 0,
   };
 
-  const sesi = await prisma.sesi.findUnique({
-    where: { id: sesiId },
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
     include: {
       jadwal: {
         include: {
@@ -50,41 +50,41 @@ export async function processSessionDeductions(
           },
         },
       },
-      absensiSiswa: true,
+      studentAttendance: true,
     },
   });
-  if (!sesi) {
+  if (!session) {
     throw new Error("Sesi tidak ditemukan");
   }
   // Teacher absence ≠ student penalty: never deduct for a class that
   // didn't run.
-  if (sesi.status === "KELAS_KOSONG") {
+  if (session.status === "NO_CLASS") {
     return summary;
   }
 
   const settings = await getAttendanceSettings();
   const attendanceByStudent = new Map(
-    sesi.absensiSiswa.map((record) => [record.studentId, record]),
+    session.studentAttendance.map((record) => [record.studentId, record]),
   );
 
-  for (const student of sesi.jadwal.kelas.students) {
+  for (const student of session.jadwal.kelas.students) {
     const record = attendanceByStudent.get(student.id);
 
-    if (record?.status === "HADIR") {
+    if (record?.status === "PRESENT") {
       continue;
     }
 
-    if (record?.status === "TERLAMBAT") {
-      if (!(await hasAutoDeduction(student.id, sesi.id))) {
+    if (record?.status === "LATE") {
+      if (!(await hasAutoDeduction(student.id, session.id))) {
         await createCreditEntry({
           ownerType: "STUDENT",
           studentId: student.id,
-          type: "PELANGGARAN",
+          type: "VIOLATION",
           category: "Kedisiplinan",
           points: settings.creditPoints.terlambatStudent,
           note: "Terlambat (otomatis)",
           source: "AUTO",
-          refSesiId: sesi.id,
+          refSessionId: session.id,
         });
         summary.terlambat += 1;
       }
@@ -92,33 +92,33 @@ export async function processSessionDeductions(
     }
 
     if (record) {
-      // IZIN / SAKIT / ALPHA already recorded — no further action here.
+      // EXCUSED / SICK / ABSENT already recorded — no further action here.
       continue;
     }
 
-    // No attendance record at all → pre-approved izin/sakit, else Alpa.
-    const izin = await prisma.pengajuanIzin.findFirst({
+    // No attendance record at all → pre-approved izin/sakit, else Absent.
+    const izin = await prisma.leaveRequest.findFirst({
       where: {
         studentId: student.id,
         status: "APPROVED",
-        tanggal: sesi.tanggal,
+        date: session.date,
         OR: [
-          { jadwalId: null, sesiId: null },
-          { jadwalId: sesi.jadwalId },
-          { sesiId: sesi.id },
+          { scheduleId: null, sessionId: null },
+          { scheduleId: session.scheduleId },
+          { sessionId: session.id },
         ],
       },
     });
 
     if (izin) {
-      await prisma.absensiSiswa.create({
+      await prisma.studentAttendance.create({
         data: {
-          jadwalId: sesi.jadwalId,
+          scheduleId: session.scheduleId,
           studentId: student.id,
-          sesiId: sesi.id,
-          tanggal: sesi.tanggal,
-          status: izin.jenis === "SAKIT" ? "SAKIT" : "IZIN",
-          catatan: "Izin/sakit disetujui sebelum sesi ditutup",
+          sessionId: session.id,
+          date: session.date,
+          status: izin.type === "SICK" ? "SICK" : "EXCUSED",
+          note: "Izin/sakit disetujui sebelum sesi ditutup",
           method: "MANUAL",
         },
       });
@@ -126,26 +126,26 @@ export async function processSessionDeductions(
       continue;
     }
 
-    await prisma.absensiSiswa.create({
+    await prisma.studentAttendance.create({
       data: {
-        jadwalId: sesi.jadwalId,
+        scheduleId: session.scheduleId,
         studentId: student.id,
-        sesiId: sesi.id,
-        tanggal: sesi.tanggal,
-        status: "ALPHA",
+        sessionId: session.id,
+        date: session.date,
+        status: "ABSENT",
         method: "MANUAL",
       },
     });
-    if (!(await hasAutoDeduction(student.id, sesi.id))) {
+    if (!(await hasAutoDeduction(student.id, session.id))) {
       await createCreditEntry({
         ownerType: "STUDENT",
         studentId: student.id,
-        type: "PELANGGARAN",
+        type: "VIOLATION",
         category: "Kedisiplinan",
         points: settings.creditPoints.alpaStudent,
         note: "Alpa (otomatis)",
         source: "AUTO",
-        refSesiId: sesi.id,
+        refSessionId: session.id,
       });
     }
     summary.alpa += 1;

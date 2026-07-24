@@ -2,22 +2,22 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { submitIzin } from "@/src/features/attendance/services/izin";
+import { submitLeaveRequest } from "@/src/features/attendance/services/izin";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { PengajuanIzin, Student } from "@prisma/client";
+import type { LeaveRequest, Student } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
     student: { findUnique: vi.fn() },
-    guru: { findUnique: vi.fn() },
-    pengajuanIzin: { findMany: vi.fn() },
+    teacher: { findUnique: vi.fn() },
+    leaveRequest: { findMany: vi.fn() },
   },
 }));
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
 vi.mock("@/src/features/attendance/services/izin", () => ({
-  submitIzin: vi.fn(),
+  submitLeaveRequest: vi.fn(),
 }));
 
 function buildRequest(body: unknown): Request {
@@ -29,9 +29,9 @@ function buildRequest(body: unknown): Request {
 }
 
 const validBody = {
-  jenis: "SAKIT",
-  tanggal: "2026-07-09",
-  alasan: "Demam tinggi",
+  type: "SICK",
+  date: "2026-07-09",
+  reason: "Demam tinggi",
 };
 
 describe("POST /api/attendance/izin", () => {
@@ -47,8 +47,8 @@ describe("POST /api/attendance/izin", () => {
     vi.mocked(prisma.student.findUnique).mockResolvedValue({
       id: "s1",
     } as Student);
-    vi.mocked(submitIzin).mockResolvedValue({
-      izin: { id: "izin-1" } as PengajuanIzin,
+    vi.mocked(submitLeaveRequest).mockResolvedValue({
+      izin: { id: "izin-1" } as LeaveRequest,
       error: null,
     });
 
@@ -57,7 +57,7 @@ describe("POST /api/attendance/izin", () => {
     );
 
     expect(response.status).toBe(201);
-    expect(submitIzin).toHaveBeenCalledWith(
+    expect(submitLeaveRequest).toHaveBeenCalledWith(
       expect.objectContaining({ studentId: "s1", submittedById: "u1" }),
     );
   });
@@ -82,9 +82,9 @@ describe("POST /api/attendance/izin", () => {
     } as SessionUser);
 
     const response = await POST(
-      buildRequest({ ...validBody, tanggal: "09/07/2026" }),
+      buildRequest({ ...validBody, date: "09/07/2026" }),
     );
     expect(response.status).toBe(400);
-    expect(submitIzin).not.toHaveBeenCalled();
+    expect(submitLeaveRequest).not.toHaveBeenCalled();
   });
 });

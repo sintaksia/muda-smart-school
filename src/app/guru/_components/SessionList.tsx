@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronRight, QrCode } from "lucide-react";
 import { Badge } from "@/src/app/admin/_components/Badge";
-import { SESI_STATUS_BADGES, SESI_STATUS_LABELS } from "@/src/lib/constants";
+import {
+  SESSION_STATUS_BADGES,
+  SESSION_STATUS_LABELS,
+} from "@/src/lib/constants";
 
 interface SessionItem {
   jadwalId: string;
@@ -36,7 +39,7 @@ export function SessionList({ items }: SessionListProps) {
       if (!response.ok) {
         throw new Error(data.error ?? "Gagal membuka sesi");
       }
-      if (data.status === "KELAS_KOSONG") {
+      if (data.status === "NO_CLASS") {
         toast.warning("Sesi ditandai kelas kosong (guru berhalangan)");
         router.refresh();
         return;
@@ -75,11 +78,11 @@ export function SessionList({ items }: SessionListProps) {
           </div>
           <div className="flex items-center gap-3">
             {item.sesiStatus && (
-              <Badge variant={SESI_STATUS_BADGES[item.sesiStatus]}>
-                {SESI_STATUS_LABELS[item.sesiStatus]}
+              <Badge variant={SESSION_STATUS_BADGES[item.sesiStatus]}>
+                {SESSION_STATUS_LABELS[item.sesiStatus]}
               </Badge>
             )}
-            {item.sesiId && item.sesiStatus !== "KELAS_KOSONG" ? (
+            {item.sesiId && item.sesiStatus !== "NO_CLASS" ? (
               <button
                 type="button"
                 onClick={() => router.push(`/guru/sesi/${item.sesiId}`)}

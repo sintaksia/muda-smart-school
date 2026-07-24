@@ -1,5 +1,5 @@
 import { prisma } from "@/src/lib/prisma";
-import type { AbsensiGuru } from "@prisma/client";
+import type { TeacherAttendance } from "@prisma/client";
 import type { ReportTeacherAbsenceInput } from "../types";
 import { createCreditEntry } from "./credit";
 import { getAttendanceSettings } from "./settings";
@@ -10,18 +10,18 @@ import {
 } from "./notifications";
 import {
   dateOnlyUtc,
-  hariFromDateISO,
+  dayOfWeekFromDateISO,
   toWibParts,
   wibInstant,
 } from "../utils/time";
 
 /** Idempotency guard: one auto teacher deduction per jadwal+date. */
 async function hasTeacherAutoDeduction(
-  guruId: string,
+  teacherId: string,
   refNote: string,
 ): Promise<boolean> {
   const existing = await prisma.creditScore.findFirst({
-    where: { guruId, source: "AUTO", type: "PELANGGARAN", note: refNote },
+    where: { teacherId, source: "AUTO", type: "VIOLATION", note: refNote },
     select: { id: true },
   });
   return existing !== null;
@@ -34,19 +34,19 @@ async function hasTeacherAutoDeduction(
  */
 export async function reportTeacherAbsence(
   input: ReportTeacherAbsenceInput,
-): Promise<{ records: AbsensiGuru[]; error: string | null }> {
-  const tanggal = dateOnlyUtc(input.tanggal);
-  const hari = hariFromDateISO(input.tanggal);
-  if (!hari) {
+): Promise<{ records: TeacherAttendance[]; error: string | null }> {
+  const date = dateOnlyUtc(input.date);
+  const dayOfWeek = dayOfWeekFromDateISO(input.date);
+  if (!dayOfWeek) {
     return { records: [], error: "Tidak ada jadwal pada hari Minggu" };
   }
 
-  const jadwalList = await prisma.jadwal.findMany({
+  const jadwalList = await prisma.schedule.findMany({
     where: {
-      guruId: input.guruId,
-      hari,
+      teacherId: input.teacherId,
+      dayOfWeek,
       isActive: true,
-      ...(input.jadwalIds?.length ? { id: { in: input.jadwalIds } } : {}),
+      ...(input.scheduleIds?.length ? { id: { in: input.scheduleIds } } : {}),
     },
   });
   if (jadwalList.length === 0) {
@@ -57,40 +57,40 @@ export async function reportTeacherAbsence(
   }
 
   const settings = await getAttendanceSettings();
-  const records: AbsensiGuru[] = [];
+  const records: TeacherAttendance[] = [];
 
   for (const jadwal of jadwalList) {
-    const record = await prisma.absensiGuru.upsert({
+    const record = await prisma.teacherAttendance.upsert({
       where: {
-        jadwalId_guruId_tanggal: {
-          jadwalId: jadwal.id,
-          guruId: input.guruId,
-          tanggal,
+        scheduleId_teacherId_date: {
+          scheduleId: jadwal.id,
+          teacherId: input.teacherId,
+          date,
         },
       },
       update: {
         status: input.status,
-        catatan: input.catatan,
+        note: input.note,
         reportedById: input.reportedById,
       },
       create: {
-        jadwalId: jadwal.id,
-        guruId: input.guruId,
-        tanggal,
+        scheduleId: jadwal.id,
+        teacherId: input.teacherId,
+        date,
         status: input.status,
-        catatan: input.catatan,
+        note: input.note,
         reportedById: input.reportedById,
       },
     });
     records.push(record);
 
-    if (input.status === "ALPHA") {
-      const refNote = `Alpa mengajar ${input.tanggal} jadwal ${jadwal.id}`;
-      if (!(await hasTeacherAutoDeduction(input.guruId, refNote))) {
+    if (input.status === "ABSENT") {
+      const refNote = `Alpa mengajar ${input.date} jadwal ${jadwal.id}`;
+      if (!(await hasTeacherAutoDeduction(input.teacherId, refNote))) {
         await createCreditEntry({
           ownerType: "TEACHER",
-          guruId: input.guruId,
-          type: "PELANGGARAN",
+          teacherId: input.teacherId,
+          type: "VIOLATION",
           category: "Kedisiplinan",
           points: settings.creditPoints.alpaTeacher,
           note: refNote,
@@ -99,16 +99,16 @@ export async function reportTeacherAbsence(
       }
     }
 
-    const waliUserId = await getWaliKelasUserId(jadwal.kelasId);
+    const waliUserId = await getWaliKelasUserId(jadwal.classId);
     const students = await prisma.student.findMany({
-      where: { classId: jadwal.kelasId, status: "AKTIF" },
+      where: { classId: jadwal.classId, status: "AKTIF" },
       select: { userId: true },
     });
     await notifyUsers(
       [...students.map((s) => s.userId), ...(waliUserId ? [waliUserId] : [])],
       {
         title: "Guru berhalangan hadir",
-        body: `Guru berhalangan (${input.status.toLowerCase()}) pada ${input.tanggal}. Menunggu penugasan guru pengganti.`,
+        body: `Guru berhalangan (${input.status.toLowerCase()}) pada ${input.date}. Menunggu penugasan guru pengganti.`,
         type: "TEACHER_ABSENCE",
         refId: record.id,
       },
@@ -121,23 +121,23 @@ export async function reportTeacherAbsence(
 /** Process 4 step 4 — Admin assigns a substitute (manual in v1). */
 export async function assignSubstitute(
   absensiGuruId: string,
-  substituteGuruId: string,
-): Promise<{ record: AbsensiGuru | null; error: string | null }> {
-  const existing = await prisma.absensiGuru.findUnique({
+  substituteTeacherId: string,
+): Promise<{ record: TeacherAttendance | null; error: string | null }> {
+  const existing = await prisma.teacherAttendance.findUnique({
     where: { id: absensiGuruId },
   });
   if (!existing) {
     return { record: null, error: "Data absensi guru tidak ditemukan" };
   }
-  if (existing.guruId === substituteGuruId) {
+  if (existing.teacherId === substituteTeacherId) {
     return { record: null, error: "Guru pengganti tidak boleh guru yang sama" };
   }
-  const record = await prisma.absensiGuru.update({
+  const record = await prisma.teacherAttendance.update({
     where: { id: absensiGuruId },
-    data: { substituteGuruId },
+    data: { substituteTeacherId },
   });
   const substitute = await prisma.teacher.findUnique({
-    where: { id: substituteGuruId },
+    where: { id: substituteTeacherId },
     select: { userId: true },
   });
   if (substitute) {
@@ -160,38 +160,41 @@ export async function detectMissedSessions(
   now: Date = new Date(),
 ): Promise<number> {
   const settings = await getAttendanceSettings();
-  const { dateISO, hari } = toWibParts(now);
-  if (!hari) {
+  const { dateISO, dayOfWeek } = toWibParts(now);
+  if (!dayOfWeek) {
     return 0;
   }
-  const tanggal = dateOnlyUtc(dateISO);
+  const date = dateOnlyUtc(dateISO);
 
-  const jadwalList = await prisma.jadwal.findMany({
-    where: { hari, isActive: true },
+  const jadwalList = await prisma.schedule.findMany({
+    where: { dayOfWeek, isActive: true },
     include: {
-      sesi: { where: { tanggal } },
-      absensiGuru: { where: { tanggal } },
+      sessions: { where: { date } },
+      teacherAttendance: { where: { date } },
     },
   });
 
   let flagged = 0;
   for (const jadwal of jadwalList) {
     const endCutoff = new Date(
-      wibInstant(dateISO, jadwal.jamSelesai).getTime() +
+      wibInstant(dateISO, jadwal.endTime).getTime() +
         settings.sessionGracePeriodMinutes * 60 * 1000,
     );
 
     // Escalation: absence with no substitute, 15 min before start.
-    const absence = jadwal.absensiGuru.find((a) => a.status !== "HADIR");
+    const absence = jadwal.teacherAttendance.find(
+      (a) => a.status !== "PRESENT",
+    );
     const startsSoon =
       now >=
-        new Date(wibInstant(dateISO, jadwal.jamMulai).getTime() - 15 * 60000) &&
-      now < wibInstant(dateISO, jadwal.jamMulai);
-    if (absence && !absence.substituteGuruId && startsSoon) {
+        new Date(
+          wibInstant(dateISO, jadwal.startTime).getTime() - 15 * 60000,
+        ) && now < wibInstant(dateISO, jadwal.startTime);
+    if (absence && !absence.substituteTeacherId && startsSoon) {
       const adminIds = await getAdminUserIds();
       await notifyUsers(adminIds, {
         title: "Guru absen tanpa pengganti",
-        body: `Sesi ${jadwal.jamMulai} hari ini belum memiliki guru pengganti.`,
+        body: `Sesi ${jadwal.startTime} hari ini belum memiliki guru pengganti.`,
         type: "TEACHER_ABSENCE",
         refId: absence.id,
       });
@@ -200,21 +203,21 @@ export async function detectMissedSessions(
     // Retroactive Alpa: session over, never opened, nothing reported.
     if (
       now > endCutoff &&
-      jadwal.sesi.length === 0 &&
-      jadwal.absensiGuru.length === 0
+      jadwal.sessions.length === 0 &&
+      jadwal.teacherAttendance.length === 0
     ) {
       await reportTeacherAbsence({
-        guruId: jadwal.guruId,
-        tanggal: dateISO,
-        status: "ALPHA",
-        catatan: "Terdeteksi otomatis: sesi tidak dibuka tanpa laporan",
-        jadwalIds: [jadwal.id],
+        teacherId: jadwal.teacherId,
+        date: dateISO,
+        status: "ABSENT",
+        note: "Terdeteksi otomatis: sesi tidak dibuka tanpa laporan",
+        scheduleIds: [jadwal.id],
       });
       // Mark the slot as kelas kosong so students are never penalized.
-      await prisma.sesi.upsert({
-        where: { jadwalId_tanggal: { jadwalId: jadwal.id, tanggal } },
+      await prisma.session.upsert({
+        where: { scheduleId_date: { scheduleId: jadwal.id, date } },
         update: {},
-        create: { jadwalId: jadwal.id, tanggal, status: "KELAS_KOSONG" },
+        create: { scheduleId: jadwal.id, date, status: "NO_CLASS" },
       });
       flagged += 1;
     }

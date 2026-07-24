@@ -61,7 +61,7 @@ describe("deleteMapel", () => {
   it("refuses to delete a subject used in schedules", async () => {
     vi.mocked(prisma.subject.findUnique).mockResolvedValue({
       id: "m1",
-      _count: { teacherSubjects: 2, jadwal: 3 },
+      _count: { teacherSubjects: 2, schedules: 3 },
     } as unknown as Subject);
 
     const result = await deleteMapel("m1");
@@ -73,7 +73,7 @@ describe("deleteMapel", () => {
   it("deletes an unscheduled subject and its qualifications", async () => {
     vi.mocked(prisma.subject.findUnique).mockResolvedValue({
       id: "m1",
-      _count: { teacherSubjects: 2, jadwal: 0 },
+      _count: { teacherSubjects: 2, schedules: 0 },
     } as unknown as Subject);
 
     const result = await deleteMapel("m1");

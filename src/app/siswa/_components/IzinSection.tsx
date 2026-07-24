@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import {
-  IZIN_JENIS_LABELS,
-  IZIN_STATUS_BADGES,
-  IZIN_STATUS_LABELS,
+  LEAVE_TYPE_LABELS,
+  LEAVE_STATUS_BADGES,
+  LEAVE_STATUS_LABELS,
 } from "@/src/lib/constants";
 
 interface IzinItem {
@@ -24,11 +24,11 @@ interface IzinSectionProps {
 
 export function IzinSection({ submissions }: IzinSectionProps) {
   const router = useRouter();
-  const [jenis, setJenis] = useState<string>("SAKIT");
-  const [tanggal, setTanggal] = useState<string>(
+  const [type, setType] = useState<string>("SICK");
+  const [date, setDate] = useState<string>(
     new Date().toISOString().slice(0, 10),
   );
-  const [alasan, setAlasan] = useState<string>("");
+  const [reason, setReason] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   async function handleSubmit(
@@ -40,14 +40,14 @@ export function IzinSection({ submissions }: IzinSectionProps) {
       const response = await fetch("/api/attendance/izin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jenis, tanggal, alasan }),
+        body: JSON.stringify({ type, date, reason }),
       });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error ?? "Gagal mengajukan izin");
       }
       toast.success("Pengajuan terkirim ke wali kelas");
-      setAlasan("");
+      setReason("");
       router.refresh();
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Terjadi kesalahan");
@@ -67,23 +67,23 @@ export function IzinSection({ submissions }: IzinSectionProps) {
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <select
-            value={jenis}
-            onChange={(event) => setJenis(event.target.value)}
+            value={type}
+            onChange={(event) => setType(event.target.value)}
             className={inputClass}
           >
-            <option value="SAKIT">Sakit</option>
-            <option value="IZIN">Izin</option>
+            <option value="SICK">Sakit</option>
+            <option value="PERMISSION">Izin</option>
           </select>
           <input
             type="date"
-            value={tanggal}
-            onChange={(event) => setTanggal(event.target.value)}
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
             className={inputClass}
           />
         </div>
         <textarea
-          value={alasan}
-          onChange={(event) => setAlasan(event.target.value)}
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
           placeholder="Alasan (mis. demam, acara keluarga)…"
           required
           minLength={3}
@@ -92,7 +92,7 @@ export function IzinSection({ submissions }: IzinSectionProps) {
         />
         <button
           type="submit"
-          disabled={submitting || alasan.trim().length < 3}
+          disabled={submitting || reason.trim().length < 3}
           className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 w-full text-sm font-semibold text-white transition-colors disabled:opacity-50"
         >
           {submitting ? "Mengirim..." : "Kirim Pengajuan"}
@@ -108,15 +108,15 @@ export function IzinSection({ submissions }: IzinSectionProps) {
             >
               <div>
                 <p className="text-ink text-sm font-semibold">
-                  {IZIN_JENIS_LABELS[izin.jenis]} ·{" "}
+                  {LEAVE_TYPE_LABELS[izin.jenis]} ·{" "}
                   <span className="tabular-nums">{izin.tanggal}</span>
                 </p>
                 <p className="text-ink-muted max-w-72 truncate text-xs">
                   {izin.alasan}
                 </p>
               </div>
-              <Badge variant={IZIN_STATUS_BADGES[izin.status]}>
-                {IZIN_STATUS_LABELS[izin.status]}
+              <Badge variant={LEAVE_STATUS_BADGES[izin.status]}>
+                {LEAVE_STATUS_LABELS[izin.status]}
               </Badge>
             </li>
           ))}

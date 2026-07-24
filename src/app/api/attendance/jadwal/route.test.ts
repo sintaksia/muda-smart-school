@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { createJadwal } from "@/src/features/attendance/services/schedule";
+import { createSchedule } from "@/src/features/attendance/services/schedule";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { Jadwal } from "@prisma/client";
+import type { Schedule } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
-  prisma: { jadwal: { findMany: vi.fn() } },
+  prisma: { schedule: { findMany: vi.fn() } },
 }));
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
 vi.mock("@/src/features/attendance/services/schedule", () => ({
-  createJadwal: vi.fn(),
+  createSchedule: vi.fn(),
 }));
 
 function buildRequest(body: unknown): Request {
@@ -24,12 +24,12 @@ function buildRequest(body: unknown): Request {
 }
 
 const validBody = {
-  kelasId: "k1",
-  mataPelajaranId: "m1",
-  guruId: "g1",
-  hari: "SENIN",
-  jamMulai: "07:00",
-  jamSelesai: "08:30",
+  classId: "k1",
+  subjectId: "m1",
+  teacherId: "g1",
+  dayOfWeek: "MONDAY",
+  startTime: "07:00",
+  endTime: "08:30",
 };
 
 describe("POST /api/attendance/jadwal", () => {
@@ -52,8 +52,8 @@ describe("POST /api/attendance/jadwal", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(createJadwal).mockResolvedValue({
-      jadwal: { id: "j1" } as Jadwal,
+    vi.mocked(createSchedule).mockResolvedValue({
+      schedule: { id: "j1" } as Schedule,
       warnings: ["Total jam mengajar mingguan guru (26 jam) melebihi batas"],
       errors: [],
     });
@@ -71,8 +71,8 @@ describe("POST /api/attendance/jadwal", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(createJadwal).mockResolvedValue({
-      jadwal: null,
+    vi.mocked(createSchedule).mockResolvedValue({
+      schedule: null,
       warnings: [],
       errors: ["Guru bentrok jadwal"],
     });
@@ -91,9 +91,9 @@ describe("POST /api/attendance/jadwal", () => {
     } as SessionUser);
 
     const response = await POST(
-      buildRequest({ ...validBody, jamMulai: "25:99" }),
+      buildRequest({ ...validBody, startTime: "25:99" }),
     );
     expect(response.status).toBe(400);
-    expect(createJadwal).not.toHaveBeenCalled();
+    expect(createSchedule).not.toHaveBeenCalled();
   });
 });

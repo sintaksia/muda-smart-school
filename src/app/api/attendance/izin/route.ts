@@ -3,20 +3,20 @@ import { z } from "zod";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { submitIzin } from "@/src/features/attendance/services/izin";
-import { IZIN_JENIS_VALUES } from "@/src/lib/constants";
+import { submitLeaveRequest } from "@/src/features/attendance/services/izin";
+import { LEAVE_TYPE_VALUES } from "@/src/lib/constants";
 
 const submitSchema = z.object({
   studentId: z.string().min(1).optional(), // admins may submit on behalf
-  jenis: z.enum(IZIN_JENIS_VALUES as ["IZIN", "SAKIT"], {
+  type: z.enum(LEAVE_TYPE_VALUES as ["PERMISSION", "SICK"], {
     message: "Jenis wajib dipilih",
   }),
-  tanggal: z
+  date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Tanggal tidak valid" }),
-  jadwalId: z.string().optional(),
-  alasan: z.string({ message: "Alasan wajib diisi" }).min(3),
-  lampiran: z.string().optional(),
+  scheduleId: z.string().optional(),
+  reason: z.string({ message: "Alasan wajib diisi" }).min(3),
+  attachment: z.string().optional(),
 });
 
 // GET /api/attendance/izin - list submissions (role-scoped)
@@ -50,7 +50,7 @@ export async function GET() {
       };
     }
 
-    const submissions = await prisma.pengajuanIzin.findMany({
+    const submissions = await prisma.leaveRequest.findMany({
       where,
       include: {
         student: {
@@ -108,13 +108,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const { izin, error } = await submitIzin({
+    const { izin, error } = await submitLeaveRequest({
       studentId,
-      jenis: result.data.jenis,
-      tanggal: result.data.tanggal,
-      jadwalId: result.data.jadwalId,
-      alasan: result.data.alasan,
-      lampiran: result.data.lampiran,
+      type: result.data.type,
+      date: result.data.date,
+      scheduleId: result.data.scheduleId,
+      reason: result.data.reason,
+      attachment: result.data.attachment,
       submittedById: currentUser.id,
     });
     if (error || !izin) {

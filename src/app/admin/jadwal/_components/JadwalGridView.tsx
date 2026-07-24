@@ -29,7 +29,7 @@ export function JadwalGridView({
   const [entityId, setEntityId] = useState<string>("ALL");
 
   const entityOptions = mode === "kelas" ? kelasOptions : guruOptions;
-  const entityKey = mode === "kelas" ? "kelasId" : "guruId";
+  const entityKey = mode === "kelas" ? "classId" : "teacherId";
   const entityEntries =
     entityId === "ALL"
       ? entries

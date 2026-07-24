@@ -6,15 +6,15 @@ import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import { reportTeacherAbsence } from "@/src/features/attendance/services/teacher-attendance";
 
 const reportSchema = z.object({
-  guruId: z.string().min(1).optional(), // teachers self-report; admin passes it
-  tanggal: z
+  teacherId: z.string().min(1).optional(), // teachers self-report; admin passes it
+  date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Tanggal tidak valid" }),
-  status: z.enum(["IZIN", "SAKIT", "ALPHA"], {
+  status: z.enum(["EXCUSED", "SICK", "ABSENT"], {
     message: "Status wajib dipilih",
   }),
-  catatan: z.string().optional(),
-  jadwalIds: z.array(z.string()).optional(),
+  note: z.string().optional(),
+  scheduleIds: z.array(z.string()).optional(),
 });
 
 // GET /api/attendance/teacher-absence?date=YYYY-MM-DD - admin recap
@@ -27,9 +27,9 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const date = searchParams.get("date");
-    const where = date ? { tanggal: new Date(`${date}T00:00:00.000Z`) } : {};
+    const where = date ? { date: new Date(`${date}T00:00:00.000Z`) } : {};
 
-    const records = await prisma.absensiGuru.findMany({
+    const records = await prisma.teacherAttendance.findMany({
       where,
       include: {
         guru: { select: { id: true, user: { select: { name: true } } } },
@@ -38,14 +38,14 @@ export async function GET(request: Request) {
         },
         jadwal: {
           select: {
-            jamMulai: true,
-            jamSelesai: true,
+            startTime: true,
+            endTime: true,
             kelas: { select: { name: true } },
             mataPelajaran: { select: { name: true } },
           },
         },
       },
-      orderBy: [{ tanggal: "desc" }, { createdAt: "desc" }],
+      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
     });
     return NextResponse.json(records);
   } catch (err: unknown) {
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
       );
     }
 
-    let guruId = result.data.guruId;
+    let teacherId = result.data.teacherId;
     if (!canAccessAdmin(currentUser.role)) {
       // Self-report path: teachers may only report themselves (not Alpa).
       const guru = await prisma.teacher.findUnique({
@@ -83,14 +83,14 @@ export async function POST(request: Request) {
       if (!guru || currentUser.role !== "TEACHER") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
-      if (result.data.status === "ALPHA") {
+      if (result.data.status === "ABSENT") {
         return NextResponse.json(
           { error: "Status Alpa hanya dapat dicatat oleh Admin" },
           { status: 403 },
         );
       }
-      guruId = guru.id;
-    } else if (!guruId) {
+      teacherId = guru.id;
+    } else if (!teacherId) {
       return NextResponse.json(
         { error: "guruId wajib diisi" },
         { status: 400 },
@@ -98,12 +98,12 @@ export async function POST(request: Request) {
     }
 
     const { records, error } = await reportTeacherAbsence({
-      guruId,
-      tanggal: result.data.tanggal,
+      teacherId,
+      date: result.data.date,
       status: result.data.status,
-      catatan: result.data.catatan,
+      note: result.data.note,
       reportedById: currentUser.id,
-      jadwalIds: result.data.jadwalIds,
+      scheduleIds: result.data.scheduleIds,
     });
     if (error) {
       return NextResponse.json({ error }, { status: 400 });

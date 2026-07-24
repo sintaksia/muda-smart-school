@@ -58,7 +58,7 @@ describe("notifyUsers", () => {
     const count = await notifyUsers(["a", "b", "a", ""], {
       title: "T",
       body: "B",
-      type: "KELAS_KOSONG",
+      type: "NO_CLASS",
     });
 
     expect(count).toBe(2);
@@ -70,7 +70,7 @@ describe("notifyUsers", () => {
     const count = await notifyUsers([], {
       title: "T",
       body: "B",
-      type: "KELAS_KOSONG",
+      type: "NO_CLASS",
     });
     expect(count).toBe(0);
     expect(prisma.notification.createMany).not.toHaveBeenCalled();

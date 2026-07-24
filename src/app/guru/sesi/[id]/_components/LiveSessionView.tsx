@@ -97,8 +97,8 @@ export function LiveSessionView({
             {sesi.jadwal.mataPelajaran.name}
           </h1>
           <p className="text-ink-secondary mt-1 text-sm">
-            {sesi.jadwal.kelas.name} · {sesi.jadwal.jamMulai}–
-            {sesi.jadwal.jamSelesai}
+            {sesi.jadwal.kelas.name} · {sesi.jadwal.startTime}–
+            {sesi.jadwal.endTime}
           </p>
         </div>
         {isOpen && (

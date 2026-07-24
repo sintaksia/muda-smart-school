@@ -1,5 +1,5 @@
 import { prisma } from "@/src/lib/prisma";
-import type { Sesi } from "@prisma/client";
+import type { Session } from "@prisma/client";
 import { getAttendanceSettings } from "./settings";
 import { processSessionDeductions } from "./deduction";
 import { notifyUsers, getWaliKelasUserId } from "./notifications";
@@ -7,101 +7,110 @@ import { generateQrToken } from "../utils/qr";
 import { dateOnlyUtc, toWibParts, wibInstant } from "../utils/time";
 
 export interface OpenSessionResult {
-  sesi: Sesi | null;
+  session: Session | null;
   error: string | null;
 }
 
 /**
  * Process 1 — open a class session for today. Handles the teacher-absence
  * edge case: with an unresolved absence and no substitute the session is
- * recorded as KELAS_KOSONG (no QR, no student penalty).
+ * recorded as NO_CLASS (no QR, no student penalty).
  */
 export async function openSession(
-  jadwalId: string,
-  options: { byGuruId?: string; now?: Date } = {},
+  scheduleId: string,
+  options: { byTeacherId?: string; now?: Date } = {},
 ): Promise<OpenSessionResult> {
   const now = options.now ?? new Date();
-  const { dateISO, hari } = toWibParts(now);
-  const tanggal = dateOnlyUtc(dateISO);
+  const { dateISO, dayOfWeek } = toWibParts(now);
+  const date = dateOnlyUtc(dateISO);
 
-  const jadwal = await prisma.jadwal.findUnique({
-    where: { id: jadwalId },
+  const schedule = await prisma.schedule.findUnique({
+    where: { id: scheduleId },
     include: {
       kelas: { include: { students: { where: { status: "AKTIF" } } } },
     },
   });
-  if (!jadwal || !jadwal.isActive) {
-    return { sesi: null, error: "Jadwal tidak ditemukan" };
+  if (!schedule || !schedule.isActive) {
+    return { session: null, error: "Jadwal tidak ditemukan" };
   }
-  if (jadwal.hari !== hari) {
-    return { sesi: null, error: "Jadwal bukan untuk hari ini" };
+  if (schedule.dayOfWeek !== dayOfWeek) {
+    return { session: null, error: "Jadwal bukan untuk hari ini" };
   }
 
-  const existing = await prisma.sesi.findUnique({
-    where: { jadwalId_tanggal: { jadwalId, tanggal } },
+  const existing = await prisma.session.findUnique({
+    where: { scheduleId_date: { scheduleId, date } },
   });
   if (existing) {
     if (existing.status === "OPEN") {
-      return { sesi: existing, error: null };
+      return { session: existing, error: null };
     }
-    return { sesi: existing, error: "Sesi sudah ditutup" };
+    return { session: existing, error: "Sesi sudah ditutup" };
   }
 
   // Teacher absence check (Process 1 edge case / Process 4 step 4).
-  const teacherAbsence = await prisma.absensiGuru.findUnique({
+  const teacherAbsence = await prisma.teacherAttendance.findUnique({
     where: {
-      jadwalId_guruId_tanggal: { jadwalId, guruId: jadwal.guruId, tanggal },
+      scheduleId_teacherId_date: {
+        scheduleId,
+        teacherId: schedule.teacherId,
+        date,
+      },
     },
   });
-  const isAbsent = teacherAbsence !== null && teacherAbsence.status !== "HADIR";
+  const isAbsent =
+    teacherAbsence !== null && teacherAbsence.status !== "PRESENT";
 
-  if (isAbsent && !teacherAbsence.substituteGuruId) {
-    const sesi = await prisma.sesi.create({
-      data: { jadwalId, tanggal, status: "KELAS_KOSONG" },
+  if (isAbsent && !teacherAbsence.substituteTeacherId) {
+    const session = await prisma.session.create({
+      data: { scheduleId, date, status: "NO_CLASS" },
     });
-    const studentUserIds = jadwal.kelas.students.map(
+    const studentUserIds = schedule.kelas.students.map(
       (student) => student.userId,
     );
-    const waliUserId = await getWaliKelasUserId(jadwal.kelasId);
+    const waliUserId = await getWaliKelasUserId(schedule.classId);
     await notifyUsers(
       [...studentUserIds, ...(waliUserId ? [waliUserId] : [])],
       {
         title: "Kelas kosong",
         body: `Guru berhalangan hadir dan belum ada pengganti. Sesi ${dateISO} ditandai kelas kosong.`,
-        type: "KELAS_KOSONG",
-        refId: sesi.id,
+        type: "NO_CLASS",
+        refId: session.id,
       },
     );
-    return { sesi, error: null };
+    return { session, error: null };
   }
 
-  const actualGuruId =
-    isAbsent && teacherAbsence.substituteGuruId
-      ? teacherAbsence.substituteGuruId
-      : (options.byGuruId ?? jadwal.guruId);
+  const actualTeacherId =
+    isAbsent && teacherAbsence.substituteTeacherId
+      ? teacherAbsence.substituteTeacherId
+      : (options.byTeacherId ?? schedule.teacherId);
 
-  const sesi = await prisma.sesi.create({
+  const session = await prisma.session.create({
     data: {
-      jadwalId,
-      tanggal,
+      scheduleId,
+      date,
       status: "OPEN",
       openedAt: now,
       qrToken: generateQrToken(),
       qrTokenIssuedAt: now,
-      actualGuruId,
+      actualTeacherId,
     },
   });
-  return { sesi, error: null };
+  return { session, error: null };
 }
 
 /** Rotate the QR token (DYNAMIC mode, Process 1 step 3). */
-export async function refreshQrToken(sesiId: string): Promise<Sesi | null> {
-  const sesi = await prisma.sesi.findUnique({ where: { id: sesiId } });
-  if (!sesi || sesi.status !== "OPEN") {
+export async function refreshQrToken(
+  sessionId: string,
+): Promise<Session | null> {
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+  });
+  if (!session || session.status !== "OPEN") {
     return null;
   }
-  return prisma.sesi.update({
-    where: { id: sesiId },
+  return prisma.session.update({
+    where: { id: sessionId },
     data: { qrToken: generateQrToken(), qrTokenIssuedAt: new Date() },
   });
 }
@@ -110,22 +119,24 @@ export async function refreshQrToken(sesiId: string): Promise<Sesi | null> {
  * Process 1 step 6 — close a session and trigger Process 3 deductions.
  */
 export async function closeSession(
-  sesiId: string,
+  sessionId: string,
   options: { now?: Date } = {},
-): Promise<{ sesi: Sesi | null; error: string | null }> {
-  const existing = await prisma.sesi.findUnique({ where: { id: sesiId } });
+): Promise<{ session: Session | null; error: string | null }> {
+  const existing = await prisma.session.findUnique({
+    where: { id: sessionId },
+  });
   if (!existing) {
-    return { sesi: null, error: "Sesi tidak ditemukan" };
+    return { session: null, error: "Sesi tidak ditemukan" };
   }
   if (existing.status !== "OPEN") {
-    return { sesi: existing, error: "Sesi sudah ditutup" };
+    return { session: existing, error: "Sesi sudah ditutup" };
   }
-  const sesi = await prisma.sesi.update({
-    where: { id: sesiId },
+  const session = await prisma.session.update({
+    where: { id: sessionId },
     data: { status: "CLOSED", closedAt: options.now ?? new Date() },
   });
-  await processSessionDeductions(sesiId);
-  return { sesi, error: null };
+  await processSessionDeductions(sessionId);
+  return { session, error: null };
 }
 
 /**
@@ -136,20 +147,20 @@ export async function autoCloseDueSessions(
   now: Date = new Date(),
 ): Promise<number> {
   const settings = await getAttendanceSettings();
-  const openSessions = await prisma.sesi.findMany({
+  const openSessions = await prisma.session.findMany({
     where: { status: "OPEN" },
-    include: { jadwal: { select: { jamSelesai: true } } },
+    include: { jadwal: { select: { endTime: true } } },
   });
 
   let closed = 0;
-  for (const sesi of openSessions) {
-    const dateISO = sesi.tanggal.toISOString().slice(0, 10);
+  for (const session of openSessions) {
+    const dateISO = session.date.toISOString().slice(0, 10);
     const cutoff = new Date(
-      wibInstant(dateISO, sesi.jadwal.jamSelesai).getTime() +
+      wibInstant(dateISO, session.jadwal.endTime).getTime() +
         settings.sessionGracePeriodMinutes * 60 * 1000,
     );
     if (now > cutoff) {
-      await closeSession(sesi.id, { now });
+      await closeSession(session.id, { now });
       closed += 1;
     }
   }

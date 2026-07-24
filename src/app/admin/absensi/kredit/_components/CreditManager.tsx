@@ -17,7 +17,7 @@ export function CreditManager({
 }: CreditManagerProps) {
   const [ownerType, setOwnerType] = useState<"STUDENT" | "TEACHER">("STUDENT");
   const [ownerId, setOwnerId] = useState<string>("");
-  const [type, setType] = useState<"PRESTASI" | "PELANGGARAN">("PELANGGARAN");
+  const [type, setType] = useState<"ACHIEVEMENT" | "VIOLATION">("VIOLATION");
   const [category, setCategory] = useState<string>("");
   const [points, setPoints] = useState<string>("-5");
   const [note, setNote] = useState<string>("");
@@ -118,13 +118,13 @@ export function CreditManager({
           <select
             value={type}
             onChange={(event) => {
-              setType(event.target.value as "PRESTASI" | "PELANGGARAN");
+              setType(event.target.value as "ACHIEVEMENT" | "VIOLATION");
               setCategory("");
             }}
             className={inputClass}
           >
-            <option value="PELANGGARAN">Pelanggaran</option>
-            <option value="PRESTASI">Prestasi</option>
+            <option value="VIOLATION">Pelanggaran</option>
+            <option value="ACHIEVEMENT">Prestasi</option>
           </select>
           <select
             value={category}

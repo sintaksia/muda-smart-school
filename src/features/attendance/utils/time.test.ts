@@ -6,7 +6,7 @@ import {
   toWibParts,
   dateOnlyUtc,
   wibInstant,
-  hariFromDateISO,
+  dayOfWeekFromDateISO,
 } from "./time";
 
 describe("parseTimeToMinutes", () => {
@@ -48,12 +48,12 @@ describe("WIB conversions", () => {
     const parts = toWibParts(new Date("2026-07-08T23:30:00.000Z"));
     expect(parts.dateISO).toBe("2026-07-09");
     expect(parts.minutesOfDay).toBe(390);
-    expect(parts.hari).toBe("KAMIS");
+    expect(parts.dayOfWeek).toBe("THURSDAY");
   });
 
   it("maps Sunday to null (no schedule)", () => {
     const parts = toWibParts(new Date("2026-07-12T05:00:00.000Z"));
-    expect(parts.hari).toBeNull();
+    expect(parts.dayOfWeek).toBeNull();
   });
 
   it("builds UTC midnight date and WIB instants", () => {
@@ -67,8 +67,8 @@ describe("WIB conversions", () => {
     expect(() => dateOnlyUtc("09-07-2026")).toThrow();
   });
 
-  it("derives HariEnum from a WIB date", () => {
-    expect(hariFromDateISO("2026-07-09")).toBe("KAMIS");
-    expect(hariFromDateISO("2026-07-12")).toBeNull();
+  it("derives DayOfWeek from a WIB date", () => {
+    expect(dayOfWeekFromDateISO("2026-07-09")).toBe("THURSDAY");
+    expect(dayOfWeekFromDateISO("2026-07-12")).toBeNull();
   });
 });

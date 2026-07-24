@@ -4,7 +4,7 @@ import type { SubjectInput } from "../types";
 
 export async function getMapelList() {
   return prisma.subject.findMany({
-    include: { _count: { select: { teacherSubjects: true, jadwal: true } } },
+    include: { _count: { select: { teacherSubjects: true, schedules: true } } },
     orderBy: { name: "asc" },
   });
 }
@@ -48,12 +48,12 @@ export async function deleteMapel(
 ): Promise<{ ok: boolean; error: string | null }> {
   const usage = await prisma.subject.findUnique({
     where: { id },
-    include: { _count: { select: { teacherSubjects: true, jadwal: true } } },
+    include: { _count: { select: { teacherSubjects: true, schedules: true } } },
   });
   if (!usage) {
     return { ok: false, error: "Mapel tidak ditemukan" };
   }
-  if (usage._count.jadwal > 0) {
+  if (usage._count.schedules > 0) {
     return {
       ok: false,
       error: "Mapel masih dipakai di jadwal — tidak dapat dihapus",

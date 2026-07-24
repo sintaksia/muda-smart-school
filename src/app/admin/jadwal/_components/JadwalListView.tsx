@@ -1,7 +1,7 @@
 "use client";
 
 import { Trash2, TriangleAlert } from "lucide-react";
-import { HARI_LABELS, HARI_VALUES } from "@/src/lib/constants";
+import { DAY_OF_WEEK_LABELS, DAY_OF_WEEK_VALUES } from "@/src/lib/constants";
 import type { JadwalEntry } from "@/src/features/attendance/utils/jadwalGrid";
 
 interface JadwalListViewProps {
@@ -17,19 +17,19 @@ export function JadwalListView({
 }: JadwalListViewProps) {
   return (
     <div className="space-y-6">
-      {HARI_VALUES.map((hari) => {
-        const rows = jadwal.filter((row) => row.hari === hari);
+      {DAY_OF_WEEK_VALUES.map((dayOfWeek) => {
+        const rows = jadwal.filter((row) => row.dayOfWeek === dayOfWeek);
         if (rows.length === 0) {
           return null;
         }
         return (
           <section
-            key={hari}
+            key={dayOfWeek}
             className="border-hairline rounded-card border bg-white"
           >
             <header className="border-hairline flex items-center justify-between border-b px-5 py-4">
               <h3 className="text-ink text-base font-semibold">
-                {HARI_LABELS[hari]}
+                {DAY_OF_WEEK_LABELS[dayOfWeek]}
               </h3>
               <span className="text-ink-muted text-xs font-medium">
                 {rows.length} sesi
@@ -48,7 +48,7 @@ export function JadwalListView({
                         }`}
                       >
                         <td className="text-ink w-32 px-5 py-3 font-semibold tabular-nums">
-                          {row.jamMulai}–{row.jamSelesai}
+                          {row.startTime}–{row.endTime}
                         </td>
                         <td className="text-ink px-4 py-3">
                           <span className="flex items-center gap-2">

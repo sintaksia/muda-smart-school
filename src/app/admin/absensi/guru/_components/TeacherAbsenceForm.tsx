@@ -10,19 +10,19 @@ interface TeacherAbsenceFormProps {
 
 export function TeacherAbsenceForm({ guruOptions }: TeacherAbsenceFormProps) {
   const router = useRouter();
-  const [guruId, setGuruId] = useState<string>("");
-  const [tanggal, setTanggal] = useState<string>(
+  const [teacherId, setTeacherId] = useState<string>("");
+  const [date, setDate] = useState<string>(
     new Date().toISOString().slice(0, 10),
   );
-  const [status, setStatus] = useState<string>("IZIN");
-  const [catatan, setCatatan] = useState<string>("");
+  const [status, setStatus] = useState<string>("EXCUSED");
+  const [note, setNote] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
   ): Promise<void> {
     event.preventDefault();
-    if (!guruId) {
+    if (!teacherId) {
       toast.error("Pilih guru terlebih dahulu");
       return;
     }
@@ -31,14 +31,14 @@ export function TeacherAbsenceForm({ guruOptions }: TeacherAbsenceFormProps) {
       const response = await fetch("/api/attendance/teacher-absence", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ guruId, tanggal, status, catatan }),
+        body: JSON.stringify({ teacherId, date, status, note }),
       });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error ?? "Gagal mencatat absensi guru");
       }
       toast.success("Absensi guru tercatat untuk semua jadwal hari itu");
-      setCatatan("");
+      setNote("");
       router.refresh();
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Terjadi kesalahan");
@@ -60,8 +60,8 @@ export function TeacherAbsenceForm({ guruOptions }: TeacherAbsenceFormProps) {
       </h3>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <select
-          value={guruId}
-          onChange={(event) => setGuruId(event.target.value)}
+          value={teacherId}
+          onChange={(event) => setTeacherId(event.target.value)}
           className={inputClass}
         >
           <option value="">Pilih guru…</option>
@@ -73,8 +73,8 @@ export function TeacherAbsenceForm({ guruOptions }: TeacherAbsenceFormProps) {
         </select>
         <input
           type="date"
-          value={tanggal}
-          onChange={(event) => setTanggal(event.target.value)}
+          value={date}
+          onChange={(event) => setDate(event.target.value)}
           className={inputClass}
         />
         <select
@@ -82,15 +82,15 @@ export function TeacherAbsenceForm({ guruOptions }: TeacherAbsenceFormProps) {
           onChange={(event) => setStatus(event.target.value)}
           className={inputClass}
         >
-          <option value="IZIN">Izin</option>
-          <option value="SAKIT">Sakit</option>
-          <option value="ALPHA">Alpa</option>
+          <option value="EXCUSED">Izin</option>
+          <option value="SICK">Sakit</option>
+          <option value="ABSENT">Alpa</option>
         </select>
         <input
           type="text"
           placeholder="Catatan (opsional)"
-          value={catatan}
-          onChange={(event) => setCatatan(event.target.value)}
+          value={note}
+          onChange={(event) => setNote(event.target.value)}
           className={inputClass}
         />
         <button

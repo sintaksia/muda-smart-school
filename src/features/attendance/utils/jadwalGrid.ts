@@ -3,21 +3,21 @@ import { parseTimeToMinutes, timeRangesOverlap } from "./time";
 /** A denormalized schedule row as rendered by the admin timetable UI. */
 export interface JadwalEntry {
   id: string;
-  hari: string;
-  jamMulai: string;
-  jamSelesai: string;
-  kelasId: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  classId: string;
   kelas: string;
-  guruId: string;
+  teacherId: string;
   guru: string;
   mataPelajaran: string;
 }
 
 /** An empty interval between two sessions of the same entity on one day. */
 export interface JadwalGap {
-  hari: string;
-  jamMulai: string;
-  jamSelesai: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
 }
 
 /** Per-entity × per-day rollup used by the overview heatmap. */
@@ -35,8 +35,8 @@ export interface DaySummary {
 export function buildTimeBoundaries(entries: JadwalEntry[]): string[] {
   const boundaries = new Set<string>();
   for (const entry of entries) {
-    boundaries.add(entry.jamMulai);
-    boundaries.add(entry.jamSelesai);
+    boundaries.add(entry.startTime);
+    boundaries.add(entry.endTime);
   }
   return Array.from(boundaries).sort(
     (a, b) => parseTimeToMinutes(a) - parseTimeToMinutes(b),
@@ -53,11 +53,9 @@ export function findConflictIds(entries: JadwalEntry[]): Set<string> {
     for (let j = i + 1; j < entries.length; j++) {
       const a = entries[i];
       const b = entries[j];
-      if (a.hari !== b.hari) continue;
-      if (a.guruId !== b.guruId && a.kelasId !== b.kelasId) continue;
-      if (
-        timeRangesOverlap(a.jamMulai, a.jamSelesai, b.jamMulai, b.jamSelesai)
-      ) {
+      if (a.dayOfWeek !== b.dayOfWeek) continue;
+      if (a.teacherId !== b.teacherId && a.classId !== b.classId) continue;
+      if (timeRangesOverlap(a.startTime, a.endTime, b.startTime, b.endTime)) {
         conflictIds.add(a.id);
         conflictIds.add(b.id);
       }
@@ -73,31 +71,32 @@ export function findConflictIds(entries: JadwalEntry[]): Set<string> {
 export function findGaps(entries: JadwalEntry[]): JadwalGap[] {
   const byDay = new Map<string, JadwalEntry[]>();
   for (const entry of entries) {
-    const list = byDay.get(entry.hari) ?? [];
+    const list = byDay.get(entry.dayOfWeek) ?? [];
     list.push(entry);
-    byDay.set(entry.hari, list);
+    byDay.set(entry.dayOfWeek, list);
   }
 
   const gaps: JadwalGap[] = [];
-  for (const [hari, dayEntries] of byDay) {
+  for (const [dayOfWeek, dayEntries] of byDay) {
     const sorted = [...dayEntries].sort(
-      (a, b) => parseTimeToMinutes(a.jamMulai) - parseTimeToMinutes(b.jamMulai),
+      (a, b) =>
+        parseTimeToMinutes(a.startTime) - parseTimeToMinutes(b.startTime),
     );
-    let coveredUntil = parseTimeToMinutes(sorted[0].jamMulai);
-    let coveredUntilLabel = sorted[0].jamMulai;
+    let coveredUntil = parseTimeToMinutes(sorted[0].startTime);
+    let coveredUntilLabel = sorted[0].startTime;
     for (const entry of sorted) {
-      const start = parseTimeToMinutes(entry.jamMulai);
+      const start = parseTimeToMinutes(entry.startTime);
       if (start > coveredUntil) {
         gaps.push({
-          hari,
-          jamMulai: coveredUntilLabel,
-          jamSelesai: entry.jamMulai,
+          dayOfWeek,
+          startTime: coveredUntilLabel,
+          endTime: entry.startTime,
         });
       }
-      const end = parseTimeToMinutes(entry.jamSelesai);
+      const end = parseTimeToMinutes(entry.endTime);
       if (end > coveredUntil) {
         coveredUntil = end;
-        coveredUntilLabel = entry.jamSelesai;
+        coveredUntilLabel = entry.endTime;
       }
     }
   }
@@ -105,13 +104,13 @@ export function findGaps(entries: JadwalEntry[]): JadwalGap[] {
 }
 
 /**
- * Heatmap rollup: for each entity (keyed by kelasId or guruId) and day,
+ * Heatmap rollup: for each entity (keyed by classId or teacherId) and day,
  * session count, total hours, conflict flag, and gap count. Gaps are only
  * meaningful for kelas (a class should have no idle time between sessions).
  */
 export function summarizeByEntity(
   entries: JadwalEntry[],
-  entityKey: "kelasId" | "guruId",
+  entityKey: "classId" | "teacherId",
 ): Map<string, Map<string, DaySummary>> {
   const conflictIds = findConflictIds(entries);
   const byEntity = new Map<string, JadwalEntry[]>();
@@ -127,7 +126,7 @@ export function summarizeByEntity(
     const gaps = findGaps(entityEntries);
     const days = new Map<string, DaySummary>();
     for (const entry of entityEntries) {
-      const summary = days.get(entry.hari) ?? {
+      const summary = days.get(entry.dayOfWeek) ?? {
         sessionCount: 0,
         totalHours: 0,
         hasConflict: false,
@@ -135,14 +134,14 @@ export function summarizeByEntity(
       };
       summary.sessionCount += 1;
       summary.totalHours +=
-        (parseTimeToMinutes(entry.jamSelesai) -
-          parseTimeToMinutes(entry.jamMulai)) /
+        (parseTimeToMinutes(entry.endTime) -
+          parseTimeToMinutes(entry.startTime)) /
         60;
       summary.hasConflict = summary.hasConflict || conflictIds.has(entry.id);
-      days.set(entry.hari, summary);
+      days.set(entry.dayOfWeek, summary);
     }
     for (const gap of gaps) {
-      const summary = days.get(gap.hari);
+      const summary = days.get(gap.dayOfWeek);
       if (summary) {
         summary.gapCount += 1;
       }

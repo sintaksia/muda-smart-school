@@ -5,16 +5,20 @@ import { getAttendanceSettings } from "./settings";
 import { createCreditEntry } from "./credit";
 import { notifyUsers } from "./notifications";
 import type { AttendanceSettings } from "../types";
-import type { AbsensiGuru, Teacher, Jadwal } from "@prisma/client";
+import type { TeacherAttendance, Teacher, Schedule } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
-    jadwal: { findMany: vi.fn() },
-    absensiGuru: { upsert: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
+    schedule: { findMany: vi.fn() },
+    teacherAttendance: {
+      upsert: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
     creditScore: { findFirst: vi.fn() },
     student: { findMany: vi.fn() },
     teacher: { findUnique: vi.fn() },
-    sesi: { upsert: vi.fn() },
+    session: { upsert: vi.fn() },
   },
 }));
 
@@ -44,58 +48,58 @@ beforeEach(() => {
 describe("reportTeacherAbsence", () => {
   const jadwal = {
     id: "jadwal-1",
-    guruId: "guru-1",
-    kelasId: "kelas-1",
-    hari: "KAMIS",
-  } as Jadwal;
+    teacherId: "guru-1",
+    classId: "kelas-1",
+    dayOfWeek: "THURSDAY",
+  } as Schedule;
 
   it("records absence for all schedule entries and notifies", async () => {
-    vi.mocked(prisma.jadwal.findMany).mockResolvedValue([jadwal]);
-    vi.mocked(prisma.absensiGuru.upsert).mockResolvedValue({
+    vi.mocked(prisma.schedule.findMany).mockResolvedValue([jadwal]);
+    vi.mocked(prisma.teacherAttendance.upsert).mockResolvedValue({
       id: "ag-1",
-    } as AbsensiGuru);
+    } as TeacherAttendance);
 
     // 2026-07-09 is a Thursday
     const result = await reportTeacherAbsence({
-      guruId: "guru-1",
-      tanggal: "2026-07-09",
-      status: "IZIN",
+      teacherId: "guru-1",
+      date: "2026-07-09",
+      status: "EXCUSED",
       reportedById: "admin-user",
     });
 
     expect(result.error).toBeNull();
     expect(result.records).toHaveLength(1);
-    expect(createCreditEntry).not.toHaveBeenCalled(); // IZIN → no deduction
+    expect(createCreditEntry).not.toHaveBeenCalled(); // EXCUSED → no deduction
     expect(notifyUsers).toHaveBeenCalled();
   });
 
-  it("deducts teacher credit for ALPHA", async () => {
-    vi.mocked(prisma.jadwal.findMany).mockResolvedValue([jadwal]);
-    vi.mocked(prisma.absensiGuru.upsert).mockResolvedValue({
+  it("deducts teacher credit for ABSENT", async () => {
+    vi.mocked(prisma.schedule.findMany).mockResolvedValue([jadwal]);
+    vi.mocked(prisma.teacherAttendance.upsert).mockResolvedValue({
       id: "ag-1",
-    } as AbsensiGuru);
+    } as TeacherAttendance);
 
     await reportTeacherAbsence({
-      guruId: "guru-1",
-      tanggal: "2026-07-09",
-      status: "ALPHA",
+      teacherId: "guru-1",
+      date: "2026-07-09",
+      status: "ABSENT",
     });
 
     expect(createCreditEntry).toHaveBeenCalledWith(
       expect.objectContaining({
         ownerType: "TEACHER",
-        guruId: "guru-1",
+        teacherId: "guru-1",
         points: -15,
       }),
     );
   });
 
   it("errors when the teacher has no schedule that day", async () => {
-    vi.mocked(prisma.jadwal.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.schedule.findMany).mockResolvedValue([]);
     const result = await reportTeacherAbsence({
-      guruId: "guru-1",
-      tanggal: "2026-07-09",
-      status: "IZIN",
+      teacherId: "guru-1",
+      date: "2026-07-09",
+      status: "EXCUSED",
     });
     expect(result.error).toBe("Guru tidak memiliki jadwal pada tanggal ini");
   });
@@ -103,14 +107,14 @@ describe("reportTeacherAbsence", () => {
 
 describe("assignSubstitute", () => {
   it("assigns and notifies the substitute", async () => {
-    vi.mocked(prisma.absensiGuru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacherAttendance.findUnique).mockResolvedValue({
       id: "ag-1",
-      guruId: "guru-1",
-    } as AbsensiGuru);
-    vi.mocked(prisma.absensiGuru.update).mockResolvedValue({
+      teacherId: "guru-1",
+    } as TeacherAttendance);
+    vi.mocked(prisma.teacherAttendance.update).mockResolvedValue({
       id: "ag-1",
-      substituteGuruId: "guru-2",
-    } as AbsensiGuru);
+      substituteTeacherId: "guru-2",
+    } as TeacherAttendance);
     vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       userId: "guru2-user",
     } as Teacher);
@@ -125,10 +129,10 @@ describe("assignSubstitute", () => {
   });
 
   it("rejects assigning the absent teacher as their own substitute", async () => {
-    vi.mocked(prisma.absensiGuru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacherAttendance.findUnique).mockResolvedValue({
       id: "ag-1",
-      guruId: "guru-1",
-    } as AbsensiGuru);
+      teacherId: "guru-1",
+    } as TeacherAttendance);
 
     const result = await assignSubstitute("ag-1", "guru-1");
     expect(result.error).toBe("Guru pengganti tidak boleh guru yang sama");

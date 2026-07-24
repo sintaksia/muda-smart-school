@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { reviewIzin } from "@/src/features/attendance/services/izin";
+import { reviewLeaveRequest } from "@/src/features/attendance/services/izin";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -26,7 +26,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     if (!canAccessAdmin(currentUser.role)) {
-      const izin = await prisma.pengajuanIzin.findUnique({
+      const izin = await prisma.leaveRequest.findUnique({
         where: { id },
         include: {
           student: {
@@ -60,7 +60,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       );
     }
 
-    const { izin, error } = await reviewIzin(
+    const { izin, error } = await reviewLeaveRequest(
       id,
       result.data.decision,
       currentUser.id,

@@ -9,18 +9,18 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import { Button } from "@/src/components/ui/button";
-import { hariOptions } from "@/src/lib/constants";
+import { dayOfWeekOptions } from "@/src/lib/constants";
 
 export interface JadwalFilterState {
-  hari: string;
-  kelasId: string;
-  guruId: string;
+  dayOfWeek: string;
+  classId: string;
+  teacherId: string;
 }
 
 export const EMPTY_FILTERS: JadwalFilterState = {
-  hari: "ALL",
-  kelasId: "ALL",
-  guruId: "ALL",
+  dayOfWeek: "ALL",
+  classId: "ALL",
+  teacherId: "ALL",
 };
 
 interface JadwalFiltersProps {
@@ -37,21 +37,21 @@ export function JadwalFilters({
   guruOptions,
 }: JadwalFiltersProps) {
   const hasActiveFilter =
-    filters.hari !== "ALL" ||
-    filters.kelasId !== "ALL" ||
-    filters.guruId !== "ALL";
+    filters.dayOfWeek !== "ALL" ||
+    filters.classId !== "ALL" ||
+    filters.teacherId !== "ALL";
 
   const selects = [
     {
-      key: "hari" as const,
+      key: "dayOfWeek" as const,
       placeholder: "Semua Hari",
-      options: hariOptions.map((option) => ({
+      options: dayOfWeekOptions.map((option) => ({
         value: option.value as string,
         label: option.label,
       })),
     },
     {
-      key: "kelasId" as const,
+      key: "classId" as const,
       placeholder: "Semua Kelas",
       options: kelasOptions.map((option) => ({
         value: option.id,
@@ -59,7 +59,7 @@ export function JadwalFilters({
       })),
     },
     {
-      key: "guruId" as const,
+      key: "teacherId" as const,
       placeholder: "Semua Guru",
       options: guruOptions.map((option) => ({
         value: option.id,

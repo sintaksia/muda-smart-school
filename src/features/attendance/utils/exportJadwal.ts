@@ -1,5 +1,5 @@
 import { utils, writeFile } from "xlsx";
-import { HARI_VALUES, HARI_LABELS } from "@/src/lib/constants";
+import { DAY_OF_WEEK_VALUES, DAY_OF_WEEK_LABELS } from "@/src/lib/constants";
 import { parseTimeToMinutes } from "./time";
 import type { JadwalEntry } from "./jadwalGrid";
 
@@ -14,20 +14,20 @@ export function buildFlatRows(entries: JadwalEntry[]): string[][] {
     "Guru",
   ];
   const dayOrder: Record<string, number> = Object.fromEntries(
-    HARI_VALUES.map((value, index) => [value, index]),
+    DAY_OF_WEEK_VALUES.map((value, index) => [value, index]),
   );
   const sorted = [...entries].sort(
     (a, b) =>
-      (dayOrder[a.hari] ?? 99) - (dayOrder[b.hari] ?? 99) ||
-      parseTimeToMinutes(a.jamMulai) - parseTimeToMinutes(b.jamMulai) ||
+      (dayOrder[a.dayOfWeek] ?? 99) - (dayOrder[b.dayOfWeek] ?? 99) ||
+      parseTimeToMinutes(a.startTime) - parseTimeToMinutes(b.startTime) ||
       a.kelas.localeCompare(b.kelas),
   );
   return [
     header,
     ...sorted.map((entry) => [
-      HARI_LABELS[entry.hari] ?? entry.hari,
-      entry.jamMulai,
-      entry.jamSelesai,
+      DAY_OF_WEEK_LABELS[entry.dayOfWeek] ?? entry.dayOfWeek,
+      entry.startTime,
+      entry.endTime,
       entry.kelas,
       entry.mataPelajaran,
       entry.guru,
@@ -42,7 +42,7 @@ export function buildFlatRows(entries: JadwalEntry[]): string[][] {
 export function buildKelasMatrix(entries: JadwalEntry[]): string[][] {
   const ranges = new Map<string, string>();
   for (const entry of entries) {
-    ranges.set(`${entry.jamMulai}–${entry.jamSelesai}`, entry.jamMulai);
+    ranges.set(`${entry.startTime}–${entry.endTime}`, entry.startTime);
   }
   const sortedRanges = Array.from(ranges.keys()).sort(
     (a, b) =>
@@ -50,17 +50,20 @@ export function buildKelasMatrix(entries: JadwalEntry[]): string[][] {
       parseTimeToMinutes(ranges.get(b) as string),
   );
 
-  const header = ["Jam", ...HARI_VALUES.map((hari) => HARI_LABELS[hari])];
+  const header = [
+    "Jam",
+    ...DAY_OF_WEEK_VALUES.map((day) => DAY_OF_WEEK_LABELS[day]),
+  ];
   const rows = sortedRanges.map((range) => {
-    const [jamMulai, jamSelesai] = range.split("–");
+    const [startTime, endTime] = range.split("–");
     return [
       range,
-      ...HARI_VALUES.map((hari) => {
+      ...DAY_OF_WEEK_VALUES.map((day) => {
         const match = entries.find(
           (entry) =>
-            entry.hari === hari &&
-            entry.jamMulai === jamMulai &&
-            entry.jamSelesai === jamSelesai,
+            entry.dayOfWeek === day &&
+            entry.startTime === startTime &&
+            entry.endTime === endTime,
         );
         return match ? `${match.mataPelajaran} — ${match.guru}` : "";
       }),
@@ -89,7 +92,7 @@ export function exportJadwalToExcel(entries: JadwalEntry[]): void {
   );
 
   const kelasNames = Array.from(
-    new Map(entries.map((entry) => [entry.kelasId, entry.kelas])).values(),
+    new Map(entries.map((entry) => [entry.classId, entry.kelas])).values(),
   ).sort((a, b) => a.localeCompare(b));
   const usedNames = new Set<string>(["Semua Jadwal"]);
   for (const kelas of kelasNames) {

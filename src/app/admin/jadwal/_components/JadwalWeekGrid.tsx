@@ -1,6 +1,6 @@
 "use client";
 
-import { HARI_LABELS, HARI_VALUES } from "@/src/lib/constants";
+import { DAY_OF_WEEK_LABELS, DAY_OF_WEEK_VALUES } from "@/src/lib/constants";
 import { parseTimeToMinutes } from "@/src/features/attendance/utils/time";
 import {
   buildTimeBoundaries,
@@ -36,10 +36,10 @@ export function JadwalWeekGrid({
 
   const spans = new Map<string, DaySpan>();
   for (const entry of entries) {
-    const start = parseTimeToMinutes(entry.jamMulai);
-    const end = parseTimeToMinutes(entry.jamSelesai);
-    const span = spans.get(entry.hari);
-    spans.set(entry.hari, {
+    const start = parseTimeToMinutes(entry.startTime);
+    const end = parseTimeToMinutes(entry.endTime);
+    const span = spans.get(entry.dayOfWeek);
+    spans.set(entry.dayOfWeek, {
       start: Math.min(span?.start ?? start, start),
       end: Math.max(span?.end ?? end, end),
     });
@@ -53,12 +53,12 @@ export function JadwalWeekGrid({
             <th className="text-ink-muted w-28 px-3 py-2 text-left text-xs font-medium">
               Jam
             </th>
-            {HARI_VALUES.map((hari) => (
+            {DAY_OF_WEEK_VALUES.map((dayOfWeek) => (
               <th
-                key={hari}
+                key={dayOfWeek}
                 className="text-ink border-hairline border-l px-3 py-2 text-left text-xs font-semibold"
               >
-                {HARI_LABELS[hari]}
+                {DAY_OF_WEEK_LABELS[dayOfWeek]}
               </th>
             ))}
           </tr>
@@ -72,14 +72,14 @@ export function JadwalWeekGrid({
                 <td className="text-ink-secondary px-3 py-2 text-xs font-medium tabular-nums">
                   {slotStart}–{slotEnd}
                 </td>
-                {HARI_VALUES.map((hari) => {
+                {DAY_OF_WEEK_VALUES.map((dayOfWeek) => {
                   const covering = entries.filter(
                     (entry) =>
-                      entry.hari === hari &&
-                      parseTimeToMinutes(entry.jamMulai) <= startMin &&
-                      parseTimeToMinutes(entry.jamSelesai) > startMin,
+                      entry.dayOfWeek === dayOfWeek &&
+                      parseTimeToMinutes(entry.startTime) <= startMin &&
+                      parseTimeToMinutes(entry.endTime) > startMin,
                   );
-                  const span = spans.get(hari);
+                  const span = spans.get(dayOfWeek);
                   const insideSpan =
                     span !== undefined &&
                     startMin >= span.start &&
@@ -88,7 +88,7 @@ export function JadwalWeekGrid({
                   if (covering.length === 0) {
                     return (
                       <td
-                        key={hari}
+                        key={dayOfWeek}
                         className={`border-hairline border-l px-3 py-2 text-xs ${
                           insideSpan
                             ? mode === "kelas"
@@ -111,7 +111,7 @@ export function JadwalWeekGrid({
                   );
                   return (
                     <td
-                      key={hari}
+                      key={dayOfWeek}
                       className={`border-l px-3 py-2 align-top ${
                         hasConflict || covering.length > 1
                           ? "border-danger/40 bg-danger/10"
@@ -120,7 +120,7 @@ export function JadwalWeekGrid({
                     >
                       {covering.map((entry) => (
                         <div key={entry.id} className="text-xs leading-snug">
-                          {entry.jamMulai === slotStart ? (
+                          {entry.startTime === slotStart ? (
                             <>
                               <p className="text-ink font-semibold">
                                 {entry.mataPelajaran}

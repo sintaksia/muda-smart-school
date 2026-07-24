@@ -99,70 +99,71 @@ export const REGISTRATION_STATUS_BADGES: Record<
  * Attendance & Credit Score system
  * ============================================================ */
 
-export const absensiStatusOptions = [
-  { value: "HADIR", label: "Hadir", badge: "success" as const },
-  { value: "TERLAMBAT", label: "Terlambat", badge: "warning" as const },
-  { value: "IZIN", label: "Izin", badge: "info" as const },
-  { value: "SAKIT", label: "Sakit", badge: "secondary" as const },
-  { value: "ALPHA", label: "Alpa", badge: "destructive" as const },
+export const attendanceStatusOptions = [
+  { value: "PRESENT", label: "Hadir", badge: "success" as const },
+  { value: "LATE", label: "Terlambat", badge: "warning" as const },
+  { value: "EXCUSED", label: "Izin", badge: "info" as const },
+  { value: "SICK", label: "Sakit", badge: "secondary" as const },
+  { value: "ABSENT", label: "Alpa", badge: "destructive" as const },
 ] as const;
 
-export const ABSENSI_STATUS_VALUES = absensiStatusOptions.map((o) => o.value);
-
-export const ABSENSI_STATUS_LABELS: Record<string, string> = Object.fromEntries(
-  absensiStatusOptions.map((o) => [o.value, o.label]),
+export const ATTENDANCE_STATUS_VALUES = attendanceStatusOptions.map(
+  (o) => o.value,
 );
 
-export const ABSENSI_STATUS_BADGES: Record<
+export const ATTENDANCE_STATUS_LABELS: Record<string, string> =
+  Object.fromEntries(attendanceStatusOptions.map((o) => [o.value, o.label]));
+
+export const ATTENDANCE_STATUS_BADGES: Record<
   string,
   "success" | "warning" | "info" | "secondary" | "destructive"
-> = Object.fromEntries(absensiStatusOptions.map((o) => [o.value, o.badge]));
+> = Object.fromEntries(attendanceStatusOptions.map((o) => [o.value, o.badge]));
 
-export const sesiStatusOptions = [
+export const sessionStatusOptions = [
   { value: "OPEN", label: "Berlangsung", badge: "success" as const },
   { value: "CLOSED", label: "Selesai", badge: "secondary" as const },
-  { value: "KELAS_KOSONG", label: "Kelas Kosong", badge: "warning" as const },
+  { value: "NO_CLASS", label: "Kelas Kosong", badge: "warning" as const },
 ] as const;
 
-export const SESI_STATUS_LABELS: Record<string, string> = Object.fromEntries(
-  sesiStatusOptions.map((o) => [o.value, o.label]),
+export const SESSION_STATUS_LABELS: Record<string, string> = Object.fromEntries(
+  sessionStatusOptions.map((o) => [o.value, o.label]),
 );
 
-export const SESI_STATUS_BADGES: Record<
+export const SESSION_STATUS_BADGES: Record<
   string,
   "success" | "warning" | "secondary"
-> = Object.fromEntries(sesiStatusOptions.map((o) => [o.value, o.badge]));
+> = Object.fromEntries(sessionStatusOptions.map((o) => [o.value, o.badge]));
 
-export const izinJenisOptions = [
-  { value: "IZIN", label: "Izin", badge: "info" as const },
-  { value: "SAKIT", label: "Sakit", badge: "secondary" as const },
+export const leaveTypeOptions = [
+  { value: "PERMISSION", label: "Izin", badge: "info" as const },
+  { value: "SICK", label: "Sakit", badge: "secondary" as const },
 ] as const;
 
-export const IZIN_JENIS_VALUES = izinJenisOptions.map((o) => o.value);
+export const LEAVE_TYPE_VALUES = leaveTypeOptions.map((o) => o.value);
 
-export const IZIN_JENIS_LABELS: Record<string, string> = Object.fromEntries(
-  izinJenisOptions.map((o) => [o.value, o.label]),
+export const LEAVE_TYPE_LABELS: Record<string, string> = Object.fromEntries(
+  leaveTypeOptions.map((o) => [o.value, o.label]),
 );
 
-export const izinStatusOptions = [
+export const leaveStatusOptions = [
   { value: "PENDING", label: "Menunggu", badge: "warning" as const },
   { value: "APPROVED", label: "Disetujui", badge: "success" as const },
   { value: "REJECTED", label: "Ditolak", badge: "destructive" as const },
 ] as const;
 
-export const IZIN_STATUS_LABELS: Record<string, string> = Object.fromEntries(
-  izinStatusOptions.map((o) => [o.value, o.label]),
+export const LEAVE_STATUS_LABELS: Record<string, string> = Object.fromEntries(
+  leaveStatusOptions.map((o) => [o.value, o.label]),
 );
 
-export const IZIN_STATUS_BADGES: Record<
+export const LEAVE_STATUS_BADGES: Record<
   string,
   "success" | "warning" | "destructive"
-> = Object.fromEntries(izinStatusOptions.map((o) => [o.value, o.badge]));
+> = Object.fromEntries(leaveStatusOptions.map((o) => [o.value, o.badge]));
 
 export const creditEntryTypeOptions = [
-  { value: "PRESTASI", label: "Prestasi", badge: "success" as const },
-  { value: "PELANGGARAN", label: "Pelanggaran", badge: "destructive" as const },
-  { value: "KOREKSI", label: "Koreksi", badge: "info" as const },
+  { value: "ACHIEVEMENT", label: "Prestasi", badge: "success" as const },
+  { value: "VIOLATION", label: "Pelanggaran", badge: "destructive" as const },
+  { value: "CORRECTION", label: "Koreksi", badge: "info" as const },
 ] as const;
 
 export const CREDIT_ENTRY_TYPE_VALUES = creditEntryTypeOptions.map(
@@ -227,19 +228,19 @@ export const gradeLevelOptions = [
   { value: 12, label: "Kelas 12" },
 ] as const;
 
-export const hariOptions = [
-  { value: "SENIN", label: "Senin" },
-  { value: "SELASA", label: "Selasa" },
-  { value: "RABU", label: "Rabu" },
-  { value: "KAMIS", label: "Kamis" },
-  { value: "JUMAT", label: "Jumat" },
-  { value: "SABTU", label: "Sabtu" },
+export const dayOfWeekOptions = [
+  { value: "MONDAY", label: "Senin" },
+  { value: "TUESDAY", label: "Selasa" },
+  { value: "WEDNESDAY", label: "Rabu" },
+  { value: "THURSDAY", label: "Kamis" },
+  { value: "FRIDAY", label: "Jumat" },
+  { value: "SATURDAY", label: "Sabtu" },
 ] as const;
 
-export const HARI_VALUES = hariOptions.map((o) => o.value);
+export const DAY_OF_WEEK_VALUES = dayOfWeekOptions.map((o) => o.value);
 
-export const HARI_LABELS: Record<string, string> = Object.fromEntries(
-  hariOptions.map((o) => [o.value, o.label]),
+export const DAY_OF_WEEK_LABELS: Record<string, string> = Object.fromEntries(
+  dayOfWeekOptions.map((o) => [o.value, o.label]),
 );
 
 export const testimonialTypeOptions = [

@@ -23,15 +23,15 @@ export default async function SiswaDashboardPage() {
 
   const [total, history, izinList] = await Promise.all([
     getCreditTotal("STUDENT", student.id),
-    prisma.absensiSiswa.findMany({
+    prisma.studentAttendance.findMany({
       where: { studentId: student.id },
       include: {
         jadwal: { select: { mataPelajaran: { select: { name: true } } } },
       },
-      orderBy: { tanggal: "desc" },
+      orderBy: { date: "desc" },
       take: 20,
     }),
-    prisma.pengajuanIzin.findMany({
+    prisma.leaveRequest.findMany({
       where: { studentId: student.id },
       orderBy: { createdAt: "desc" },
       take: 10,
@@ -45,16 +45,16 @@ export default async function SiswaDashboardPage() {
       <IzinSection
         submissions={izinList.map((izin) => ({
           id: izin.id,
-          jenis: izin.jenis,
-          tanggal: izin.tanggal.toISOString().slice(0, 10),
-          alasan: izin.alasan,
+          jenis: izin.type,
+          tanggal: izin.date.toISOString().slice(0, 10),
+          alasan: izin.reason,
           status: izin.status,
         }))}
       />
       <AttendanceHistory
         records={history.map((record) => ({
           id: record.id,
-          tanggal: record.tanggal.toISOString().slice(0, 10),
+          tanggal: record.date.toISOString().slice(0, 10),
           mapel: record.jadwal.mataPelajaran.name,
           status: record.status,
         }))}

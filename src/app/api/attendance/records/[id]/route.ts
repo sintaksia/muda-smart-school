@@ -4,7 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import { overrideAttendance } from "@/src/features/attendance/services/scan";
-import { ABSENSI_STATUS_VALUES } from "@/src/lib/constants";
+import { ATTENDANCE_STATUS_VALUES } from "@/src/lib/constants";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -13,11 +13,17 @@ interface RouteParams {
 const overrideSchema = z.object({
   status: z
     .enum(
-      ABSENSI_STATUS_VALUES as ["HADIR", "TERLAMBAT", "IZIN", "SAKIT", "ALPHA"],
+      ATTENDANCE_STATUS_VALUES as [
+        "PRESENT",
+        "LATE",
+        "EXCUSED",
+        "SICK",
+        "ABSENT",
+      ],
       { message: "Status tidak valid" },
     )
     .optional(),
-  catatan: z.string().optional(),
+  note: z.string().optional(),
   clearReview: z.boolean().optional(),
 });
 
@@ -34,9 +40,9 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       const guru = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
-      const record = await prisma.absensiSiswa.findUnique({
+      const record = await prisma.studentAttendance.findUnique({
         where: { id },
-        include: { jadwal: { select: { guruId: true } }, sesi: true },
+        include: { jadwal: { select: { teacherId: true } }, sesi: true },
       });
       if (!record) {
         return NextResponse.json(
@@ -46,8 +52,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       }
       const isSessionTeacher =
         guru &&
-        (record.jadwal.guruId === guru.id ||
-          record.sesi?.actualGuruId === guru.id);
+        (record.jadwal.teacherId === guru.id ||
+          record.sesi?.actualTeacherId === guru.id);
       if (!isSessionTeacher) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }

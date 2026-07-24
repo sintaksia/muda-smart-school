@@ -4,12 +4,12 @@ import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { overrideAttendance } from "@/src/features/attendance/services/scan";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { AbsensiSiswa } from "@prisma/client";
+import type { StudentAttendance } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
     teacher: { findUnique: vi.fn() },
-    absensiSiswa: { findUnique: vi.fn() },
+    studentAttendance: { findUnique: vi.fn() },
   },
 }));
 vi.mock("@/src/features/auth/services/auth", () => ({
@@ -42,15 +42,15 @@ describe("PATCH /api/attendance/records/[id]", () => {
     vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
     } as never);
-    vi.mocked(prisma.absensiSiswa.findUnique).mockResolvedValue({
+    vi.mocked(prisma.studentAttendance.findUnique).mockResolvedValue({
       id: "abs-1",
-      jadwal: { guruId: "guru-1" },
+      jadwal: { teacherId: "guru-1" },
       sesi: null,
-    } as unknown as AbsensiSiswa);
+    } as unknown as StudentAttendance);
     vi.mocked(overrideAttendance).mockResolvedValue({
       id: "abs-1",
       needsReview: false,
-    } as AbsensiSiswa);
+    } as StudentAttendance);
 
     const response = await PATCH(
       buildRequest({ clearReview: true }),
@@ -71,14 +71,14 @@ describe("PATCH /api/attendance/records/[id]", () => {
     vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-9",
     } as never);
-    vi.mocked(prisma.absensiSiswa.findUnique).mockResolvedValue({
+    vi.mocked(prisma.studentAttendance.findUnique).mockResolvedValue({
       id: "abs-1",
-      jadwal: { guruId: "guru-1" },
-      sesi: { actualGuruId: "guru-1" },
-    } as unknown as AbsensiSiswa);
+      jadwal: { teacherId: "guru-1" },
+      sesi: { actualTeacherId: "guru-1" },
+    } as unknown as StudentAttendance);
 
     const response = await PATCH(
-      buildRequest({ status: "HADIR" }),
+      buildRequest({ status: "PRESENT" }),
       routeParams,
     );
     expect(response.status).toBe(403);
