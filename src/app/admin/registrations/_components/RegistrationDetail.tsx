@@ -6,14 +6,14 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/src/components/ui/tabs";
-import type { Pendaftaran } from "@/src/features/registration/services";
+import type { Registration } from "@/src/features/registration/services";
 import { DataDiriTab } from "./detail/DataDiriTab";
 import { DataOrtuTab } from "./detail/DataOrtuTab";
 import { SekolahAsalTab } from "./detail/SekolahAsalTab";
 import { DokumenTab } from "./detail/DokumenTab";
 
 interface RegistrationDetailProps {
-  registration: Pendaftaran;
+  registration: Registration;
 }
 
 export function RegistrationDetail({ registration }: RegistrationDetailProps) {

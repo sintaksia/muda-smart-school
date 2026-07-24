@@ -6,13 +6,13 @@ import {
 } from "@/src/components/ui/card";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import {
-  STATUS_PENDAFTARAN_BADGES,
-  STATUS_PENDAFTARAN_LABELS,
+  REGISTRATION_STATUS_BADGES,
+  REGISTRATION_STATUS_LABELS,
 } from "@/src/lib/constants";
-import type { Pendaftaran } from "@/src/features/registration/services";
+import type { Registration } from "@/src/features/registration/services";
 import { DetailItem, formatDate } from "./DetailItem";
 
-export function DokumenTab({ registration }: { registration: Pendaftaran }) {
+export function DokumenTab({ registration }: { registration: Registration }) {
   return (
     <Card>
       <CardHeader>
@@ -22,21 +22,21 @@ export function DokumenTab({ registration }: { registration: Pendaftaran }) {
         <div className="grid gap-4 md:grid-cols-2">
           <DetailItem
             label="No. Pendaftaran"
-            value={registration.nomorPendaftaran || "-"}
+            value={registration.registrationNumber || "-"}
           />
           <DetailItem
             label="Tanggal Pendaftaran"
-            value={formatDate(registration.tanggalPendaftaran)}
+            value={formatDate(registration.registrationDate)}
           />
           <DetailItem
             label="Status"
             value={
               <Badge
                 variant={
-                  STATUS_PENDAFTARAN_BADGES[registration.status] ?? "warning"
+                  REGISTRATION_STATUS_BADGES[registration.status] ?? "warning"
                 }
               >
-                {STATUS_PENDAFTARAN_LABELS[registration.status] ??
+                {REGISTRATION_STATUS_LABELS[registration.status] ??
                   registration.status}
               </Badge>
             }

@@ -24,7 +24,7 @@ function buildRequest(body: unknown): Request {
 const validBody = {
   nama: "X PPLG 1",
   tingkat: 10,
-  programKeahlian: "PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM",
+  specialization: "SOFTWARE_AND_GAME_DEVELOPMENT",
   tahunAjaran: "2026/2027",
 };
 

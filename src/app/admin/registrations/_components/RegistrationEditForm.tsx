@@ -12,7 +12,7 @@ import {
   type RegistrasiFormData,
 } from "@/src/features/registration/services/registration.schema";
 import { registrationToFormDefaults } from "@/src/features/registration/services/registration.utils";
-import type { Pendaftaran } from "@prisma/client";
+import type { Registration } from "@prisma/client";
 
 import { Button } from "@/src/components/ui/button";
 import { Form } from "@/src/components/ui/form";
@@ -23,7 +23,7 @@ import { AsalSekolahFields } from "./edit-form/AsalSekolahFields";
 import { TextFormField } from "./edit-form/FormFields";
 
 interface RegistrationEditFormProps {
-  registration: Pendaftaran;
+  registration: Registration;
 }
 
 export function RegistrationEditForm({
@@ -74,11 +74,11 @@ export function RegistrationEditForm({
           title="Data Ayah"
           subjek="Ayah"
           names={{
-            nama: "namaAyah",
-            tahunLahir: "tahunLahirAyah",
-            pendidikan: "pendidikanAyah",
-            pekerjaan: "pekerjaanAyah",
-            noTelp: "noTelpAyah",
+            nama: "fatherName",
+            tahunLahir: "fatherBirthYear",
+            pendidikan: "fatherEducation",
+            pekerjaan: "fatherOccupation",
+            noTelp: "fatherPhone",
           }}
         />
         <OrangTuaFields
@@ -86,11 +86,11 @@ export function RegistrationEditForm({
           title="Data Ibu"
           subjek="Ibu"
           names={{
-            nama: "namaIbu",
-            tahunLahir: "tahunLahirIbu",
-            pendidikan: "pendidikanIbu",
-            pekerjaan: "pekerjaanIbu",
-            noTelp: "noTelpIbu",
+            nama: "motherName",
+            tahunLahir: "motherBirthYear",
+            pendidikan: "motherEducation",
+            pekerjaan: "motherOccupation",
+            noTelp: "motherPhone",
           }}
         />
         <OrangTuaFields
@@ -98,17 +98,17 @@ export function RegistrationEditForm({
           title="Data Wali (Opsional)"
           subjek="Wali"
           names={{
-            nama: "namaWali",
-            tahunLahir: "tahunLahirWali",
-            pendidikan: "pendidikanWali",
-            pekerjaan: "pekerjaanWali",
-            noTelp: "noTelpWali",
+            nama: "guardianName",
+            tahunLahir: "guardianBirthYear",
+            pendidikan: "guardianEducation",
+            pekerjaan: "guardianOccupation",
+            noTelp: "guardianPhone",
           }}
           pendidikanPlaceholder="Pilih pendidikan (opsional)"
         >
           <TextFormField
             control={form.control}
-            name="hubunganWali"
+            name="guardianRelationship"
             label="Hubungan dengan Siswa"
           />
         </OrangTuaFields>

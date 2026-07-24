@@ -18,7 +18,7 @@ export default async function MapelPage() {
           id: mapel.id,
           nama: mapel.nama,
           kode: mapel.kode,
-          programKeahlian: mapel.programKeahlian,
+          specialization: mapel.specialization,
           tingkat: mapel.tingkat,
           jumlahGuru: mapel._count.guru,
           jumlahJadwal: mapel._count.jadwal,

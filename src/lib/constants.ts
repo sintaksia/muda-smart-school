@@ -1,62 +1,60 @@
-export const jenisKelaminOptions = [
-  { value: "LAKI_LAKI", label: "Laki-laki" },
-  { value: "PEREMPUAN", label: "Perempuan" },
+export const genderOptions = [
+  { value: "MALE", label: "Laki-laki" },
+  { value: "FEMALE", label: "Perempuan" },
 ] as const;
 
-export const JENIS_KELAMIN_LABELS: Record<string, string> = Object.fromEntries(
-  jenisKelaminOptions.map((option) => [option.value, option.label]),
+export const GENDER_LABELS: Record<string, string> = Object.fromEntries(
+  genderOptions.map((option) => [option.value, option.label]),
 );
 
-export const programKeahlianOptions = [
+export const specializationOptions = [
   {
-    value: "TEKNIK_OTOMOTIF",
+    value: "AUTOMOTIVE_ENGINEERING",
     label: "Teknik Otomotif",
     short: "TO",
     color: "#EF4444",
   },
   {
-    value: "PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM",
+    value: "SOFTWARE_AND_GAME_DEVELOPMENT",
     label: "Pemrograman Perangkat Lunak dan Gim",
     short: "PPLG",
     color: "#32368C",
   },
   {
-    value: "TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI",
+    value: "NETWORK_AND_TELECOMMUNICATIONS_ENGINEERING",
     label: "Teknik Jaringan Komputer dan Telekomunikasi",
     short: "TJKT",
     color: "#4CAF93",
   },
   {
-    value: "MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS",
+    value: "OFFICE_MANAGEMENT_AND_BUSINESS_SERVICES",
     label: "Manajemen Perkantoran dan Layanan Bisnis",
     short: "MPLB",
     color: "#F2C94C",
   },
   {
-    value: "AKUNTANSI_DAN_KEUANGAN_LEMBAGA",
+    value: "ACCOUNTING_AND_INSTITUTIONAL_FINANCE",
     label: "Akuntansi dan Keuangan Lembaga",
     short: "AKL",
     color: "#9333EA",
   },
 ] as const;
 
-export const PROGRAM_KEAHLIAN_LABELS: Record<string, string> =
+export const SPECIALIZATION_LABELS: Record<string, string> = Object.fromEntries(
+  specializationOptions.map((option) => [option.value, option.label]),
+);
+
+export const SPECIALIZATION_SHORT_LABELS: Record<string, string> =
   Object.fromEntries(
-    programKeahlianOptions.map((option) => [option.value, option.label]),
+    specializationOptions.map((option) => [option.value, option.short]),
   );
 
-export const PROGRAM_KEAHLIAN_SHORT_LABELS: Record<string, string> =
-  Object.fromEntries(
-    programKeahlianOptions.map((option) => [option.value, option.short]),
-  );
+export const SPECIALIZATION_COLORS: Record<string, string> = Object.fromEntries(
+  specializationOptions.map((option) => [option.value, option.color]),
+);
 
-export const PROGRAM_KEAHLIAN_COLORS: Record<string, string> =
-  Object.fromEntries(
-    programKeahlianOptions.map((option) => [option.value, option.color]),
-  );
-
-export const pendidikanOptions = [
-  { value: "TIDAK_SEKOLAH", label: "Tidak Sekolah" },
+export const educationOptions = [
+  { value: "NO_SCHOOLING", label: "Tidak Sekolah" },
   { value: "SD", label: "SD/Sederajat" },
   { value: "SMP", label: "SMP/Sederajat" },
   { value: "SMA", label: "SMA/Sederajat" },
@@ -70,31 +68,31 @@ export const pendidikanOptions = [
   { value: "S3", label: "S3" },
 ] as const;
 
-export const PENDIDIKAN_LABELS: Record<string, string> = Object.fromEntries(
-  pendidikanOptions.map((option) => [option.value, option.label]),
+export const EDUCATION_LABELS: Record<string, string> = Object.fromEntries(
+  educationOptions.map((option) => [option.value, option.label]),
 );
 
-export const statusPendaftaranOptions = [
+export const registrationStatusOptions = [
   { value: "PENDING", label: "Menunggu", badge: "warning" as const },
-  { value: "DIVERIFIKASI", label: "Terverifikasi", badge: "info" as const },
-  { value: "DITERIMA", label: "Diterima", badge: "success" as const },
-  { value: "DITOLAK", label: "Ditolak", badge: "destructive" as const },
+  { value: "VERIFIED", label: "Terverifikasi", badge: "info" as const },
+  { value: "ACCEPTED", label: "Diterima", badge: "success" as const },
+  { value: "REJECTED", label: "Ditolak", badge: "destructive" as const },
 ] as const;
 
-export const STATUS_PENDAFTARAN_VALUES = statusPendaftaranOptions.map(
+export const REGISTRATION_STATUS_VALUES = registrationStatusOptions.map(
   (option) => option.value,
 );
 
-export const STATUS_PENDAFTARAN_LABELS: Record<string, string> =
+export const REGISTRATION_STATUS_LABELS: Record<string, string> =
   Object.fromEntries(
-    statusPendaftaranOptions.map((option) => [option.value, option.label]),
+    registrationStatusOptions.map((option) => [option.value, option.label]),
   );
 
-export const STATUS_PENDAFTARAN_BADGES: Record<
+export const REGISTRATION_STATUS_BADGES: Record<
   string,
   "success" | "warning" | "info" | "destructive"
 > = Object.fromEntries(
-  statusPendaftaranOptions.map((option) => [option.value, option.badge]),
+  registrationStatusOptions.map((option) => [option.value, option.badge]),
 );
 
 /* ============================================================

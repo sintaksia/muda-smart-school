@@ -29,12 +29,12 @@ import {
   createStudentFromRegistrationSchema,
   type CreateStudentFromRegistrationFormData,
 } from "@/src/app/api/students/StudentSchema";
-import type { PendaftaranWithStudent } from "@/src/features/registration/services";
+import type { RegistrationWithStudent } from "@/src/features/registration/services";
 
 interface CreateStudentAccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  registration: PendaftaranWithStudent;
+  registration: RegistrationWithStudent;
 }
 
 export function CreateStudentAccountDialog({
@@ -48,7 +48,7 @@ export function CreateStudentAccountDialog({
   const form = useForm<CreateStudentFromRegistrationFormData>({
     resolver: zodResolver(createStudentFromRegistrationSchema),
     defaultValues: {
-      pendaftaranId: registration.id,
+      registrationId: registration.id,
       nis: "",
       angkatan: new Date().getFullYear(),
       password: "",
@@ -90,8 +90,8 @@ export function CreateStudentAccountDialog({
         <DialogHeader>
           <DialogTitle>Buat Akun Siswa</DialogTitle>
           <DialogDescription>
-            Buat akun login untuk <strong>{registration.namaLengkap}</strong> (
-            {registration.emailMurid || "tidak ada email"})
+            Buat akun login untuk <strong>{registration.fullName}</strong> (
+            {registration.studentEmail || "tidak ada email"})
           </DialogDescription>
         </DialogHeader>
 

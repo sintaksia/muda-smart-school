@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import {
-  PROGRAM_KEAHLIAN_SHORT_LABELS,
-  programKeahlianOptions,
+  SPECIALIZATION_SHORT_LABELS,
+  specializationOptions,
 } from "@/src/lib/constants";
 
 export interface MapelRow {
   id: string;
   nama: string;
   kode: string;
-  programKeahlian: string | null;
+  specialization: string | null;
   tingkat: number | null;
   jumlahGuru: number;
   jumlahJadwal: number;
@@ -30,7 +30,7 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
   const router = useRouter();
   const [nama, setNama] = useState<string>("");
   const [kode, setKode] = useState<string>("");
-  const [programKeahlian, setProgramKeahlian] = useState<string>("");
+  const [specialization, setSpecialization] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   async function handleCreate(
@@ -45,7 +45,7 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
         body: JSON.stringify({
           nama,
           kode,
-          programKeahlian: programKeahlian || null,
+          specialization: specialization || null,
         }),
       });
       const data = await response.json();
@@ -107,12 +107,12 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
             className={`${inputClass} font-mono uppercase`}
           />
           <select
-            value={programKeahlian}
-            onChange={(e) => setProgramKeahlian(e.target.value)}
+            value={specialization}
+            onChange={(e) => setSpecialization(e.target.value)}
             className={inputClass}
           >
             <option value="">Umum (semua program)</option>
-            {programKeahlianOptions.map((option) => (
+            {specializationOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.short}
               </option>
@@ -152,8 +152,8 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
                   </td>
                   <td className="text-ink px-4 py-3">{row.nama}</td>
                   <td className="text-ink-secondary px-4 py-3">
-                    {row.programKeahlian
-                      ? PROGRAM_KEAHLIAN_SHORT_LABELS[row.programKeahlian]
+                    {row.specialization
+                      ? SPECIALIZATION_SHORT_LABELS[row.specialization]
                       : "Umum"}
                   </td>
                   <td className="text-ink-secondary px-4 py-3 text-right tabular-nums">

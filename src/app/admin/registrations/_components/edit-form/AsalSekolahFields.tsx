@@ -13,23 +13,23 @@ export function AsalSekolahFields({ control }: { control: RegistrasiControl }) {
       <div className="grid gap-4 md:grid-cols-2">
         <TextFormField
           control={control}
-          name="namaAsalSekolah"
+          name="previousSchoolName"
           label="Nama SMP/MTs/Sederajat"
           className="md:col-span-2"
         />
         <TextFormField
           control={control}
-          name="npsnAsalSekolah"
+          name="previousSchoolNpsn"
           label="NPSN Sekolah Asal"
         />
         <TextFormField
           control={control}
-          name="tahunLulus"
+          name="graduationYear"
           label="Tahun Lulus"
         />
         <TextFormField
           control={control}
-          name="alamatAsalSekolah"
+          name="previousSchoolAddress"
           label="Alamat Sekolah Asal"
           className="md:col-span-2"
         />

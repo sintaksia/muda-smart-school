@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { programKeahlianOptions } from "@/src/lib/constants";
+import { specializationOptions } from "@/src/lib/constants";
 
-const PROGRAM_VALUES = programKeahlianOptions.map((o) => o.value) as [
-  "TEKNIK_OTOMOTIF",
-  "PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM",
-  "TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI",
-  "MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS",
-  "AKUNTANSI_DAN_KEUANGAN_LEMBAGA",
+const SPECIALIZATION_VALUES = specializationOptions.map((o) => o.value) as [
+  "AUTOMOTIVE_ENGINEERING",
+  "SOFTWARE_AND_GAME_DEVELOPMENT",
+  "NETWORK_AND_TELECOMMUNICATIONS_ENGINEERING",
+  "OFFICE_MANAGEMENT_AND_BUSINESS_SERVICES",
+  "ACCOUNTING_AND_INSTITUTIONAL_FINANCE",
 ];
 
 export const mapelSchema = z.object({
@@ -16,7 +16,7 @@ export const mapelSchema = z.object({
     .min(2)
     .max(12)
     .transform((value) => value.toUpperCase()),
-  programKeahlian: z.enum(PROGRAM_VALUES).optional().nullable(),
+  specialization: z.enum(SPECIALIZATION_VALUES).optional().nullable(),
   tingkat: z.number().int().min(10).max(12).optional().nullable(),
 });
 

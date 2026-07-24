@@ -1,16 +1,13 @@
 import { z } from "zod";
 import {
-  jenisKelaminOptions,
-  pendidikanOptions,
+  genderOptions,
+  educationOptions,
   STATUS_KEPEGAWAIAN_VALUES,
 } from "@/src/lib/constants";
 
-const JENIS_KELAMIN_VALUES = jenisKelaminOptions.map((o) => o.value) as [
-  "LAKI_LAKI",
-  "PEREMPUAN",
-];
-const PENDIDIKAN_VALUES = pendidikanOptions.map((o) => o.value) as [
-  "TIDAK_SEKOLAH",
+const GENDER_VALUES = genderOptions.map((o) => o.value) as ["MALE", "FEMALE"];
+const EDUCATION_VALUES = educationOptions.map((o) => o.value) as [
+  "NO_SCHOOLING",
   "SD",
   "SMP",
   "SMA",
@@ -33,14 +30,14 @@ export const createGuruSchema = z.object({
   phone: z.string().optional(),
   nip: z.string().optional(),
   nuptk: z.string().optional(),
-  jenisKelamin: z.enum(JENIS_KELAMIN_VALUES, {
+  gender: z.enum(GENDER_VALUES, {
     message: "Jenis kelamin wajib dipilih",
   }),
   tempatLahir: z.string({ message: "Tempat lahir wajib diisi" }).min(2),
   tanggalLahir: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Tanggal lahir tidak valid" }),
-  pendidikanTerakhir: z.enum(PENDIDIKAN_VALUES, {
+  education: z.enum(EDUCATION_VALUES, {
     message: "Pendidikan wajib dipilih",
   }),
   jabatan: z.string().optional(),

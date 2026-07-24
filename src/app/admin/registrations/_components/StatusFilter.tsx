@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import { Badge } from "@/src/app/admin/_components/Badge";
-import { statusPendaftaranOptions } from "@/src/lib/constants";
+import { registrationStatusOptions } from "@/src/lib/constants";
 
 interface StatusFilterProps {
   value: string;
@@ -18,7 +18,7 @@ interface StatusFilterProps {
 export function StatusFilter({ value, onChange }: StatusFilterProps) {
   const statusOptions = [
     { value: "all", label: "Semua Status", badge: null },
-    ...statusPendaftaranOptions,
+    ...registrationStatusOptions,
   ];
 
   return (

@@ -7,12 +7,12 @@ import { DeleteDialog } from "@/src/app/admin/_components/DeleteDialog";
 import { CreateStudentAccountDialog } from "./CreateStudentAccountDialog";
 import { RegistrationActionsMenu } from "./RegistrationActionsMenu";
 import type {
-  PendaftaranWithStudent,
-  StatusPendaftaran,
+  RegistrationWithStudent,
+  RegistrationStatus,
 } from "@/src/features/registration/services";
 
 interface RegistrationActionsProps {
-  registration: PendaftaranWithStudent;
+  registration: RegistrationWithStudent;
 }
 
 export function RegistrationActions({
@@ -24,7 +24,7 @@ export function RegistrationActions({
   const [isLoading, setIsLoading] = useState(false);
 
   const updateStatus = async (
-    status: StatusPendaftaran,
+    status: RegistrationStatus,
     successMessage: string,
     errorMessage: string,
   ) => {
@@ -82,7 +82,7 @@ export function RegistrationActions({
         onConfirm={handleDelete}
         isLoading={isLoading}
         title="Hapus Pendaftaran"
-        description={`Apakah Anda yakin ingin menghapus pendaftaran "${registration.namaLengkap}"?`}
+        description={`Apakah Anda yakin ingin menghapus pendaftaran "${registration.fullName}"?`}
       />
 
       <CreateStudentAccountDialog

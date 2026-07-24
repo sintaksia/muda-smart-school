@@ -1,12 +1,12 @@
-import type { Pendidikan } from "@prisma/client";
+import type { Education } from "@prisma/client";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import { PENDIDIKAN_LABELS } from "@/src/lib/constants";
-import type { Pendaftaran } from "@/src/features/registration/services";
+import { EDUCATION_LABELS } from "@/src/lib/constants";
+import type { Registration } from "@/src/features/registration/services";
 import { DetailItem, formatYear } from "./DetailItem";
 
 interface OrangTuaCardProps {
@@ -14,7 +14,7 @@ interface OrangTuaCardProps {
   namaLabel: string;
   nama: string;
   tahunLahir: number | null;
-  pendidikan: Pendidikan | null;
+  pendidikan: Education | null;
   pekerjaan: string | null;
   noTelp: string | null;
 }
@@ -40,7 +40,7 @@ function OrangTuaCard({
           <DetailItem
             label="Pendidikan"
             value={
-              pendidikan ? (PENDIDIKAN_LABELS[pendidikan] ?? pendidikan) : "-"
+              pendidikan ? (EDUCATION_LABELS[pendidikan] ?? pendidikan) : "-"
             }
           />
           <DetailItem label="Pekerjaan" value={pekerjaan || "-"} />
@@ -51,40 +51,40 @@ function OrangTuaCard({
   );
 }
 
-export function DataOrtuTab({ registration }: { registration: Pendaftaran }) {
+export function DataOrtuTab({ registration }: { registration: Registration }) {
   return (
     <div className="space-y-4">
       <OrangTuaCard
         title="Data Ayah"
         namaLabel="Nama Ayah"
-        nama={registration.namaAyah}
-        tahunLahir={registration.tahunLahirAyah}
-        pendidikan={registration.pendidikanAyah}
-        pekerjaan={registration.pekerjaanAyah}
-        noTelp={registration.noTelpAyah}
+        nama={registration.fatherName}
+        tahunLahir={registration.fatherBirthYear}
+        pendidikan={registration.fatherEducation}
+        pekerjaan={registration.fatherOccupation}
+        noTelp={registration.fatherPhone}
       />
       <OrangTuaCard
         title="Data Ibu"
         namaLabel="Nama Ibu"
-        nama={registration.namaIbu}
-        tahunLahir={registration.tahunLahirIbu}
-        pendidikan={registration.pendidikanIbu}
-        pekerjaan={registration.pekerjaanIbu}
-        noTelp={registration.noTelpIbu}
+        nama={registration.motherName}
+        tahunLahir={registration.motherBirthYear}
+        pendidikan={registration.motherEducation}
+        pekerjaan={registration.motherOccupation}
+        noTelp={registration.motherPhone}
       />
-      {registration.namaWali && (
+      {registration.guardianName && (
         <OrangTuaCard
           title={
-            registration.hubunganWali
-              ? `Data Wali (${registration.hubunganWali})`
+            registration.guardianRelationship
+              ? `Data Wali (${registration.guardianRelationship})`
               : "Data Wali"
           }
           namaLabel="Nama Wali"
-          nama={registration.namaWali}
-          tahunLahir={registration.tahunLahirWali}
-          pendidikan={registration.pendidikanWali}
-          pekerjaan={registration.pekerjaanWali}
-          noTelp={registration.noTelpWali}
+          nama={registration.guardianName}
+          tahunLahir={registration.guardianBirthYear}
+          pendidikan={registration.guardianEducation}
+          pekerjaan={registration.guardianOccupation}
+          noTelp={registration.guardianPhone}
         />
       )}
     </div>

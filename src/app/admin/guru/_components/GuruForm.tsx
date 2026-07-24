@@ -10,8 +10,8 @@ import {
   DialogTitle,
 } from "@/src/components/ui/dialog";
 import {
-  jenisKelaminOptions,
-  pendidikanOptions,
+  genderOptions,
+  educationOptions,
   statusKepegawaianOptions,
 } from "@/src/lib/constants";
 
@@ -30,10 +30,10 @@ const initialState = {
   password: "",
   phone: "",
   nip: "",
-  jenisKelamin: "LAKI_LAKI",
+  gender: "MALE",
   tempatLahir: "",
   tanggalLahir: "1990-01-01",
-  pendidikanTerakhir: "S1",
+  education: "S1",
   statusKepegawaian: "GTY",
 };
 
@@ -135,11 +135,11 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
               className={inputClass}
             />
             <select
-              value={form.jenisKelamin}
-              onChange={(e) => set("jenisKelamin", e.target.value)}
+              value={form.gender}
+              onChange={(e) => set("gender", e.target.value)}
               className={inputClass}
             >
-              {jenisKelaminOptions.map((o) => (
+              {genderOptions.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
                 </option>
@@ -173,11 +173,11 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
             />
           </div>
           <select
-            value={form.pendidikanTerakhir}
-            onChange={(e) => set("pendidikanTerakhir", e.target.value)}
+            value={form.education}
+            onChange={(e) => set("education", e.target.value)}
             className={inputClass}
           >
-            {pendidikanOptions.map((o) => (
+            {educationOptions.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
               </option>

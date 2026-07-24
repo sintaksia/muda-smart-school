@@ -12,9 +12,9 @@ import {
   getRegistrationStats,
 } from "@/src/features/registration/services/registration.service";
 import {
-  STATUS_PENDAFTARAN_LABELS,
-  STATUS_PENDAFTARAN_BADGES,
-  PROGRAM_KEAHLIAN_LABELS,
+  REGISTRATION_STATUS_LABELS,
+  REGISTRATION_STATUS_BADGES,
+  SPECIALIZATION_LABELS,
 } from "@/src/lib/constants";
 
 export default async function AdminPage() {
@@ -67,7 +67,7 @@ export default async function AdminPage() {
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.diterima}</div>
+            <div className="text-2xl font-bold">{stats.accepted}</div>
             <p className="text-xs text-muted-foreground">
               Calon siswa diterima
             </p>
@@ -80,7 +80,7 @@ export default async function AdminPage() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.ditolak}</div>
+            <div className="text-2xl font-bold">{stats.rejected}</div>
             <p className="text-xs text-muted-foreground">Calon siswa ditolak</p>
           </CardContent>
         </Card>
@@ -108,19 +108,18 @@ export default async function AdminPage() {
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">
-                        {registration.namaLengkap}
+                        {registration.fullName}
                       </p>
                       <p className="truncate text-xs text-muted-foreground">
-                        {registration.nomorPendaftaran} &middot;{" "}
-                        {PROGRAM_KEAHLIAN_LABELS[
-                          registration.programKeahlian
-                        ] ?? registration.programKeahlian}
+                        {registration.registrationNumber} &middot;{" "}
+                        {SPECIALIZATION_LABELS[registration.specialization] ??
+                          registration.specialization}
                       </p>
                     </div>
                     <Badge
-                      variant={STATUS_PENDAFTARAN_BADGES[registration.status]}
+                      variant={REGISTRATION_STATUS_BADGES[registration.status]}
                     >
-                      {STATUS_PENDAFTARAN_LABELS[registration.status]}
+                      {REGISTRATION_STATUS_LABELS[registration.status]}
                     </Badge>
                   </div>
                 ))}

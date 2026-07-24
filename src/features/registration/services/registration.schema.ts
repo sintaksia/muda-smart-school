@@ -1,32 +1,32 @@
 import { z } from "zod";
 import {
-  jenisKelaminOptions,
-  programKeahlianOptions,
-  pendidikanOptions,
+  genderOptions,
+  specializationOptions,
+  educationOptions,
 } from "@/src/lib/constants";
 
-export { jenisKelaminOptions, programKeahlianOptions, pendidikanOptions };
+export { genderOptions, specializationOptions, educationOptions };
 
-const jenisKelaminValues = jenisKelaminOptions.map((o) => o.value) as [
-  (typeof jenisKelaminOptions)[number]["value"],
-  ...(typeof jenisKelaminOptions)[number]["value"][],
+const genderValues = genderOptions.map((o) => o.value) as [
+  (typeof genderOptions)[number]["value"],
+  ...(typeof genderOptions)[number]["value"][],
 ];
-const programKeahlianValues = programKeahlianOptions.map((o) => o.value) as [
-  (typeof programKeahlianOptions)[number]["value"],
-  ...(typeof programKeahlianOptions)[number]["value"][],
+const specializationValues = specializationOptions.map((o) => o.value) as [
+  (typeof specializationOptions)[number]["value"],
+  ...(typeof specializationOptions)[number]["value"][],
 ];
-const pendidikanValues = pendidikanOptions.map((o) => o.value) as [
-  (typeof pendidikanOptions)[number]["value"],
-  ...(typeof pendidikanOptions)[number]["value"][],
+const educationValues = educationOptions.map((o) => o.value) as [
+  (typeof educationOptions)[number]["value"],
+  ...(typeof educationOptions)[number]["value"][],
 ];
 
 export const registrasiSchema = z.object({
   // Identitas Diri
-  namaLengkap: z.string().min(3, "Nama lengkap minimal 3 karakter"),
-  jenisKelamin: z.enum(jenisKelaminValues, {
+  fullName: z.string().min(3, "Nama lengkap minimal 3 karakter"),
+  gender: z.enum(genderValues, {
     message: "Pilih jenis kelamin",
   }),
-  programKeahlian: z.enum(programKeahlianValues, {
+  specialization: z.enum(specializationValues, {
     message: "Pilih program keahlian",
   }),
   nisn: z
@@ -37,31 +37,31 @@ export const registrasiSchema = z.object({
     .string()
     .length(16, "NIK harus 16 digit")
     .regex(/^\d+$/, "NIK hanya boleh angka"),
-  nomorKk: z
+  familyCardNumber: z
     .string()
     .length(16, "Nomor KK harus 16 digit")
     .regex(/^\d+$/, "Nomor KK hanya boleh angka"),
-  tempatLahir: z.string().min(2, "Tempat lahir minimal 2 karakter"),
-  tanggalLahir: z.string().min(1, "Tanggal lahir wajib diisi"),
-  noHpMurid: z
+  birthPlace: z.string().min(2, "Tempat lahir minimal 2 karakter"),
+  birthDate: z.string().min(1, "Tanggal lahir wajib diisi"),
+  studentPhone: z
     .string()
     .refine(
       (val) => val === "" || /^\d+$/.test(val),
       "Nomor HP hanya boleh angka",
     ),
-  emailMurid: z
+  studentEmail: z
     .string()
     .email("Email tidak valid")
     .optional()
     .or(z.literal("")),
-  noTelpAyah: z
+  fatherPhone: z
     .string()
     .refine(
       (val) => val === "" || /^\d+$/.test(val),
       "Nomor telepon hanya boleh angka",
     )
     .optional(),
-  noTelpIbu: z
+  motherPhone: z
     .string()
     .refine(
       (val) => val === "" || /^\d+$/.test(val),
@@ -70,14 +70,14 @@ export const registrasiSchema = z.object({
     .optional(),
 
   // Alamat
-  alamatJalan: z.string().min(5, "Alamat minimal 5 karakter"),
+  streetAddress: z.string().min(5, "Alamat minimal 5 karakter"),
   rt: z.string().min(1, "RT wajib diisi").max(3, "RT maksimal 3 digit"),
   rw: z.string().min(1, "RW wajib diisi").max(3, "RW maksimal 3 digit"),
-  kelurahanDesa: z.string().min(2, "Kelurahan/Desa minimal 2 karakter"),
-  kecamatan: z.string().min(2, "Kecamatan minimal 2 karakter"),
-  kotaKabupaten: z.string().min(2, "Kota/Kabupaten minimal 2 karakter"),
-  provinsi: z.string().min(2, "Provinsi minimal 2 karakter"),
-  kodePos: z
+  village: z.string().min(2, "Kelurahan/Desa minimal 2 karakter"),
+  district: z.string().min(2, "Kecamatan minimal 2 karakter"),
+  city: z.string().min(2, "Kota/Kabupaten minimal 2 karakter"),
+  province: z.string().min(2, "Provinsi minimal 2 karakter"),
+  postalCode: z
     .string()
     .regex(/^\d+$/, "Kode pos hanya boleh angka")
     .length(5, "Kode pos harus 5 digit")
@@ -85,52 +85,54 @@ export const registrasiSchema = z.object({
     .or(z.literal("")),
 
   // Data Ayah
-  namaAyah: z.string().min(3, "Nama ayah minimal 3 karakter"),
-  tahunLahirAyah: z
+  fatherName: z.string().min(3, "Nama ayah minimal 3 karakter"),
+  fatherBirthYear: z
     .string()
     .regex(/^\d{4}$/, "Tahun lahir harus 4 digit angka"),
-  pendidikanAyah: z.enum(pendidikanValues, {
+  fatherEducation: z.enum(educationValues, {
     message: "Pilih pendidikan ayah",
   }),
-  pekerjaanAyah: z.string(),
+  fatherOccupation: z.string(),
 
   // Data Ibu
-  namaIbu: z.string().min(3, "Nama ibu minimal 3 karakter"),
-  tahunLahirIbu: z.string().regex(/^\d{4}$/, "Tahun lahir harus 4 digit angka"),
-  pendidikanIbu: z.enum(pendidikanValues, {
+  motherName: z.string().min(3, "Nama ibu minimal 3 karakter"),
+  motherBirthYear: z
+    .string()
+    .regex(/^\d{4}$/, "Tahun lahir harus 4 digit angka"),
+  motherEducation: z.enum(educationValues, {
     message: "Pilih pendidikan ibu",
   }),
-  pekerjaanIbu: z.string(),
+  motherOccupation: z.string(),
 
   // Data Wali (Opsional)
-  namaWali: z.string().optional(),
-  tahunLahirWali: z
+  guardianName: z.string().optional(),
+  guardianBirthYear: z
     .string()
     .refine(
       (val) => val === "" || /^\d+$/.test(val),
       "Tahun lahir hanya boleh angka",
     )
     .optional(),
-  pendidikanWali: z
-    .enum(pendidikanValues, { message: "Pilih pendidikan wali" })
+  guardianEducation: z
+    .enum(educationValues, { message: "Pilih pendidikan wali" })
     .optional(),
-  pekerjaanWali: z.string().optional(),
-  noTelpWali: z
+  guardianOccupation: z.string().optional(),
+  guardianPhone: z
     .string()
     .refine(
       (val) => val === "" || /^\d+$/.test(val),
       "Nomor telepon hanya boleh angka",
     )
     .optional(),
-  hubunganWali: z.string().optional(),
+  guardianRelationship: z.string().optional(),
 
   // Asal Sekolah
-  namaAsalSekolah: z.string().min(3, "Nama sekolah minimal 3 karakter"),
-  npsnAsalSekolah: z
+  previousSchoolName: z.string().min(3, "Nama sekolah minimal 3 karakter"),
+  previousSchoolNpsn: z
     .string()
     .refine((val) => val === "" || /^\d+$/.test(val), "NPSN hanya boleh angka"),
-  alamatAsalSekolah: z.string().min(5, "Alamat sekolah minimal 5 karakter"),
-  tahunLulus: z
+  previousSchoolAddress: z.string().min(5, "Alamat sekolah minimal 5 karakter"),
+  graduationYear: z
     .string()
     .regex(/^\d+$/, "Tahun lulus hanya boleh angka")
     .length(4, "Tahun lulus harus 4 digit")
@@ -145,32 +147,32 @@ export type RegistrasiFormData = z.infer<typeof registrasiSchema>;
 
 // Fields with min/length validation (required fields)
 export const requiredFields: Set<keyof RegistrasiFormData> = new Set([
-  "namaLengkap",
-  "jenisKelamin",
-  "programKeahlian",
+  "fullName",
+  "gender",
+  "specialization",
   "nisn",
   "nik",
-  "nomorKk",
-  "tempatLahir",
-  "tanggalLahir",
-  "noHpMurid",
-  "alamatJalan",
+  "familyCardNumber",
+  "birthPlace",
+  "birthDate",
+  "studentPhone",
+  "streetAddress",
   "rt",
   "rw",
-  "kelurahanDesa",
-  "kecamatan",
-  "kotaKabupaten",
-  "provinsi",
-  "namaAyah",
-  "pendidikanAyah",
-  "namaIbu",
-  "pendidikanIbu",
-  "namaAsalSekolah",
-  "alamatAsalSekolah",
-  "tahunLulus",
-  "pekerjaanAyah",
-  "pekerjaanIbu",
-  "npsnAsalSekolah",
-  "tahunLahirAyah",
-  "tahunLahirIbu",
+  "village",
+  "district",
+  "city",
+  "province",
+  "fatherName",
+  "fatherEducation",
+  "motherName",
+  "motherEducation",
+  "previousSchoolName",
+  "previousSchoolAddress",
+  "graduationYear",
+  "fatherOccupation",
+  "motherOccupation",
+  "previousSchoolNpsn",
+  "fatherBirthYear",
+  "motherBirthYear",
 ]);

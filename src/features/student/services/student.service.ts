@@ -6,23 +6,23 @@ import type { CreateStudentFromRegistrationInput } from "../types";
 
 /**
  * Create a Student account (Supabase Auth + User + Student) from an
- * accepted (DITERIMA) registration.
+ * accepted (ACCEPTED) registration.
  */
 export async function createStudentFromRegistration(
   input: CreateStudentFromRegistrationInput,
   createdById?: string,
 ): Promise<{ student: Student | null; error: string | null }> {
   try {
-    const registration = await getRegistrationById(input.pendaftaranId);
+    const registration = await getRegistrationById(input.registrationId);
 
     if (!registration) {
       return { student: null, error: "Pendaftaran tidak ditemukan" };
     }
 
-    if (registration.status !== "DITERIMA") {
+    if (registration.status !== "ACCEPTED") {
       return {
         student: null,
-        error: "Pendaftaran belum diterima (status harus DITERIMA)",
+        error: "Pendaftaran belum diterima (status harus ACCEPTED)",
       };
     }
 
@@ -33,7 +33,7 @@ export async function createStudentFromRegistration(
       };
     }
 
-    if (!registration.emailMurid) {
+    if (!registration.studentEmail) {
       return {
         student: null,
         error: "Pendaftaran belum memiliki email siswa",
@@ -42,11 +42,11 @@ export async function createStudentFromRegistration(
 
     const { user, error: userError } = await createUser(
       {
-        email: registration.emailMurid,
+        email: registration.studentEmail,
         password: input.password,
-        name: registration.namaLengkap,
+        name: registration.fullName,
         role: "STUDENT",
-        phone: registration.noHpMurid,
+        phone: registration.studentPhone,
       },
       createdById,
     );
@@ -58,10 +58,10 @@ export async function createStudentFromRegistration(
     const student = await prisma.student.create({
       data: {
         userId: user.id,
-        pendaftaranId: registration.id,
+        registrationId: registration.id,
         nis: input.nis,
         nisn: registration.nisn,
-        programKeahlian: registration.programKeahlian,
+        specialization: registration.specialization,
         angkatan: input.angkatan,
       },
     });

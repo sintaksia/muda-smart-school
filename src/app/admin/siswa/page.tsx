@@ -25,7 +25,7 @@ export default async function SiswaPage() {
           id: siswa.id,
           nama: siswa.user.name,
           nis: siswa.nis,
-          programKeahlian: siswa.programKeahlian,
+          specialization: siswa.specialization,
           angkatan: siswa.angkatan,
           kelasId: siswa.kelas?.id ?? null,
           status: siswa.status,

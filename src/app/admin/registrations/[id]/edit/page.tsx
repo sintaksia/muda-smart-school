@@ -30,8 +30,8 @@ export default async function RegistrationEditPage({
           </Link>
         </Button>
         <PageHeader
-          title={`Edit Pendaftaran: ${registration.namaLengkap}`}
-          description={`No. Pendaftaran: ${registration.nomorPendaftaran || "-"}`}
+          title={`Edit Pendaftaran: ${registration.fullName}`}
+          description={`No. Pendaftaran: ${registration.registrationNumber || "-"}`}
         />
       </div>
 

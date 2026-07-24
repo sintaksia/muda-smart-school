@@ -4,13 +4,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import type { Pendaftaran } from "@/src/features/registration/services";
+import type { Registration } from "@/src/features/registration/services";
 import { DetailItem } from "./DetailItem";
 
 export function SekolahAsalTab({
   registration,
 }: {
-  registration: Pendaftaran;
+  registration: Registration;
 }) {
   return (
     <>
@@ -22,19 +22,19 @@ export function SekolahAsalTab({
           <div className="grid gap-4 md:grid-cols-2">
             <DetailItem
               label="Nama Sekolah"
-              value={registration.namaAsalSekolah}
+              value={registration.previousSchoolName}
             />
             <DetailItem
               label="NPSN"
-              value={registration.npsnAsalSekolah || "-"}
+              value={registration.previousSchoolNpsn || "-"}
             />
             <DetailItem
               label="Alamat Sekolah"
-              value={registration.alamatAsalSekolah}
+              value={registration.previousSchoolAddress}
             />
             <DetailItem
               label="Tahun Lulus"
-              value={registration.tahunLulus.toString()}
+              value={registration.graduationYear.toString()}
             />
           </div>
         </CardContent>
@@ -46,22 +46,22 @@ export function SekolahAsalTab({
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
-            <DetailItem label="Alamat Jalan" value={registration.alamatJalan} />
+            <DetailItem
+              label="Alamat Jalan"
+              value={registration.streetAddress}
+            />
             <DetailItem
               label="RT/RW"
               value={`${registration.rt}/${registration.rw}`}
             />
+            <DetailItem label="Kelurahan/Desa" value={registration.village} />
+            <DetailItem label="Kecamatan" value={registration.district} />
+            <DetailItem label="Kota/Kabupaten" value={registration.city} />
+            <DetailItem label="Provinsi" value={registration.province} />
             <DetailItem
-              label="Kelurahan/Desa"
-              value={registration.kelurahanDesa}
+              label="Kode Pos"
+              value={registration.postalCode || "-"}
             />
-            <DetailItem label="Kecamatan" value={registration.kecamatan} />
-            <DetailItem
-              label="Kota/Kabupaten"
-              value={registration.kotaKabupaten}
-            />
-            <DetailItem label="Provinsi" value={registration.provinsi} />
-            <DetailItem label="Kode Pos" value={registration.kodePos || "-"} />
           </div>
         </CardContent>
       </Card>

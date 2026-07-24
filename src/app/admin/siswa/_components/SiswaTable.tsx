@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import {
-  PROGRAM_KEAHLIAN_SHORT_LABELS,
+  SPECIALIZATION_SHORT_LABELS,
   STUDENT_STATUS_BADGES,
   STUDENT_STATUS_LABELS,
   studentStatusOptions,
@@ -14,7 +14,7 @@ export interface SiswaRow {
   id: string;
   nama: string;
   nis: string;
-  programKeahlian: string;
+  specialization: string;
   angkatan: number;
   kelasId: string | null;
   status: string;
@@ -73,7 +73,7 @@ export function SiswaTable({ siswaList, kelasOptions }: SiswaTableProps) {
                   </p>
                 </td>
                 <td className="text-ink-secondary px-4 py-3">
-                  {PROGRAM_KEAHLIAN_SHORT_LABELS[siswa.programKeahlian]}
+                  {SPECIALIZATION_SHORT_LABELS[siswa.specialization]}
                 </td>
                 <td className="text-ink-secondary px-4 py-3 tabular-nums">
                   {siswa.angkatan}

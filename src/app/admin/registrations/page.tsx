@@ -85,12 +85,12 @@ export default async function RegistrationsPage({
                 </Link>
               </Button>
               <Button
-                variant={activeStatus === "DITERIMA" ? "secondary" : "ghost"}
+                variant={activeStatus === "ACCEPTED" ? "secondary" : "ghost"}
                 size="sm"
                 asChild
               >
-                <Link href="/admin/registrations?status=DITERIMA">
-                  Diterima ({stats.diterima})
+                <Link href="/admin/registrations?status=ACCEPTED">
+                  Diterima ({stats.accepted})
                 </Link>
               </Button>
             </div>

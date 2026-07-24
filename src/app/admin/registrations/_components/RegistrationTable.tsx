@@ -14,11 +14,11 @@ import { Download } from "lucide-react";
 import { DataTable } from "@/src/app/admin/_components/DataTable";
 import { StatusFilter } from "./StatusFilter";
 import { registrationColumns } from "./RegistrationColumns";
-import type { PendaftaranWithStudent } from "@/src/features/registration/services";
-import { programKeahlianOptions } from "@/src/lib/constants";
+import type { RegistrationWithStudent } from "@/src/features/registration/services";
+import { specializationOptions } from "@/src/lib/constants";
 
 interface RegistrationTableProps {
-  data: PendaftaranWithStudent[];
+  data: RegistrationWithStudent[];
 }
 
 export function RegistrationTable({ data }: RegistrationTableProps) {
@@ -28,7 +28,7 @@ export function RegistrationTable({ data }: RegistrationTableProps) {
   const filteredData = useMemo(
     () =>
       data.filter((item) => {
-        if (programFilter !== "all" && item.programKeahlian !== programFilter) {
+        if (programFilter !== "all" && item.specialization !== programFilter) {
           return false;
         }
         if (statusFilter !== "all" && item.status !== statusFilter) {
@@ -84,7 +84,7 @@ export function RegistrationTable({ data }: RegistrationTableProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Program</SelectItem>
-                {programKeahlianOptions.map((option) => (
+                {specializationOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>

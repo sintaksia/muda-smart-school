@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createStudentFromRegistrationSchema = z.object({
-  pendaftaranId: z.string().min(1, "Pendaftaran wajib dipilih"),
+  registrationId: z.string().min(1, "Pendaftaran wajib dipilih"),
   nis: z.string().min(1, "NIS wajib diisi"),
   angkatan: z
     .number({ message: "Angkatan wajib diisi" })

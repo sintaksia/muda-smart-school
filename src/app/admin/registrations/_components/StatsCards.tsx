@@ -10,8 +10,8 @@ interface StatsCardsProps {
   stats: {
     total: number;
     pending: number;
-    diterima: number;
-    ditolak: number;
+    accepted: number;
+    rejected: number;
   };
 }
 
@@ -35,7 +35,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
     },
     {
       title: "Diterima",
-      value: stats.diterima,
+      value: stats.accepted,
       icon: CheckCircle,
       color: "bg-green-500",
       textColor: "text-green-700",
@@ -43,7 +43,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
     },
     {
       title: "Ditolak",
-      value: stats.ditolak,
+      value: stats.rejected,
       icon: XCircle,
       color: "bg-red-500",
       textColor: "text-red-700",

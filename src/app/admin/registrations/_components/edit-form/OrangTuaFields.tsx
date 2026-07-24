@@ -1,7 +1,7 @@
 "use client";
 
 import { Users } from "lucide-react";
-import { pendidikanOptions } from "@/src/features/registration/services/registration.schema";
+import { educationOptions } from "@/src/features/registration/services/registration.schema";
 import {
   FormSection,
   TextFormField,
@@ -54,7 +54,7 @@ export function OrangTuaFields({
           name={names.pendidikan}
           label={subjek === "Wali" ? "Pendidikan Wali" : "Pendidikan Terakhir"}
           placeholder={pendidikanPlaceholder}
-          options={pendidikanOptions}
+          options={educationOptions}
         />
         <TextFormField
           control={control}

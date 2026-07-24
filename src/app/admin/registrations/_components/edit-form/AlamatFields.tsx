@@ -13,7 +13,7 @@ export function AlamatFields({ control }: { control: RegistrasiControl }) {
       <div className="grid gap-4 md:grid-cols-2">
         <TextFormField
           control={control}
-          name="alamatJalan"
+          name="streetAddress"
           label="Alamat Jalan"
           className="md:col-span-2"
         />
@@ -23,17 +23,13 @@ export function AlamatFields({ control }: { control: RegistrasiControl }) {
         </div>
         <TextFormField
           control={control}
-          name="kelurahanDesa"
+          name="village"
           label="Kelurahan/Desa"
         />
-        <TextFormField control={control} name="kecamatan" label="Kecamatan" />
-        <TextFormField
-          control={control}
-          name="kotaKabupaten"
-          label="Kota/Kabupaten"
-        />
-        <TextFormField control={control} name="provinsi" label="Provinsi" />
-        <TextFormField control={control} name="kodePos" label="Kode Pos" />
+        <TextFormField control={control} name="district" label="Kecamatan" />
+        <TextFormField control={control} name="city" label="Kota/Kabupaten" />
+        <TextFormField control={control} name="province" label="Provinsi" />
+        <TextFormField control={control} name="postalCode" label="Kode Pos" />
       </div>
     </FormSection>
   );

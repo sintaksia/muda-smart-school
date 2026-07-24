@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { STATUS_PENDAFTARAN_VALUES } from "@/src/lib/constants";
+import { REGISTRATION_STATUS_VALUES } from "@/src/lib/constants";
 import {
   getRegistrationById,
   deleteRegistration,
@@ -19,9 +19,9 @@ interface RouteParams {
 
 const statusUpdateSchema = z.object({
   status: z.enum(
-    STATUS_PENDAFTARAN_VALUES as [
-      (typeof STATUS_PENDAFTARAN_VALUES)[number],
-      ...(typeof STATUS_PENDAFTARAN_VALUES)[number][],
+    REGISTRATION_STATUS_VALUES as [
+      (typeof REGISTRATION_STATUS_VALUES)[number],
+      ...(typeof REGISTRATION_STATUS_VALUES)[number][],
     ],
     { message: "Status tidak valid" },
   ),

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import type { Pendaftaran, User } from "@prisma/client";
+import type { Registration, User } from "@prisma/client";
 import { GET, PATCH, PUT, DELETE } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
@@ -65,7 +65,7 @@ describe("auth guard", () => {
     ["GET", () => GET(buildRequest("GET"), routeParams)],
     [
       "PATCH",
-      () => PATCH(buildRequest("PATCH", { status: "DITERIMA" }), routeParams),
+      () => PATCH(buildRequest("PATCH", { status: "ACCEPTED" }), routeParams),
     ],
     ["PUT", () => PUT(buildRequest("PUT", validRegistrasiBody), routeParams)],
     ["DELETE", () => DELETE(buildRequest("DELETE"), routeParams)],
@@ -134,18 +134,18 @@ describe("PATCH /api/registrasi/[id]", () => {
     mockAdmin();
     vi.mocked(updateRegistrationStatus).mockResolvedValue({
       id: "reg-1",
-      status: "DITERIMA",
-    } as Pendaftaran);
+      status: "ACCEPTED",
+    } as Registration);
 
     const response = await PATCH(
-      buildRequest("PATCH", { status: "DITERIMA" }),
+      buildRequest("PATCH", { status: "ACCEPTED" }),
       routeParams,
     );
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.status).toBe("DITERIMA");
-    expect(updateRegistrationStatus).toHaveBeenCalledWith("reg-1", "DITERIMA");
+    expect(data.status).toBe("ACCEPTED");
+    expect(updateRegistrationStatus).toHaveBeenCalledWith("reg-1", "ACCEPTED");
   });
 });
 
@@ -187,7 +187,7 @@ describe("PUT /api/registrasi/[id]", () => {
     } as Awaited<ReturnType<typeof getRegistrationById>>);
     vi.mocked(updateRegistration).mockResolvedValue({
       id: "reg-1",
-    } as Pendaftaran);
+    } as Registration);
 
     const response = await PUT(
       buildRequest("PUT", validRegistrasiBody),
@@ -198,9 +198,9 @@ describe("PUT /api/registrasi/[id]", () => {
     expect(updateRegistration).toHaveBeenCalledWith(
       "reg-1",
       expect.objectContaining({
-        namaLengkap: "Budi Santoso",
-        tahunLahirAyah: 1980,
-        emailMurid: null,
+        fullName: "Budi Santoso",
+        fatherBirthYear: 1980,
+        studentEmail: null,
       }),
     );
   });
@@ -224,7 +224,7 @@ describe("DELETE /api/registrasi/[id]", () => {
     } as Awaited<ReturnType<typeof getRegistrationById>>);
     vi.mocked(deleteRegistration).mockResolvedValue({
       id: "reg-1",
-    } as Pendaftaran);
+    } as Registration);
 
     const response = await DELETE(buildRequest("DELETE"), routeParams);
     const data = await response.json();

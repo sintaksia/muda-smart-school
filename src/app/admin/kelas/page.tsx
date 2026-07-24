@@ -25,7 +25,7 @@ export default async function KelasPage() {
           id: kelas.id,
           nama: kelas.nama,
           tingkat: kelas.tingkat,
-          programKeahlian: kelas.programKeahlian,
+          specialization: kelas.specialization,
           tahunAjaran: kelas.tahunAjaran,
           waliKelasId: kelas.waliKelas?.id ?? null,
           waliKelas: kelas.waliKelas?.user.name ?? null,

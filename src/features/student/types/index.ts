@@ -4,7 +4,7 @@ import type { Student, StudentStatus } from "@prisma/client";
 export type { Student, StudentStatus };
 
 export interface CreateStudentFromRegistrationInput {
-  pendaftaranId: string;
+  registrationId: string;
   nis: string;
   angkatan: number;
   password: string;

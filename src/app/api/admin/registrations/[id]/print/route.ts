@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getRegistrationById } from "@/src/features/registration/services";
 import {
-  PROGRAM_KEAHLIAN_LABELS,
-  PENDIDIKAN_LABELS,
-  STATUS_PENDAFTARAN_LABELS,
+  SPECIALIZATION_LABELS,
+  EDUCATION_LABELS,
+  REGISTRATION_STATUS_LABELS,
 } from "@/src/lib/constants";
 
 function formatDate(date: Date | null): string {
@@ -98,25 +98,25 @@ export async function GET(
   });
 
   const statusClass = `status-${reg.status}`;
-  const statusText = STATUS_PENDAFTARAN_LABELS[reg.status] ?? reg.status;
+  const statusText = REGISTRATION_STATUS_LABELS[reg.status] ?? reg.status;
   const programText =
-    PROGRAM_KEAHLIAN_LABELS[reg.programKeahlian] ?? reg.programKeahlian;
-  const pendidikanAyah =
-    PENDIDIKAN_LABELS[reg.pendidikanAyah] ?? reg.pendidikanAyah;
-  const pendidikanIbu =
-    PENDIDIKAN_LABELS[reg.pendidikanIbu] ?? reg.pendidikanIbu;
-  const pendidikanWali = reg.pendidikanWali
-    ? (PENDIDIKAN_LABELS[reg.pendidikanWali] ?? reg.pendidikanWali)
+    SPECIALIZATION_LABELS[reg.specialization] ?? reg.specialization;
+  const fatherEducation =
+    EDUCATION_LABELS[reg.fatherEducation] ?? reg.fatherEducation;
+  const motherEducation =
+    EDUCATION_LABELS[reg.motherEducation] ?? reg.motherEducation;
+  const guardianEducation = reg.guardianEducation
+    ? (EDUCATION_LABELS[reg.guardianEducation] ?? reg.guardianEducation)
     : "-";
 
-  const waliSection = reg.namaWali
-    ? `<p class="sub-heading">Data Wali ${reg.hubunganWali ? `(${reg.hubunganWali})` : ""}</p>
+  const waliSection = reg.guardianName
+    ? `<p class="sub-heading">Data Wali ${reg.guardianRelationship ? `(${reg.guardianRelationship})` : ""}</p>
        ${infoGrid([
-         { label: "Nama Wali", value: reg.namaWali },
-         { label: "Tahun Lahir", value: reg.tahunLahirWali?.toString() },
-         { label: "Pendidikan", value: pendidikanWali },
-         { label: "Pekerjaan", value: reg.pekerjaanWali },
-         { label: "No. Telepon", value: reg.noTelpWali },
+         { label: "Nama Wali", value: reg.guardianName },
+         { label: "Tahun Lahir", value: reg.guardianBirthYear?.toString() },
+         { label: "Pendidikan", value: guardianEducation },
+         { label: "Pekerjaan", value: reg.guardianOccupation },
+         { label: "No. Telepon", value: reg.guardianPhone },
        ])}`
     : "";
 
@@ -125,7 +125,7 @@ export async function GET(
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulir Pendaftaran – ${reg.namaLengkap}</title>
+  <title>Formulir Pendaftaran – ${reg.fullName}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -258,10 +258,10 @@ export async function GET(
       font-size: 8.5pt;
       font-weight: 700;
     }
-    .status-PENDING      { background: #FFF3CD; color: #856404; border: 1px solid #F2C94C; }
-    .status-DITERIMA     { background: #D1F0E8; color: #155724; border: 1px solid #4CAF93; }
-    .status-DITOLAK      { background: #FDECEA; color: #842029; border: 1px solid #dc3545; }
-    .status-DIVERIFIKASI { background: #D0EAFF; color: #0c5460; border: 1px solid #0dcaf0; }
+    .status-PENDING  { background: #FFF3CD; color: #856404; border: 1px solid #F2C94C; }
+    .status-ACCEPTED { background: #D1F0E8; color: #155724; border: 1px solid #4CAF93; }
+    .status-REJECTED { background: #FDECEA; color: #842029; border: 1px solid #dc3545; }
+    .status-VERIFIED { background: #D0EAFF; color: #0c5460; border: 1px solid #0dcaf0; }
 
     /* ── SECTION ── */
     .section { margin-bottom: 12px; }
@@ -365,11 +365,11 @@ export async function GET(
   <div class="reg-meta">
     <div>
       <span class="meta-label">No. Pendaftaran</span>
-      <span class="meta-value">${reg.nomorPendaftaran ?? "-"}</span>
+      <span class="meta-value">${reg.registrationNumber ?? "-"}</span>
     </div>
     <div>
       <span class="meta-label">Tanggal Pendaftaran</span>
-      <span class="meta-value">${formatDate(reg.tanggalPendaftaran)}</span>
+      <span class="meta-value">${formatDate(reg.registrationDate)}</span>
     </div>
     <div>
       <span class="meta-label">Status</span>
@@ -382,19 +382,19 @@ export async function GET(
     <div class="section-title">1. Data Pribadi Calon Peserta Didik</div>
     <div class="section-body">
       ${infoGrid([
-        { label: "Nama Lengkap", value: reg.namaLengkap },
+        { label: "Nama Lengkap", value: reg.fullName },
         {
           label: "Jenis Kelamin",
-          value: reg.jenisKelamin === "LAKI_LAKI" ? "Laki-laki" : "Perempuan",
+          value: reg.gender === "MALE" ? "Laki-laki" : "Perempuan",
         },
         { label: "Program Keahlian", value: programText, full: true },
         { label: "NISN", value: reg.nisn },
         { label: "NIK", value: reg.nik },
-        { label: "No. KK", value: reg.nomorKk },
-        { label: "Tempat Lahir", value: reg.tempatLahir },
-        { label: "Tanggal Lahir", value: formatDate(reg.tanggalLahir) },
-        { label: "No. HP Siswa", value: reg.noHpMurid },
-        { label: "Email Siswa", value: reg.emailMurid },
+        { label: "No. KK", value: reg.familyCardNumber },
+        { label: "Tempat Lahir", value: reg.birthPlace },
+        { label: "Tanggal Lahir", value: formatDate(reg.birthDate) },
+        { label: "No. HP Siswa", value: reg.studentPhone },
+        { label: "Email Siswa", value: reg.studentEmail },
       ])}
     </div>
   </div>
@@ -404,14 +404,14 @@ export async function GET(
     <div class="section-title">2. Alamat Tempat Tinggal</div>
     <div class="section-body">
       ${infoGrid([
-        { label: "Alamat Jalan", value: reg.alamatJalan, full: true },
+        { label: "Alamat Jalan", value: reg.streetAddress, full: true },
         { label: "RT", value: reg.rt },
         { label: "RW", value: reg.rw },
-        { label: "Kelurahan / Desa", value: reg.kelurahanDesa },
-        { label: "Kecamatan", value: reg.kecamatan },
-        { label: "Kota / Kabupaten", value: reg.kotaKabupaten },
-        { label: "Provinsi", value: reg.provinsi },
-        { label: "Kode Pos", value: reg.kodePos },
+        { label: "Kelurahan / Desa", value: reg.village },
+        { label: "Kecamatan", value: reg.district },
+        { label: "Kota / Kabupaten", value: reg.city },
+        { label: "Provinsi", value: reg.province },
+        { label: "Kode Pos", value: reg.postalCode },
       ])}
     </div>
   </div>
@@ -422,20 +422,20 @@ export async function GET(
     <div class="section-body">
       <p class="sub-heading">Data Ayah</p>
       ${infoGrid([
-        { label: "Nama Ayah", value: reg.namaAyah },
-        { label: "Tahun Lahir", value: reg.tahunLahirAyah?.toString() },
-        { label: "Pendidikan", value: pendidikanAyah },
-        { label: "Pekerjaan", value: reg.pekerjaanAyah },
-        { label: "No. Telepon", value: reg.noTelpAyah },
+        { label: "Nama Ayah", value: reg.fatherName },
+        { label: "Tahun Lahir", value: reg.fatherBirthYear?.toString() },
+        { label: "Pendidikan", value: fatherEducation },
+        { label: "Pekerjaan", value: reg.fatherOccupation },
+        { label: "No. Telepon", value: reg.fatherPhone },
       ])}
 
       <p class="sub-heading">Data Ibu</p>
       ${infoGrid([
-        { label: "Nama Ibu", value: reg.namaIbu },
-        { label: "Tahun Lahir", value: reg.tahunLahirIbu?.toString() },
-        { label: "Pendidikan", value: pendidikanIbu },
-        { label: "Pekerjaan", value: reg.pekerjaanIbu },
-        { label: "No. Telepon", value: reg.noTelpIbu },
+        { label: "Nama Ibu", value: reg.motherName },
+        { label: "Tahun Lahir", value: reg.motherBirthYear?.toString() },
+        { label: "Pendidikan", value: motherEducation },
+        { label: "Pekerjaan", value: reg.motherOccupation },
+        { label: "No. Telepon", value: reg.motherPhone },
       ])}
 
       ${waliSection}
@@ -447,10 +447,14 @@ export async function GET(
     <div class="section-title">4. Sekolah Asal</div>
     <div class="section-body">
       ${infoGrid([
-        { label: "Nama Sekolah", value: reg.namaAsalSekolah },
-        { label: "NPSN", value: reg.npsnAsalSekolah },
-        { label: "Alamat Sekolah", value: reg.alamatAsalSekolah, full: true },
-        { label: "Tahun Lulus", value: reg.tahunLulus.toString() },
+        { label: "Nama Sekolah", value: reg.previousSchoolName },
+        { label: "NPSN", value: reg.previousSchoolNpsn },
+        {
+          label: "Alamat Sekolah",
+          value: reg.previousSchoolAddress,
+          full: true,
+        },
+        { label: "Tahun Lulus", value: reg.graduationYear.toString() },
       ])}
     </div>
   </div>

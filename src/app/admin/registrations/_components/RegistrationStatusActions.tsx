@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { CheckCircle, XCircle, FileCheck } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { toast } from "sonner";
-import type { StatusPendaftaran } from "@/src/features/registration/services";
+import type { RegistrationStatus } from "@/src/features/registration/services";
 
 interface RegistrationStatusActionsProps {
   id: string;
-  status: StatusPendaftaran;
+  status: RegistrationStatus;
 }
 
 export function RegistrationStatusActions({
@@ -20,7 +20,7 @@ export function RegistrationStatusActions({
   const [isLoading, setIsLoading] = useState(false);
 
   const updateStatus = async (
-    nextStatus: StatusPendaftaran,
+    nextStatus: RegistrationStatus,
     successMessage: string,
   ) => {
     setIsLoading(true);
@@ -56,7 +56,7 @@ export function RegistrationStatusActions({
         type="button"
         variant="default"
         disabled={isLoading}
-        onClick={() => updateStatus("DITERIMA", "Pendaftaran diterima")}
+        onClick={() => updateStatus("ACCEPTED", "Pendaftaran diterima")}
       >
         <CheckCircle className="mr-2 h-4 w-4" />
         Terima Pendaftaran
@@ -66,7 +66,7 @@ export function RegistrationStatusActions({
         type="button"
         variant="destructive"
         disabled={isLoading}
-        onClick={() => updateStatus("DITOLAK", "Pendaftaran ditolak")}
+        onClick={() => updateStatus("REJECTED", "Pendaftaran ditolak")}
       >
         <XCircle className="mr-2 h-4 w-4" />
         Tolak Pendaftaran
@@ -78,7 +78,7 @@ export function RegistrationStatusActions({
           variant="outline"
           disabled={isLoading}
           onClick={() =>
-            updateStatus("DIVERIFIKASI", "Ditandai sebagai terverifikasi")
+            updateStatus("VERIFIED", "Ditandai sebagai terverifikasi")
           }
         >
           <FileCheck className="mr-2 h-4 w-4" />

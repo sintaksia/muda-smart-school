@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import type { Pendaftaran, User } from "@prisma/client";
+import type { Registration, User } from "@prisma/client";
 import { GET, POST } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
@@ -133,7 +133,7 @@ describe("POST /api/registrasi", () => {
   it("returns 201 with the created registration (public, no auth needed)", async () => {
     vi.mocked(createRegistration).mockResolvedValue({
       id: "reg-1",
-    } as Pendaftaran);
+    } as Registration);
 
     const response = await POST(buildPostRequest(validRegistrasiBody));
     const data = await response.json();

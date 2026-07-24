@@ -14,8 +14,8 @@ import { RegistrationDetail } from "../_components/RegistrationDetail";
 import { RegistrationStatusActions } from "../_components/RegistrationStatusActions";
 import { getRegistrationById } from "@/src/features/registration/services";
 import {
-  STATUS_PENDAFTARAN_BADGES,
-  STATUS_PENDAFTARAN_LABELS,
+  REGISTRATION_STATUS_BADGES,
+  REGISTRATION_STATUS_LABELS,
 } from "@/src/lib/constants";
 
 interface RegistrationDetailPageProps {
@@ -44,8 +44,8 @@ export default async function RegistrationDetailPage({
             </Link>
           </Button>
           <PageHeader
-            title={`Detail Pendaftaran: ${registration.namaLengkap}`}
-            description={`No. Pendaftaran: ${registration.nomorPendaftaran || "-"}`}
+            title={`Detail Pendaftaran: ${registration.fullName}`}
+            description={`No. Pendaftaran: ${registration.registrationNumber || "-"}`}
           />
         </div>
 
@@ -75,10 +75,10 @@ export default async function RegistrationDetailPage({
       {/* Status Badge */}
       <div className="flex items-center gap-4">
         <Badge
-          variant={STATUS_PENDAFTARAN_BADGES[registration.status] ?? "warning"}
+          variant={REGISTRATION_STATUS_BADGES[registration.status] ?? "warning"}
           className="text-sm py-1.5 px-3"
         >
-          {STATUS_PENDAFTARAN_LABELS[registration.status] ??
+          {REGISTRATION_STATUS_LABELS[registration.status] ??
             registration.status}
         </Badge>
       </div>
@@ -88,7 +88,7 @@ export default async function RegistrationDetailPage({
 
       {/* Validation Card (untuk admin) */}
       {(registration.status === "PENDING" ||
-        registration.status === "DIVERIFIKASI") && (
+        registration.status === "VERIFIED") && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Validasi Pendaftaran</CardTitle>

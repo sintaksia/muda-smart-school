@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import {
-  PROGRAM_KEAHLIAN_SHORT_LABELS,
-  programKeahlianOptions,
+  SPECIALIZATION_SHORT_LABELS,
+  specializationOptions,
 } from "@/src/lib/constants";
 
 export interface KelasRow {
   id: string;
   nama: string;
   tingkat: number;
-  programKeahlian: string;
+  specialization: string;
   tahunAjaran: string;
   waliKelasId: string | null;
   waliKelas: string | null;
@@ -33,8 +33,8 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
   const currentYear = new Date().getFullYear();
   const [nama, setNama] = useState<string>("");
   const [tingkat, setTingkat] = useState<string>("10");
-  const [programKeahlian, setProgramKeahlian] = useState<string>(
-    programKeahlianOptions[0].value,
+  const [specialization, setSpecialization] = useState<string>(
+    specializationOptions[0].value,
   );
   const [tahunAjaran, setTahunAjaran] = useState<string>(
     `${currentYear}/${currentYear + 1}`,
@@ -69,7 +69,7 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
     const ok = await request("/api/master/kelas", "POST", {
       nama,
       tingkat: Number(tingkat),
-      programKeahlian,
+      specialization,
       tahunAjaran,
       waliKelasId: waliKelasId || null,
     });
@@ -84,7 +84,7 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
     const ok = await request(`/api/master/kelas/${row.id}`, "PUT", {
       nama: row.nama,
       tingkat: row.tingkat,
-      programKeahlian: row.programKeahlian,
+      specialization: row.specialization,
       tahunAjaran: row.tahunAjaran,
       waliKelasId: newWaliId || null,
     });
@@ -129,11 +129,11 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
             <option value="12">Kelas 12</option>
           </select>
           <select
-            value={programKeahlian}
-            onChange={(e) => setProgramKeahlian(e.target.value)}
+            value={specialization}
+            onChange={(e) => setSpecialization(e.target.value)}
             className={inputClass}
           >
-            {programKeahlianOptions.map((option) => (
+            {specializationOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.short}
               </option>
@@ -192,7 +192,7 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
                     {row.nama}
                   </td>
                   <td className="text-ink-secondary px-4 py-3">
-                    {PROGRAM_KEAHLIAN_SHORT_LABELS[row.programKeahlian]}
+                    {SPECIALIZATION_SHORT_LABELS[row.specialization]}
                   </td>
                   <td className="text-ink-secondary px-4 py-3 tabular-nums">
                     {row.tahunAjaran}

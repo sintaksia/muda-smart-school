@@ -1,7 +1,7 @@
 import type {
-  JenisKelamin,
-  Pendidikan,
-  ProgramKeahlian,
+  Gender,
+  Education,
+  Specialization,
   StatusKepegawaian,
   StudentStatus,
 } from "@prisma/client";
@@ -9,7 +9,7 @@ import type {
 export interface KelasInput {
   nama: string;
   tingkat: number;
-  programKeahlian: ProgramKeahlian;
+  specialization: Specialization;
   tahunAjaran: string;
   waliKelasId?: string | null;
 }
@@ -17,7 +17,7 @@ export interface KelasInput {
 export interface MapelInput {
   nama: string;
   kode: string;
-  programKeahlian?: ProgramKeahlian | null;
+  specialization?: Specialization | null;
   tingkat?: number | null;
 }
 
@@ -28,10 +28,10 @@ export interface CreateGuruInput {
   phone?: string;
   nip?: string;
   nuptk?: string;
-  jenisKelamin: JenisKelamin;
+  gender: Gender;
   tempatLahir: string;
   tanggalLahir: string; // YYYY-MM-DD
-  pendidikanTerakhir: Pendidikan;
+  education: Education;
   jabatan?: string;
   statusKepegawaian: StatusKepegawaian;
   mataPelajaranIds: string[];

@@ -1,6 +1,6 @@
 // Utility functions untuk registration
 
-import type { Pendaftaran } from "@prisma/client";
+import type { Registration } from "@prisma/client";
 import type { RegistrasiFormData } from "./registration.schema";
 
 /** Konversi Date ke value input type="date" (yyyy-mm-dd). */
@@ -15,57 +15,57 @@ export function toYearString(year: number | null): string {
 }
 
 /**
- * Konversi record Pendaftaran menjadi defaultValues form edit:
+ * Konversi record Registration menjadi defaultValues form edit:
  * semua field jadi string, nilai null jadi "" (kecuali enum opsional
- * pendidikanWali yang jadi undefined agar Select tidak terisi).
+ * guardianEducation yang jadi undefined agar Select tidak terisi).
  */
 export function registrationToFormDefaults(
-  registration: Pendaftaran,
+  registration: Registration,
 ): RegistrasiFormData {
   return {
-    namaLengkap: registration.namaLengkap,
-    jenisKelamin: registration.jenisKelamin,
-    programKeahlian: registration.programKeahlian,
+    fullName: registration.fullName,
+    gender: registration.gender,
+    specialization: registration.specialization,
     nisn: registration.nisn,
     nik: registration.nik,
-    nomorKk: registration.nomorKk,
-    tempatLahir: registration.tempatLahir,
-    tanggalLahir: toDateInputValue(registration.tanggalLahir),
-    noHpMurid: registration.noHpMurid,
-    emailMurid: registration.emailMurid || "",
-    noTelpAyah: registration.noTelpAyah || "",
-    noTelpIbu: registration.noTelpIbu || "",
+    familyCardNumber: registration.familyCardNumber,
+    birthPlace: registration.birthPlace,
+    birthDate: toDateInputValue(registration.birthDate),
+    studentPhone: registration.studentPhone,
+    studentEmail: registration.studentEmail || "",
+    fatherPhone: registration.fatherPhone || "",
+    motherPhone: registration.motherPhone || "",
 
-    alamatJalan: registration.alamatJalan,
+    streetAddress: registration.streetAddress,
     rt: registration.rt,
     rw: registration.rw,
-    kelurahanDesa: registration.kelurahanDesa,
-    kecamatan: registration.kecamatan,
-    kotaKabupaten: registration.kotaKabupaten,
-    provinsi: registration.provinsi,
-    kodePos: registration.kodePos || "",
+    village: registration.village,
+    district: registration.district,
+    city: registration.city,
+    province: registration.province,
+    postalCode: registration.postalCode || "",
 
-    namaAyah: registration.namaAyah,
-    tahunLahirAyah: toYearString(registration.tahunLahirAyah),
-    pendidikanAyah: registration.pendidikanAyah,
-    pekerjaanAyah: registration.pekerjaanAyah,
+    fatherName: registration.fatherName,
+    fatherBirthYear: toYearString(registration.fatherBirthYear),
+    fatherEducation: registration.fatherEducation,
+    fatherOccupation: registration.fatherOccupation,
 
-    namaIbu: registration.namaIbu,
-    tahunLahirIbu: toYearString(registration.tahunLahirIbu),
-    pendidikanIbu: registration.pendidikanIbu,
-    pekerjaanIbu: registration.pekerjaanIbu,
+    motherName: registration.motherName,
+    motherBirthYear: toYearString(registration.motherBirthYear),
+    motherEducation: registration.motherEducation,
+    motherOccupation: registration.motherOccupation,
 
-    namaWali: registration.namaWali || "",
-    tahunLahirWali: toYearString(registration.tahunLahirWali),
-    pendidikanWali: registration.pendidikanWali || undefined,
-    pekerjaanWali: registration.pekerjaanWali || "",
-    noTelpWali: registration.noTelpWali || "",
-    hubunganWali: registration.hubunganWali || "",
+    guardianName: registration.guardianName || "",
+    guardianBirthYear: toYearString(registration.guardianBirthYear),
+    guardianEducation: registration.guardianEducation || undefined,
+    guardianOccupation: registration.guardianOccupation || "",
+    guardianPhone: registration.guardianPhone || "",
+    guardianRelationship: registration.guardianRelationship || "",
 
-    namaAsalSekolah: registration.namaAsalSekolah,
-    npsnAsalSekolah: registration.npsnAsalSekolah || "",
-    alamatAsalSekolah: registration.alamatAsalSekolah,
-    tahunLulus: registration.tahunLulus.toString(),
+    previousSchoolName: registration.previousSchoolName,
+    previousSchoolNpsn: registration.previousSchoolNpsn || "",
+    previousSchoolAddress: registration.previousSchoolAddress,
+    graduationYear: registration.graduationYear.toString(),
   };
 }
 

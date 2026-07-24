@@ -1,18 +1,20 @@
 import { prisma } from "@/src/lib/prisma";
 import type {
-  Pendaftaran,
+  Registration,
   Student,
-  JenisKelamin,
-  ProgramKeahlian,
-  Pendidikan,
-  StatusPendaftaran,
+  Gender,
+  Specialization,
+  Education,
+  RegistrationStatus,
 } from "@prisma/client";
 import type { RegistrasiFormData } from "./registration.schema";
-import { STATUS_PENDAFTARAN_VALUES } from "@/src/lib/constants";
+import { REGISTRATION_STATUS_VALUES } from "@/src/lib/constants";
 
 // Re-export types
-export type { Pendaftaran };
-export type PendaftaranWithStudent = Pendaftaran & { student: Student | null };
+export type { Registration };
+export type RegistrationWithStudent = Registration & {
+  student: Student | null;
+};
 
 // ======================
 // 1. INTERFACE FOR CREATE
@@ -20,56 +22,56 @@ export type PendaftaranWithStudent = Pendaftaran & { student: Student | null };
 
 export interface CreateRegistrationInput {
   // Data Pribadi
-  namaLengkap: string;
-  jenisKelamin: JenisKelamin;
-  programKeahlian: ProgramKeahlian;
+  fullName: string;
+  gender: Gender;
+  specialization: Specialization;
   nisn: string;
   nik: string;
-  nomorKk: string;
-  tempatLahir: string;
-  tanggalLahir: Date;
+  familyCardNumber: string;
+  birthPlace: string;
+  birthDate: Date;
 
   // Kontak
-  noHpMurid: string;
-  emailMurid?: string;
+  studentPhone: string;
+  studentEmail?: string;
 
   // Alamat
-  alamatJalan: string;
+  streetAddress: string;
   rt: string;
   rw: string;
-  kelurahanDesa: string;
-  kecamatan: string;
-  kotaKabupaten: string;
-  provinsi: string;
-  kodePos?: string;
+  village: string;
+  district: string;
+  city: string;
+  province: string;
+  postalCode?: string;
 
   // Data Ayah
-  namaAyah: string;
-  tahunLahirAyah: number;
-  pendidikanAyah: Pendidikan;
-  pekerjaanAyah: string;
-  noTelpAyah?: string;
+  fatherName: string;
+  fatherBirthYear: number;
+  fatherEducation: Education;
+  fatherOccupation: string;
+  fatherPhone?: string;
 
   // Data Ibu
-  namaIbu: string;
-  tahunLahirIbu: number;
-  pendidikanIbu: Pendidikan;
-  pekerjaanIbu: string;
-  noTelpIbu?: string;
+  motherName: string;
+  motherBirthYear: number;
+  motherEducation: Education;
+  motherOccupation: string;
+  motherPhone?: string;
 
   // Data Wali (Opsional)
-  namaWali?: string;
-  tahunLahirWali?: number;
-  pendidikanWali?: Pendidikan;
-  pekerjaanWali?: string;
-  noTelpWali?: string;
-  hubunganWali?: string;
+  guardianName?: string;
+  guardianBirthYear?: number;
+  guardianEducation?: Education;
+  guardianOccupation?: string;
+  guardianPhone?: string;
+  guardianRelationship?: string;
 
   // Sekolah Asal
-  namaAsalSekolah: string;
-  npsnAsalSekolah: string;
-  alamatAsalSekolah: string;
-  tahunLulus: number;
+  previousSchoolName: string;
+  previousSchoolNpsn: string;
+  previousSchoolAddress: string;
+  graduationYear: number;
 }
 
 // ======================
@@ -81,7 +83,7 @@ export interface CreateRegistrationInput {
  * Dipakai halaman admin — jangan diekspos tanpa auth (berisi PII).
  */
 export async function getAllRegistrations() {
-  return prisma.pendaftaran.findMany({
+  return prisma.registration.findMany({
     include: { student: true },
     orderBy: { createdAt: "desc" },
   });
@@ -89,7 +91,7 @@ export async function getAllRegistrations() {
 
 /** Ambil satu pendaftaran berdasarkan id, beserta relasi akun siswa. */
 export async function getRegistrationById(id: string) {
-  return prisma.pendaftaran.findUnique({
+  return prisma.registration.findUnique({
     where: { id },
     include: { student: true },
   });
@@ -106,7 +108,7 @@ export async function getRegistrationById(id: string) {
  */
 export async function createRegistration(data: CreateRegistrationInput) {
   // 1. Cek duplikasi
-  const existing = await prisma.pendaftaran.findFirst({
+  const existing = await prisma.registration.findFirst({
     where: {
       OR: [{ nisn: data.nisn }, { nik: data.nik }],
     },
@@ -120,32 +122,32 @@ export async function createRegistration(data: CreateRegistrationInput) {
   const currentYear = new Date().getFullYear().toString();
 
   // Cari nomor terakhir tahun ini
-  const lastRegistration = await prisma.pendaftaran.findFirst({
+  const lastRegistration = await prisma.registration.findFirst({
     where: {
-      nomorPendaftaran: {
+      registrationNumber: {
         startsWith: `SPMB-${currentYear}-`,
       },
     },
     orderBy: {
-      nomorPendaftaran: "desc",
+      registrationNumber: "desc",
     },
   });
 
   let sequenceNumber = 1;
-  if (lastRegistration?.nomorPendaftaran) {
+  if (lastRegistration?.registrationNumber) {
     const lastNumber = parseInt(
-      lastRegistration.nomorPendaftaran.split("-")[2],
+      lastRegistration.registrationNumber.split("-")[2],
     );
     sequenceNumber = lastNumber + 1;
   }
 
-  const nomorPendaftaran = `SPMB-${currentYear}-${sequenceNumber.toString().padStart(3, "0")}`;
+  const registrationNumber = `SPMB-${currentYear}-${sequenceNumber.toString().padStart(3, "0")}`;
 
   // 3. Create dengan nomor pendaftaran
-  return prisma.pendaftaran.create({
+  return prisma.registration.create({
     data: {
       ...data,
-      nomorPendaftaran,
+      registrationNumber,
     },
   });
 }
@@ -180,56 +182,56 @@ export function convertZodToPrisma(
 ): CreateRegistrationInput {
   return {
     // Data Pribadi
-    namaLengkap: data.namaLengkap,
-    jenisKelamin: data.jenisKelamin,
-    programKeahlian: data.programKeahlian,
+    fullName: data.fullName,
+    gender: data.gender,
+    specialization: data.specialization,
     nisn: data.nisn,
     nik: data.nik,
-    nomorKk: data.nomorKk,
-    tempatLahir: data.tempatLahir,
-    tanggalLahir: new Date(data.tanggalLahir),
+    familyCardNumber: data.familyCardNumber,
+    birthPlace: data.birthPlace,
+    birthDate: new Date(data.birthDate),
 
     // Kontak
-    noHpMurid: data.noHpMurid,
-    emailMurid: data.emailMurid || undefined,
+    studentPhone: data.studentPhone,
+    studentEmail: data.studentEmail || undefined,
 
     // Alamat
-    alamatJalan: data.alamatJalan,
+    streetAddress: data.streetAddress,
     rt: data.rt,
     rw: data.rw,
-    kelurahanDesa: data.kelurahanDesa,
-    kecamatan: data.kecamatan,
-    kotaKabupaten: data.kotaKabupaten,
-    provinsi: data.provinsi,
-    kodePos: data.kodePos || undefined,
+    village: data.village,
+    district: data.district,
+    city: data.city,
+    province: data.province,
+    postalCode: data.postalCode || undefined,
 
     // Data Ayah
-    namaAyah: data.namaAyah,
-    tahunLahirAyah: toRequiredNumber(data.tahunLahirAyah, "Tahun lahir ayah"),
-    pendidikanAyah: data.pendidikanAyah,
-    pekerjaanAyah: data.pekerjaanAyah,
-    noTelpAyah: data.noTelpAyah || undefined,
+    fatherName: data.fatherName,
+    fatherBirthYear: toRequiredNumber(data.fatherBirthYear, "Tahun lahir ayah"),
+    fatherEducation: data.fatherEducation,
+    fatherOccupation: data.fatherOccupation,
+    fatherPhone: data.fatherPhone || undefined,
 
     // Data Ibu
-    namaIbu: data.namaIbu,
-    tahunLahirIbu: toRequiredNumber(data.tahunLahirIbu, "Tahun lahir ibu"),
-    pendidikanIbu: data.pendidikanIbu,
-    pekerjaanIbu: data.pekerjaanIbu,
-    noTelpIbu: data.noTelpIbu || undefined,
+    motherName: data.motherName,
+    motherBirthYear: toRequiredNumber(data.motherBirthYear, "Tahun lahir ibu"),
+    motherEducation: data.motherEducation,
+    motherOccupation: data.motherOccupation,
+    motherPhone: data.motherPhone || undefined,
 
     // Data Wali
-    namaWali: data.namaWali || undefined,
-    tahunLahirWali: toNumber(data.tahunLahirWali),
-    pendidikanWali: data.pendidikanWali || undefined,
-    pekerjaanWali: data.pekerjaanWali || undefined,
-    noTelpWali: data.noTelpWali || undefined,
-    hubunganWali: data.hubunganWali || undefined,
+    guardianName: data.guardianName || undefined,
+    guardianBirthYear: toNumber(data.guardianBirthYear),
+    guardianEducation: data.guardianEducation || undefined,
+    guardianOccupation: data.guardianOccupation || undefined,
+    guardianPhone: data.guardianPhone || undefined,
+    guardianRelationship: data.guardianRelationship || undefined,
 
     // Sekolah Asal
-    namaAsalSekolah: data.namaAsalSekolah,
-    npsnAsalSekolah: data.npsnAsalSekolah,
-    alamatAsalSekolah: data.alamatAsalSekolah,
-    tahunLulus: toRequiredNumber(data.tahunLulus, "Tahun lulus"),
+    previousSchoolName: data.previousSchoolName,
+    previousSchoolNpsn: data.previousSchoolNpsn,
+    previousSchoolAddress: data.previousSchoolAddress,
+    graduationYear: toRequiredNumber(data.graduationYear, "Tahun lulus"),
   };
 }
 
@@ -241,16 +243,16 @@ export function convertZodToUpdateInput(
 ): UpdateRegistrationInput {
   return {
     ...convertZodToPrisma(data),
-    emailMurid: data.emailMurid || null,
-    kodePos: data.kodePos || null,
-    noTelpAyah: data.noTelpAyah || null,
-    noTelpIbu: data.noTelpIbu || null,
-    namaWali: data.namaWali || null,
-    tahunLahirWali: toNumber(data.tahunLahirWali) ?? null,
-    pendidikanWali: data.pendidikanWali || null,
-    pekerjaanWali: data.pekerjaanWali || null,
-    noTelpWali: data.noTelpWali || null,
-    hubunganWali: data.hubunganWali || null,
+    studentEmail: data.studentEmail || null,
+    postalCode: data.postalCode || null,
+    fatherPhone: data.fatherPhone || null,
+    motherPhone: data.motherPhone || null,
+    guardianName: data.guardianName || null,
+    guardianBirthYear: toNumber(data.guardianBirthYear) ?? null,
+    guardianEducation: data.guardianEducation || null,
+    guardianOccupation: data.guardianOccupation || null,
+    guardianPhone: data.guardianPhone || null,
+    guardianRelationship: data.guardianRelationship || null,
   };
 }
 
@@ -260,61 +262,59 @@ export function convertZodToUpdateInput(
 
 export interface UpdateRegistrationInput {
   // Semua field opsional untuk partial update
-  namaLengkap?: string;
-  jenisKelamin?: JenisKelamin;
-  programKeahlian?: ProgramKeahlian;
+  fullName?: string;
+  gender?: Gender;
+  specialization?: Specialization;
   nisn?: string;
   nik?: string;
-  nomorKk?: string;
-  tempatLahir?: string;
-  tanggalLahir?: Date;
+  familyCardNumber?: string;
+  birthPlace?: string;
+  birthDate?: Date;
 
   // Kontak
-  noHpMurid?: string;
-  emailMurid?: string | null;
+  studentPhone?: string;
+  studentEmail?: string | null;
 
   // Alamat
-  alamatJalan?: string;
+  streetAddress?: string;
   rt?: string;
   rw?: string;
-  kelurahanDesa?: string;
-  kecamatan?: string;
-  kotaKabupaten?: string;
-  provinsi?: string;
-  kodePos?: string | null;
+  village?: string;
+  district?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string | null;
 
   // Data Ayah
-  namaAyah?: string;
-  tahunLahirAyah?: number;
-  pendidikanAyah?: Pendidikan;
-  pekerjaanAyah?: string;
-  noTelpAyah?: string | null;
+  fatherName?: string;
+  fatherBirthYear?: number;
+  fatherEducation?: Education;
+  fatherOccupation?: string;
+  fatherPhone?: string | null;
 
   // Data Ibu
-  namaIbu?: string;
-  tahunLahirIbu?: number;
-  pendidikanIbu?: Pendidikan;
-  pekerjaanIbu?: string;
-  noTelpIbu?: string | null;
+  motherName?: string;
+  motherBirthYear?: number;
+  motherEducation?: Education;
+  motherOccupation?: string;
+  motherPhone?: string | null;
 
   // Data Wali
-  namaWali?: string | null;
-  tahunLahirWali?: number | null;
-  pendidikanWali?: Pendidikan | null;
-  pekerjaanWali?: string | null;
-  noTelpWali?: string | null;
-  hubunganWali?: string | null;
+  guardianName?: string | null;
+  guardianBirthYear?: number | null;
+  guardianEducation?: Education | null;
+  guardianOccupation?: string | null;
+  guardianPhone?: string | null;
+  guardianRelationship?: string | null;
 
   // Sekolah Asal
-  namaAsalSekolah?: string;
-  npsnAsalSekolah?: string;
-  alamatAsalSekolah?: string;
-  tahunLulus?: number;
+  previousSchoolName?: string;
+  previousSchoolNpsn?: string;
+  previousSchoolAddress?: string;
+  graduationYear?: number;
 
   // Status
-  status?: StatusPendaftaran;
-  catatanValidasi?: string;
-  divalidasiOleh?: string;
+  status?: RegistrationStatus;
 }
 
 // Update seluruh data pendaftaran (edit)
@@ -323,26 +323,26 @@ export async function updateRegistration(
   id: string,
   data: UpdateRegistrationInput,
 ) {
-  return prisma.pendaftaran.update({
+  return prisma.registration.update({
     where: { id },
     data,
   });
 }
 
 /**
- * Update status pendaftaran (PENDING/DIVERIFIKASI/DITERIMA/DITOLAK).
+ * Update status pendaftaran (PENDING/VERIFIED/ACCEPTED/REJECTED).
  * Menerima string agar bisa dipakai langsung dari request body;
- * throw jika status bukan nilai StatusPendaftaran yang valid.
+ * throw jika status bukan nilai RegistrationStatus yang valid.
  */
 export async function updateRegistrationStatus(id: string, status: string) {
   if (!isValidStatus(status)) {
     throw new Error(`Status ${status} tidak valid`);
   }
 
-  return prisma.pendaftaran.update({
+  return prisma.registration.update({
     where: { id },
     data: {
-      status: status as StatusPendaftaran,
+      status: status as RegistrationStatus,
     },
   });
 }
@@ -353,7 +353,7 @@ export async function updateRegistrationStatus(id: string, status: string) {
 
 /** Hapus permanen satu pendaftaran. */
 export async function deleteRegistration(id: string) {
-  return prisma.pendaftaran.delete({
+  return prisma.registration.delete({
     where: { id },
   });
 }
@@ -362,9 +362,9 @@ export async function deleteRegistration(id: string) {
 // 7. UTILITY FUNCTIONS
 // ======================
 
-/** Type guard: apakah string merupakan nilai StatusPendaftaran yang valid. */
-export function isValidStatus(status: string): status is StatusPendaftaran {
-  return STATUS_PENDAFTARAN_VALUES.includes(status as StatusPendaftaran);
+/** Type guard: apakah string merupakan nilai RegistrationStatus yang valid. */
+export function isValidStatus(status: string): status is RegistrationStatus {
+  return REGISTRATION_STATUS_VALUES.includes(status as RegistrationStatus);
 }
 
 /**
@@ -376,9 +376,9 @@ export async function getRegistrationsByStatus(status: string) {
     throw new Error(`Status "${status}" tidak valid`);
   }
 
-  return prisma.pendaftaran.findMany({
+  return prisma.registration.findMany({
     where: {
-      status: status as StatusPendaftaran,
+      status: status as RegistrationStatus,
     },
     include: { student: true },
     orderBy: { createdAt: "desc" },
@@ -387,17 +387,17 @@ export async function getRegistrationsByStatus(status: string) {
 
 /** Hitung jumlah pendaftaran per status untuk kartu statistik admin. */
 export async function getRegistrationStats() {
-  const [total, pending, diterima, ditolak] = await Promise.all([
-    prisma.pendaftaran.count(),
-    prisma.pendaftaran.count({ where: { status: "PENDING" } }),
-    prisma.pendaftaran.count({ where: { status: "DITERIMA" } }),
-    prisma.pendaftaran.count({ where: { status: "DITOLAK" } }),
+  const [total, pending, accepted, rejected] = await Promise.all([
+    prisma.registration.count(),
+    prisma.registration.count({ where: { status: "PENDING" } }),
+    prisma.registration.count({ where: { status: "ACCEPTED" } }),
+    prisma.registration.count({ where: { status: "REJECTED" } }),
   ]);
 
   return {
     total,
     pending,
-    diterima,
-    ditolak,
+    accepted,
+    rejected,
   };
 }

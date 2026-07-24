@@ -25,10 +25,10 @@ const input: CreateGuruInput = {
   name: "Bu Sari",
   email: "sari@muda.sch.id",
   password: "Password123",
-  jenisKelamin: "PEREMPUAN",
+  gender: "FEMALE",
   tempatLahir: "Bandung",
   tanggalLahir: "1990-05-01",
-  pendidikanTerakhir: "S1",
+  education: "S1",
   statusKepegawaian: "GTY",
   mataPelajaranIds: ["m1", "m2"],
 };

@@ -43,10 +43,10 @@ export async function createGuru(
       userId: user.id,
       nip: input.nip || null,
       nuptk: input.nuptk || null,
-      jenisKelamin: input.jenisKelamin,
+      gender: input.gender,
       tempatLahir: input.tempatLahir,
       tanggalLahir: new Date(`${input.tanggalLahir}T00:00:00.000Z`),
-      pendidikanTerakhir: input.pendidikanTerakhir,
+      education: input.education,
       jabatan: input.jabatan || null,
       statusKepegawaian: input.statusKepegawaian,
       mataPelajaran: {

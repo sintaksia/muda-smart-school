@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { Pendaftaran } from "@prisma/client";
+import type { Registration } from "@prisma/client";
 import {
   formatTanggal,
   formatPhoneNumber,
@@ -63,62 +63,62 @@ describe("toYearString", () => {
 
 describe("registrationToFormDefaults", () => {
   const registration = {
-    namaLengkap: "Budi Santoso",
-    jenisKelamin: "LAKI_LAKI",
-    programKeahlian: "TEKNIK_OTOMOTIF",
+    fullName: "Budi Santoso",
+    gender: "MALE",
+    specialization: "AUTOMOTIVE_ENGINEERING",
     nisn: "1234567890",
     nik: "1234567890123456",
-    nomorKk: "1234567890123456",
-    tempatLahir: "Bandung",
-    tanggalLahir: new Date("2010-01-15T00:00:00Z"),
-    noHpMurid: "081234567890",
-    emailMurid: null,
-    alamatJalan: "Jl. Merdeka No. 1",
+    familyCardNumber: "1234567890123456",
+    birthPlace: "Bandung",
+    birthDate: new Date("2010-01-15T00:00:00Z"),
+    studentPhone: "081234567890",
+    studentEmail: null,
+    streetAddress: "Jl. Merdeka No. 1",
     rt: "01",
     rw: "02",
-    kelurahanDesa: "Sukajadi",
-    kecamatan: "Sukasari",
-    kotaKabupaten: "Bandung",
-    provinsi: "Jawa Barat",
-    kodePos: null,
-    namaAyah: "Asep",
-    tahunLahirAyah: 1980,
-    pendidikanAyah: "S1",
-    pekerjaanAyah: "Wiraswasta",
-    noTelpAyah: null,
-    namaIbu: "Siti",
-    tahunLahirIbu: 1982,
-    pendidikanIbu: "S1",
-    pekerjaanIbu: "IRT",
-    noTelpIbu: null,
-    namaWali: null,
-    tahunLahirWali: null,
-    pendidikanWali: null,
-    pekerjaanWali: null,
-    noTelpWali: null,
-    hubunganWali: null,
-    namaAsalSekolah: "SMPN 1",
-    npsnAsalSekolah: "12345678",
-    alamatAsalSekolah: "Jl. Pendidikan No. 2",
-    tahunLulus: 2025,
-  } as unknown as Pendaftaran;
+    village: "Sukajadi",
+    district: "Sukasari",
+    city: "Bandung",
+    province: "Jawa Barat",
+    postalCode: null,
+    fatherName: "Asep",
+    fatherBirthYear: 1980,
+    fatherEducation: "S1",
+    fatherOccupation: "Wiraswasta",
+    fatherPhone: null,
+    motherName: "Siti",
+    motherBirthYear: 1982,
+    motherEducation: "S1",
+    motherOccupation: "IRT",
+    motherPhone: null,
+    guardianName: null,
+    guardianBirthYear: null,
+    guardianEducation: null,
+    guardianOccupation: null,
+    guardianPhone: null,
+    guardianRelationship: null,
+    previousSchoolName: "SMPN 1",
+    previousSchoolNpsn: "12345678",
+    previousSchoolAddress: "Jl. Pendidikan No. 2",
+    graduationYear: 2025,
+  } as unknown as Registration;
 
-  it("maps a Pendaftaran record to form default values", () => {
+  it("maps a Registration record to form default values", () => {
     const defaults = registrationToFormDefaults(registration);
 
-    expect(defaults.namaLengkap).toBe("Budi Santoso");
-    expect(defaults.tanggalLahir).toBe("2010-01-15");
-    expect(defaults.tahunLahirAyah).toBe("1980");
-    expect(defaults.tahunLulus).toBe("2025");
+    expect(defaults.fullName).toBe("Budi Santoso");
+    expect(defaults.birthDate).toBe("2010-01-15");
+    expect(defaults.fatherBirthYear).toBe("1980");
+    expect(defaults.graduationYear).toBe("2025");
   });
 
   it("converts nullable fields to empty strings for the form", () => {
     const defaults = registrationToFormDefaults(registration);
 
-    expect(defaults.emailMurid).toBe("");
-    expect(defaults.kodePos).toBe("");
-    expect(defaults.namaWali).toBe("");
-    expect(defaults.tahunLahirWali).toBe("");
-    expect(defaults.pendidikanWali).toBeUndefined();
+    expect(defaults.studentEmail).toBe("");
+    expect(defaults.postalCode).toBe("");
+    expect(defaults.guardianName).toBe("");
+    expect(defaults.guardianBirthYear).toBe("");
+    expect(defaults.guardianEducation).toBeUndefined();
   });
 });

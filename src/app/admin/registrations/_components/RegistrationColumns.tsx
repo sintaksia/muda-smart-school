@@ -3,14 +3,14 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import { RegistrationActions } from "./RegistrationActions";
-import type { PendaftaranWithStudent } from "@/src/features/registration/services";
+import type { RegistrationWithStudent } from "@/src/features/registration/services";
 import {
-  JENIS_KELAMIN_LABELS,
-  PROGRAM_KEAHLIAN_LABELS,
-  PROGRAM_KEAHLIAN_SHORT_LABELS,
-  PROGRAM_KEAHLIAN_COLORS,
-  STATUS_PENDAFTARAN_LABELS,
-  STATUS_PENDAFTARAN_BADGES,
+  GENDER_LABELS,
+  SPECIALIZATION_LABELS,
+  SPECIALIZATION_SHORT_LABELS,
+  SPECIALIZATION_COLORS,
+  REGISTRATION_STATUS_LABELS,
+  REGISTRATION_STATUS_BADGES,
 } from "@/src/lib/constants";
 
 const formatTanggal = (date: Date | string): string => {
@@ -23,42 +23,42 @@ const formatTanggal = (date: Date | string): string => {
 };
 
 const getStatusLabel = (status: string): string =>
-  STATUS_PENDAFTARAN_LABELS[status] ?? status;
+  REGISTRATION_STATUS_LABELS[status] ?? status;
 
 const getProgramLabel = (program: string): string =>
-  PROGRAM_KEAHLIAN_LABELS[program] ?? program;
+  SPECIALIZATION_LABELS[program] ?? program;
 
 const getProgramShortLabel = (program: string): string =>
-  PROGRAM_KEAHLIAN_SHORT_LABELS[program] ?? program;
+  SPECIALIZATION_SHORT_LABELS[program] ?? program;
 
-export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
+export const registrationColumns: ColumnDef<RegistrationWithStudent>[] = [
   {
-    accessorKey: "nomorPendaftaran",
+    accessorKey: "registrationNumber",
     header: "No. Pendaftaran",
     cell: ({ row }) => (
       <span className="font-medium">
-        {row.original.nomorPendaftaran || "-"}
+        {row.original.registrationNumber || "-"}
       </span>
     ),
   },
   {
-    accessorKey: "namaLengkap",
+    accessorKey: "fullName",
     header: "Nama Lengkap",
     cell: ({ row }) => (
       <div>
-        <div className="font-medium">{row.original.namaLengkap}</div>
+        <div className="font-medium">{row.original.fullName}</div>
         <div className="text-xs text-muted-foreground">
-          {row.original.noHpMurid}
+          {row.original.studentPhone}
         </div>
       </div>
     ),
   },
   {
-    accessorKey: "programKeahlian",
+    accessorKey: "specialization",
     header: "Program",
     cell: ({ row }) => {
-      const program = row.original.programKeahlian;
-      const color = PROGRAM_KEAHLIAN_COLORS[program] ?? "#64748b";
+      const program = row.original.specialization;
+      const color = SPECIALIZATION_COLORS[program] ?? "#64748b";
       return (
         <Badge
           variant="outline"
@@ -76,23 +76,20 @@ export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
     },
   },
   {
-    accessorKey: "jenisKelamin",
+    accessorKey: "gender",
     header: "JK",
     cell: ({ row }) => (
-      <span
-        className="text-sm"
-        title={JENIS_KELAMIN_LABELS[row.original.jenisKelamin]}
-      >
-        {JENIS_KELAMIN_LABELS[row.original.jenisKelamin]?.charAt(0) ?? "-"}
+      <span className="text-sm" title={GENDER_LABELS[row.original.gender]}>
+        {GENDER_LABELS[row.original.gender]?.charAt(0) ?? "-"}
       </span>
     ),
   },
   {
-    accessorKey: "namaAsalSekolah",
+    accessorKey: "previousSchoolName",
     header: "Sekolah Asal",
     cell: ({ row }) => (
       <div className="max-w-[200px] truncate text-sm">
-        {row.original.namaAsalSekolah}
+        {row.original.previousSchoolName}
       </div>
     ),
   },
@@ -101,17 +98,17 @@ export const registrationColumns: ColumnDef<PendaftaranWithStudent>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status;
-      const variant = STATUS_PENDAFTARAN_BADGES[status] ?? "warning";
+      const variant = REGISTRATION_STATUS_BADGES[status] ?? "warning";
 
       return <Badge variant={variant}>{getStatusLabel(status)}</Badge>;
     },
   },
   {
-    accessorKey: "tanggalPendaftaran",
+    accessorKey: "registrationDate",
     header: "Tanggal Daftar",
     cell: ({ row }) => (
       <span className="text-sm">
-        {formatTanggal(row.original.tanggalPendaftaran)}
+        {formatTanggal(row.original.registrationDate)}
       </span>
     ),
   },

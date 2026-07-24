@@ -24,7 +24,7 @@ model User {
   guru         Guru?
 
   notifications        Notification[]
-  creditScoresReported CreditScore[]  @relation("CreditReporter")
+  creditScoresReported CreditScore[]   @relation("CreditReporter")
   izinSubmitted        PengajuanIzin[] @relation("IzinSubmitter")
   izinReviewed         PengajuanIzin[] @relation("IzinReviewer")
   absensiGuruReported  AbsensiGuru[]   @relation("AbsensiGuruReporter")
@@ -32,71 +32,71 @@ model User {
   @@map("users")
 }
 
-model Pendaftaran {
-  id                 String            @id @default(cuid())
-  namaLengkap        String            @map("nama_lengkap")
-  jenisKelamin       JenisKelamin      @map("jenis_kelamin")
-  programKeahlian    ProgramKeahlian   @map("program_keahlian")
-  nisn               String            @unique
-  nik                String            @unique
-  nomorKk            String            @map("nomor_kk")
-  tempatLahir        String            @map("tempat_lahir")
-  tanggalLahir       DateTime          @map("tanggal_lahir")
-  noHpMurid          String            @map("no_hp_murid")
-  alamatJalan        String            @map("alamat_jalan")
-  rt                 String
-  rw                 String
-  kelurahanDesa      String            @map("kelurahan_desa")
-  kecamatan          String
-  kotaKabupaten      String            @map("kota_kabupaten")
-  provinsi           String
-  kodePos            String?           @map("kode_pos")
-  namaAyah           String            @map("nama_ayah")
-  tahunLahirAyah     Int               @map("tahun_lahir_ayah")
-  pendidikanAyah     Pendidikan        @map("pendidikan_ayah")
-  pekerjaanAyah      String            @map("pekerjaan_ayah")
-  namaIbu            String            @map("nama_ibu")
-  tahunLahirIbu      Int               @map("tahun_lahir_ibu")
-  pendidikanIbu      Pendidikan        @map("pendidikan_ibu")
-  pekerjaanIbu       String            @map("pekerjaan_ibu")
-  namaAsalSekolah    String            @map("nama_asal_sekolah")
-  npsnAsalSekolah    String            @map("npsn_asal_sekolah")
-  alamatAsalSekolah  String            @map("alamat_asal_sekolah")
-  createdAt          DateTime          @default(now()) @map("created_at")
-  updatedAt          DateTime          @updatedAt @map("updated_at")
-  emailMurid         String?           @map("email_murid")
-  hubunganWali       String?           @map("hubungan_wali")
-  namaWali           String?           @map("nama_wali")
-  noTelpAyah         String?           @map("no_telp_ayah")
-  noTelpIbu          String?           @map("no_telp_ibu")
-  noTelpWali         String?           @map("no_telp_wali")
-  nomorPendaftaran   String            @unique @map("nomor_pendaftaran")
-  pekerjaanWali      String?           @map("pekerjaan_wali")
-  pendidikanWali     Pendidikan?       @map("pendidikan_wali")
-  tahunLahirWali     Int?              @map("tahun_lahir_wali")
-  status             StatusPendaftaran @default(PENDING)
-  tahunLulus         Int               @map("tahun_lulus")
-  tanggalPendaftaran DateTime          @default(now()) @map("tanggal_pendaftaran")
-  student            Student?
+model Registration {
+  id                    String             @id @default(cuid())
+  fullName              String             @map("full_name")
+  gender                Gender             @map("gender")
+  specialization        Specialization     @map("specialization")
+  nisn                  String             @unique
+  nik                   String             @unique
+  familyCardNumber      String             @map("family_card_number")
+  birthPlace            String             @map("birth_place")
+  birthDate             DateTime           @map("birth_date")
+  studentPhone          String             @map("student_phone")
+  streetAddress         String             @map("street_address")
+  rt                    String
+  rw                    String
+  village               String             @map("village")
+  district              String
+  city                  String             @map("city")
+  province              String
+  postalCode            String?            @map("postal_code")
+  fatherName            String             @map("father_name")
+  fatherBirthYear       Int                @map("father_birth_year")
+  fatherEducation       Education          @map("father_education")
+  fatherOccupation      String             @map("father_occupation")
+  motherName            String             @map("mother_name")
+  motherBirthYear       Int                @map("mother_birth_year")
+  motherEducation       Education          @map("mother_education")
+  motherOccupation      String             @map("mother_occupation")
+  previousSchoolName    String             @map("previous_school_name")
+  previousSchoolNpsn    String             @map("previous_school_npsn")
+  previousSchoolAddress String             @map("previous_school_address")
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+  studentEmail          String?            @map("student_email")
+  guardianRelationship  String?            @map("guardian_relationship")
+  guardianName          String?            @map("guardian_name")
+  fatherPhone           String?            @map("father_phone")
+  motherPhone           String?            @map("mother_phone")
+  guardianPhone         String?            @map("guardian_phone")
+  registrationNumber    String             @unique @map("registration_number")
+  guardianOccupation    String?            @map("guardian_occupation")
+  guardianEducation     Education?         @map("guardian_education")
+  guardianBirthYear     Int?               @map("guardian_birth_year")
+  status                RegistrationStatus @default(PENDING)
+  graduationYear        Int                @map("graduation_year")
+  registrationDate      DateTime           @default(now()) @map("registration_date")
+  student               Student?
 
-  @@map("pendaftaran")
+  @@map("registrations")
 }
 
 model Student {
-  id              String          @id @default(cuid())
-  userId          String          @unique @map("user_id")
-  pendaftaranId   String?         @unique @map("pendaftaran_id")
-  nis             String          @unique
-  nisn            String          @unique
-  programKeahlian ProgramKeahlian @map("program_keahlian")
-  angkatan        Int
-  kelasId         String?         @map("kelas_id")
-  status          StudentStatus   @default(AKTIF)
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime        @updatedAt @map("updated_at")
+  id             String         @id @default(cuid())
+  userId         String         @unique @map("user_id")
+  registrationId String?        @unique @map("registration_id")
+  nis            String         @unique
+  nisn           String         @unique
+  specialization Specialization @map("specialization")
+  angkatan       Int
+  kelasId        String?        @map("kelas_id")
+  status         StudentStatus  @default(AKTIF)
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
 
   user          User            @relation(fields: [userId], references: [id])
-  pendaftaran   Pendaftaran?    @relation(fields: [pendaftaranId], references: [id])
+  registration  Registration?   @relation(fields: [registrationId], references: [id])
   kelas         Kelas?          @relation(fields: [kelasId], references: [id])
   absensiSiswa  AbsensiSiswa[]
   creditScores  CreditScore[]
@@ -110,10 +110,10 @@ model Guru {
   userId               String            @unique @map("user_id")
   nip                  String?           @unique
   nuptk                String?           @unique
-  jenisKelamin         JenisKelamin      @map("jenis_kelamin")
+  gender               Gender            @map("gender")
   tempatLahir          String            @map("tempat_lahir")
   tanggalLahir         DateTime          @map("tanggal_lahir")
-  pendidikanTerakhir   Pendidikan        @map("pendidikan_terakhir")
+  education            Education         @map("education")
   jabatan              String?
   statusKepegawaian    StatusKepegawaian @map("status_kepegawaian")
   tanggalMulaiMengajar DateTime?         @map("tanggal_mulai_mengajar")
@@ -133,14 +133,14 @@ model Guru {
 }
 
 model Kelas {
-  id              String          @id @default(cuid())
-  nama            String
-  tingkat         Int
-  programKeahlian ProgramKeahlian @map("program_keahlian")
-  tahunAjaran     String          @map("tahun_ajaran")
-  waliKelasId     String?         @map("wali_kelas_id")
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime        @updatedAt @map("updated_at")
+  id             String         @id @default(cuid())
+  nama           String
+  tingkat        Int
+  specialization Specialization @map("specialization")
+  tahunAjaran    String         @map("tahun_ajaran")
+  waliKelasId    String?        @map("wali_kelas_id")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
 
   waliKelas Guru?     @relation(fields: [waliKelasId], references: [id])
   students  Student[]
@@ -151,13 +151,13 @@ model Kelas {
 }
 
 model MataPelajaran {
-  id              String           @id @default(cuid())
-  nama            String
-  kode            String           @unique
-  programKeahlian ProgramKeahlian? @map("program_keahlian")
-  tingkat         Int?
-  createdAt       DateTime         @default(now()) @map("created_at")
-  updatedAt       DateTime         @updatedAt @map("updated_at")
+  id             String          @id @default(cuid())
+  nama           String
+  kode           String          @unique
+  specialization Specialization? @map("specialization")
+  tingkat        Int?
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
 
   guru   GuruMataPelajaran[]
   jadwal Jadwal[]
@@ -225,21 +225,21 @@ model Sesi {
 }
 
 model AbsensiSiswa {
-  id          String         @id @default(cuid())
-  jadwalId    String         @map("jadwal_id")
-  studentId   String         @map("student_id")
-  sesiId      String?        @map("sesi_id")
+  id          String        @id @default(cuid())
+  jadwalId    String        @map("jadwal_id")
+  studentId   String        @map("student_id")
+  sesiId      String?       @map("sesi_id")
   tanggal     DateTime
   status      AbsensiStatus
   catatan     String?
-  scanTime    DateTime?      @map("scan_time")
-  gpsLat      Float?         @map("gps_lat")
-  gpsLng      Float?         @map("gps_lng")
-  gpsValid    Boolean?       @map("gps_valid")
-  needsReview Boolean        @default(false) @map("needs_review")
-  method      AbsensiMethod  @default(MANUAL)
-  createdAt   DateTime       @default(now()) @map("created_at")
-  updatedAt   DateTime       @updatedAt @map("updated_at")
+  scanTime    DateTime?     @map("scan_time")
+  gpsLat      Float?        @map("gps_lat")
+  gpsLng      Float?        @map("gps_lng")
+  gpsValid    Boolean?      @map("gps_valid")
+  needsReview Boolean       @default(false) @map("needs_review")
+  method      AbsensiMethod @default(MANUAL)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
 
   jadwal  Jadwal  @relation(fields: [jadwalId], references: [id])
   student Student @relation(fields: [studentId], references: [id])
@@ -340,15 +340,15 @@ model PengajuanIzin {
 }
 
 model Notification {
-  id        String    @id @default(cuid())
-  userId    String    @map("user_id")
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
   title     String
   body      String
   type      NotificationType
-  refId     String?   @map("ref_id")
-  channel   String    @default("IN_APP")
-  readAt    DateTime? @map("read_at")
-  createdAt DateTime  @default(now()) @map("created_at")
+  refId     String?          @map("ref_id")
+  channel   String           @default("IN_APP")
+  readAt    DateTime?        @map("read_at")
+  createdAt DateTime         @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -595,20 +595,20 @@ enum UserStatus {
   SUSPENDED
 }
 
-enum JenisKelamin {
-  LAKI_LAKI
-  PEREMPUAN
+enum Gender {
+  MALE
+  FEMALE
 }
 
-enum ProgramKeahlian {
-  TEKNIK_OTOMOTIF
-  PEMROGRAMAN_PERANGKAT_LUNAK_DAN_GIM
-  TEKNIK_JARINGAN_KOMPUTER_DAN_TELEKOMUNIKASI
-  MANAJEMEN_PERKANTORAN_DAN_LAYANAN_BISNIS
-  AKUNTANSI_DAN_KEUANGAN_LEMBAGA
+enum Specialization {
+  AUTOMOTIVE_ENGINEERING
+  SOFTWARE_AND_GAME_DEVELOPMENT
+  NETWORK_AND_TELECOMMUNICATIONS_ENGINEERING
+  OFFICE_MANAGEMENT_AND_BUSINESS_SERVICES
+  ACCOUNTING_AND_INSTITUTIONAL_FINANCE
 }
 
-enum Pendidikan {
+enum Education {
   SD
   SMP
   SMA
@@ -620,7 +620,7 @@ enum Pendidikan {
   S1
   S2
   S3
-  TIDAK_SEKOLAH
+  NO_SCHOOLING
 }
 
 enum TestimonialType {
@@ -696,11 +696,11 @@ enum SettingType {
   BOOLEAN
 }
 
-enum StatusPendaftaran {
+enum RegistrationStatus {
   PENDING
-  DIVERIFIKASI
-  DITOLAK
-  DITERIMA
+  VERIFIED
+  REJECTED
+  ACCEPTED
 }
 
 enum StudentStatus {

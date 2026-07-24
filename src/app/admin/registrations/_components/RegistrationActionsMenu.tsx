@@ -21,14 +21,14 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import type {
-  PendaftaranWithStudent,
-  StatusPendaftaran,
+  RegistrationWithStudent,
+  RegistrationStatus,
 } from "@/src/features/registration/services";
 
 interface RegistrationActionsMenuProps {
-  registration: PendaftaranWithStudent;
+  registration: RegistrationWithStudent;
   onUpdateStatus: (
-    status: StatusPendaftaran,
+    status: RegistrationStatus,
     successMessage: string,
     errorMessage: string,
   ) => void;
@@ -45,9 +45,9 @@ export function RegistrationActionsMenu({
   const router = useRouter();
 
   const canChangeStatus =
-    registration.status === "PENDING" || registration.status === "DIVERIFIKASI";
+    registration.status === "PENDING" || registration.status === "VERIFIED";
   const canCreateStudent =
-    registration.status === "DITERIMA" && !registration.student;
+    registration.status === "ACCEPTED" && !registration.student;
 
   return (
     <DropdownMenu>
@@ -93,7 +93,7 @@ export function RegistrationActionsMenu({
             <DropdownMenuItem
               onClick={() =>
                 onUpdateStatus(
-                  "DITERIMA",
+                  "ACCEPTED",
                   "Pendaftaran diterima",
                   "Gagal memvalidasi pendaftaran",
                 )
@@ -106,7 +106,7 @@ export function RegistrationActionsMenu({
             <DropdownMenuItem
               onClick={() =>
                 onUpdateStatus(
-                  "DITOLAK",
+                  "REJECTED",
                   "Pendaftaran ditolak",
                   "Gagal menolak pendaftaran",
                 )
@@ -134,7 +134,7 @@ export function RegistrationActionsMenu({
           <DropdownMenuItem
             onClick={() =>
               onUpdateStatus(
-                "DIVERIFIKASI",
+                "VERIFIED",
                 "Ditandai sebagai terverifikasi",
                 "Gagal menandai terverifikasi",
               )

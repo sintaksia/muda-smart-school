@@ -6,7 +6,7 @@ import {
   createStudentFromRegistration,
   getStudentByUserId,
 } from "./student.service";
-import type { Pendaftaran, Student, User } from "@prisma/client";
+import type { Registration, Student, User } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
@@ -27,14 +27,14 @@ vi.mock("@/src/features/registration/services", () => ({
 
 const baseRegistration = {
   id: "reg-1",
-  namaLengkap: "John Doe",
+  fullName: "John Doe",
   nisn: "1234567890",
-  programKeahlian: "PPLG",
-  emailMurid: "john@example.com",
-  noHpMurid: "08123456789",
-  status: "DITERIMA",
+  specialization: "PPLG",
+  studentEmail: "john@example.com",
+  studentPhone: "08123456789",
+  status: "ACCEPTED",
   student: null,
-} as unknown as Pendaftaran & { student: Student | null };
+} as unknown as Registration & { student: Student | null };
 
 describe("createStudentFromRegistration", () => {
   beforeEach(() => {
@@ -54,7 +54,7 @@ describe("createStudentFromRegistration", () => {
 
     const result = await createStudentFromRegistration(
       {
-        pendaftaranId: "reg-1",
+        registrationId: "reg-1",
         nis: "999",
         angkatan: 2025,
         password: "Password123",
@@ -77,10 +77,10 @@ describe("createStudentFromRegistration", () => {
     expect(prisma.student.create).toHaveBeenCalledWith({
       data: {
         userId: "user-1",
-        pendaftaranId: "reg-1",
+        registrationId: "reg-1",
         nis: "999",
         nisn: "1234567890",
-        programKeahlian: "PPLG",
+        specialization: "PPLG",
         angkatan: 2025,
       },
     });
@@ -90,7 +90,7 @@ describe("createStudentFromRegistration", () => {
     vi.mocked(getRegistrationById).mockResolvedValue(null);
 
     const result = await createStudentFromRegistration({
-      pendaftaranId: "missing",
+      registrationId: "missing",
       nis: "999",
       angkatan: 2025,
       password: "Password123",
@@ -101,14 +101,14 @@ describe("createStudentFromRegistration", () => {
     expect(createUser).not.toHaveBeenCalled();
   });
 
-  it("returns an error when registration is not DITERIMA", async () => {
+  it("returns an error when registration is not ACCEPTED", async () => {
     vi.mocked(getRegistrationById).mockResolvedValue({
       ...baseRegistration,
       status: "PENDING",
-    } as Pendaftaran & { student: Student | null });
+    } as Registration & { student: Student | null });
 
     const result = await createStudentFromRegistration({
-      pendaftaranId: "reg-1",
+      registrationId: "reg-1",
       nis: "999",
       angkatan: 2025,
       password: "Password123",
@@ -116,7 +116,7 @@ describe("createStudentFromRegistration", () => {
 
     expect(result.student).toBeNull();
     expect(result.error).toBe(
-      "Pendaftaran belum diterima (status harus DITERIMA)",
+      "Pendaftaran belum diterima (status harus ACCEPTED)",
     );
   });
 
@@ -127,7 +127,7 @@ describe("createStudentFromRegistration", () => {
     });
 
     const result = await createStudentFromRegistration({
-      pendaftaranId: "reg-1",
+      registrationId: "reg-1",
       nis: "999",
       angkatan: 2025,
       password: "Password123",
@@ -142,11 +142,11 @@ describe("createStudentFromRegistration", () => {
   it("returns an error when registration has no email", async () => {
     vi.mocked(getRegistrationById).mockResolvedValue({
       ...baseRegistration,
-      emailMurid: null,
-    } as unknown as Pendaftaran & { student: Student | null });
+      studentEmail: null,
+    } as unknown as Registration & { student: Student | null });
 
     const result = await createStudentFromRegistration({
-      pendaftaranId: "reg-1",
+      registrationId: "reg-1",
       nis: "999",
       angkatan: 2025,
       password: "Password123",
@@ -164,7 +164,7 @@ describe("createStudentFromRegistration", () => {
     });
 
     const result = await createStudentFromRegistration({
-      pendaftaranId: "reg-1",
+      registrationId: "reg-1",
       nis: "999",
       angkatan: 2025,
       password: "Password123",

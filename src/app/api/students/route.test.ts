@@ -26,7 +26,7 @@ function buildRequest(body: unknown): Request {
 }
 
 const validBody = {
-  pendaftaranId: "reg-1",
+  registrationId: "reg-1",
   nis: "999",
   angkatan: 2025,
   password: "Password123",
