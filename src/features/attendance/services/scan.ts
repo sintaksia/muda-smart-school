@@ -43,7 +43,7 @@ export async function recordScan(
   const student = await prisma.student.findUnique({
     where: { userId: input.studentUserId },
   });
-  if (!student || student.kelasId !== sesi.jadwal.kelasId) {
+  if (!student || student.classId !== sesi.jadwal.kelasId) {
     return { ok: false, error: "Tidak terdaftar di kelas ini" };
   }
 
@@ -96,7 +96,7 @@ export async function recordScan(
 
   // Process 7 — GPS-flagged scans notify the session's teacher.
   if (gps.needsReview && sesi.actualGuruId) {
-    const guru = await prisma.guru.findUnique({
+    const guru = await prisma.teacher.findUnique({
       where: { id: sesi.actualGuruId },
       select: { userId: true },
     });

@@ -3,7 +3,7 @@ import { POST } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { createMapel } from "@/src/features/master/services/mapel";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { MataPelajaran } from "@prisma/client";
+import type { Subject } from "@prisma/client";
 
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
@@ -33,7 +33,7 @@ describe("POST /api/master/mapel", () => {
     } as SessionUser);
 
     const response = await POST(
-      buildRequest({ nama: "Matematika", kode: "MTK" }),
+      buildRequest({ name: "Matematika", code: "MTK" }),
     );
     expect(response.status).toBe(403);
   });
@@ -44,17 +44,17 @@ describe("POST /api/master/mapel", () => {
       role: "ADMIN",
     } as SessionUser);
     vi.mocked(createMapel).mockResolvedValue({
-      mapel: { id: "m1" } as MataPelajaran,
+      mapel: { id: "m1" } as Subject,
       error: null,
     });
 
     const response = await POST(
-      buildRequest({ nama: "Matematika", kode: "mtk" }),
+      buildRequest({ name: "Matematika", code: "mtk" }),
     );
 
     expect(response.status).toBe(201);
     expect(createMapel).toHaveBeenCalledWith(
-      expect.objectContaining({ kode: "MTK" }),
+      expect.objectContaining({ code: "MTK" }),
     );
   });
 
@@ -69,7 +69,7 @@ describe("POST /api/master/mapel", () => {
     });
 
     const response = await POST(
-      buildRequest({ nama: "Matematika", kode: "MTK" }),
+      buildRequest({ name: "Matematika", code: "MTK" }),
     );
     expect(response.status).toBe(400);
   });

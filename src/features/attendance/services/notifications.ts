@@ -75,11 +75,11 @@ export async function getWaliKelasUserId(
   if (!kelasId) {
     return null;
   }
-  const kelas = await prisma.kelas.findUnique({
+  const kelas = await prisma.schoolClass.findUnique({
     where: { id: kelasId },
-    select: { waliKelas: { select: { userId: true } } },
+    select: { homeroomTeacher: { select: { userId: true } } },
   });
-  return kelas?.waliKelas?.userId ?? null;
+  return kelas?.homeroomTeacher?.userId ?? null;
 }
 
 export async function getUnreadNotifications(

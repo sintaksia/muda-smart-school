@@ -20,14 +20,14 @@ export default async function GuruPage() {
       <GuruManager
         guruList={guruList.map((guru) => ({
           id: guru.id,
-          nama: guru.user.name,
+          name: guru.user.name,
           email: guru.user.email,
           nip: guru.nip,
-          statusKepegawaian: guru.statusKepegawaian,
-          mapel: guru.mataPelajaran.map((gm) => gm.mataPelajaran.nama),
-          waliDari: guru.kelasWali.map((k) => k.nama),
+          employmentStatus: guru.employmentStatus,
+          subjects: guru.teacherSubjects.map((ts) => ts.subject.name),
+          homeroomClasses: guru.homeroomClasses.map((k) => k.name),
         }))}
-        mapelOptions={mapelList.map((m) => ({ id: m.id, nama: m.nama }))}
+        mapelOptions={mapelList.map((m) => ({ id: m.id, name: m.name }))}
       />
     </div>
   );

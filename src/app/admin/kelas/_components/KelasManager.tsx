@@ -11,18 +11,18 @@ import {
 
 export interface KelasRow {
   id: string;
-  nama: string;
-  tingkat: number;
+  name: string;
+  gradeLevel: number;
   specialization: string;
-  tahunAjaran: string;
-  waliKelasId: string | null;
-  waliKelas: string | null;
+  academicYear: string;
+  homeroomTeacherId: string | null;
+  homeroomTeacher: string | null;
   jumlahSiswa: number;
 }
 
 interface KelasManagerProps {
   kelasList: KelasRow[];
-  guruOptions: { id: string; nama: string }[];
+  guruOptions: { id: string; name: string }[];
 }
 
 const inputClass =
@@ -31,15 +31,15 @@ const inputClass =
 export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
   const router = useRouter();
   const currentYear = new Date().getFullYear();
-  const [nama, setNama] = useState<string>("");
-  const [tingkat, setTingkat] = useState<string>("10");
+  const [name, setName] = useState<string>("");
+  const [gradeLevel, setGradeLevel] = useState<string>("10");
   const [specialization, setSpecialization] = useState<string>(
     specializationOptions[0].value,
   );
-  const [tahunAjaran, setTahunAjaran] = useState<string>(
+  const [academicYear, setAcademicYear] = useState<string>(
     `${currentYear}/${currentYear + 1}`,
   );
-  const [waliKelasId, setWaliKelasId] = useState<string>("");
+  const [homeroomTeacherId, setHomeroomTeacherId] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   async function request(
@@ -67,26 +67,26 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
     event.preventDefault();
     setSubmitting(true);
     const ok = await request("/api/master/kelas", "POST", {
-      nama,
-      tingkat: Number(tingkat),
+      name,
+      gradeLevel: Number(gradeLevel),
       specialization,
-      tahunAjaran,
-      waliKelasId: waliKelasId || null,
+      academicYear,
+      homeroomTeacherId: homeroomTeacherId || null,
     });
     if (ok) {
       toast.success("Kelas dibuat");
-      setNama("");
+      setName("");
     }
     setSubmitting(false);
   }
 
   async function changeWali(row: KelasRow, newWaliId: string): Promise<void> {
     const ok = await request(`/api/master/kelas/${row.id}`, "PUT", {
-      nama: row.nama,
-      tingkat: row.tingkat,
+      name: row.name,
+      gradeLevel: row.gradeLevel,
       specialization: row.specialization,
-      tahunAjaran: row.tahunAjaran,
-      waliKelasId: newWaliId || null,
+      academicYear: row.academicYear,
+      homeroomTeacherId: newWaliId || null,
     });
     if (ok) {
       toast.success("Wali kelas diperbarui");
@@ -112,16 +112,16 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
         <h3 className="text-ink mb-4 text-base font-semibold">Tambah Kelas</h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           <input
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             placeholder="Nama (mis. X PPLG 1)"
             required
             minLength={2}
             className={inputClass}
           />
           <select
-            value={tingkat}
-            onChange={(e) => setTingkat(e.target.value)}
+            value={gradeLevel}
+            onChange={(e) => setGradeLevel(e.target.value)}
             className={inputClass}
           >
             <option value="10">Kelas 10</option>
@@ -140,22 +140,22 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
             ))}
           </select>
           <input
-            value={tahunAjaran}
-            onChange={(e) => setTahunAjaran(e.target.value)}
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
             placeholder="2026/2027"
             pattern="\d{4}/\d{4}"
             required
             className={`${inputClass} tabular-nums`}
           />
           <select
-            value={waliKelasId}
-            onChange={(e) => setWaliKelasId(e.target.value)}
+            value={homeroomTeacherId}
+            onChange={(e) => setHomeroomTeacherId(e.target.value)}
             className={inputClass}
           >
             <option value="">Wali kelas (opsional)</option>
             {guruOptions.map((guru) => (
               <option key={guru.id} value={guru.id}>
-                {guru.nama}
+                {guru.name}
               </option>
             ))}
           </select>
@@ -189,24 +189,24 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
                   className="border-hairline border-b last:border-b-0"
                 >
                   <td className="text-ink px-5 py-3 font-semibold">
-                    {row.nama}
+                    {row.name}
                   </td>
                   <td className="text-ink-secondary px-4 py-3">
                     {SPECIALIZATION_SHORT_LABELS[row.specialization]}
                   </td>
                   <td className="text-ink-secondary px-4 py-3 tabular-nums">
-                    {row.tahunAjaran}
+                    {row.academicYear}
                   </td>
                   <td className="px-4 py-3">
                     <select
-                      value={row.waliKelasId ?? ""}
+                      value={row.homeroomTeacherId ?? ""}
                       onChange={(e) => changeWali(row, e.target.value)}
                       className="border-hairline-strong text-ink-secondary rounded-input h-9 border bg-white px-2 text-xs"
                     >
                       <option value="">— Belum ada —</option>
                       {guruOptions.map((guru) => (
                         <option key={guru.id} value={guru.id}>
-                          {guru.nama}
+                          {guru.name}
                         </option>
                       ))}
                     </select>

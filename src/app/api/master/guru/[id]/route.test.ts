@@ -3,7 +3,7 @@ import { PUT } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { updateGuru } from "@/src/features/master/services/guru";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { Guru } from "@prisma/client";
+import type { Teacher } from "@prisma/client";
 
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
@@ -33,18 +33,18 @@ describe("PUT /api/master/guru/[id]", () => {
       role: "ADMIN",
     } as SessionUser);
     vi.mocked(updateGuru).mockResolvedValue({
-      guru: { id: "guru-1" } as Guru,
+      guru: { id: "guru-1" } as Teacher,
       error: null,
     });
 
     const response = await PUT(
-      buildRequest({ mataPelajaranIds: ["m1", "m2"] }),
+      buildRequest({ subjectIds: ["m1", "m2"] }),
       routeParams,
     );
 
     expect(response.status).toBe(200);
     expect(updateGuru).toHaveBeenCalledWith("guru-1", {
-      mataPelajaranIds: ["m1", "m2"],
+      subjectIds: ["m1", "m2"],
     });
   });
 
@@ -59,7 +59,7 @@ describe("PUT /api/master/guru/[id]", () => {
     });
 
     const response = await PUT(
-      buildRequest({ jabatan: "Wakasek" }),
+      buildRequest({ position: "Wakasek" }),
       routeParams,
     );
     expect(response.status).toBe(400);

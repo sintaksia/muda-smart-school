@@ -38,7 +38,7 @@ async function authorizeSessionAccess(
   if (canAccessAdmin(currentUser.role)) {
     return { status: 200 };
   }
-  const guru = await prisma.guru.findUnique({
+  const guru = await prisma.teacher.findUnique({
     where: { userId: currentUser.id },
   });
   if (!guru) {
@@ -79,7 +79,7 @@ export async function GET(request: Request, { params }: RouteParams) {
                 },
               },
             },
-            mataPelajaran: { select: { nama: true } },
+            mataPelajaran: { select: { name: true } },
           },
         },
         absensiSiswa: true,

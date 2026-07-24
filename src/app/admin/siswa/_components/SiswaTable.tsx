@@ -16,13 +16,13 @@ export interface SiswaRow {
   nis: string;
   specialization: string;
   angkatan: number;
-  kelasId: string | null;
+  classId: string | null;
   status: string;
 }
 
 interface SiswaTableProps {
   siswaList: SiswaRow[];
-  kelasOptions: { id: string; nama: string }[];
+  kelasOptions: { id: string; name: string }[];
 }
 
 export function SiswaTable({ siswaList, kelasOptions }: SiswaTableProps) {
@@ -30,7 +30,7 @@ export function SiswaTable({ siswaList, kelasOptions }: SiswaTableProps) {
 
   async function patch(
     id: string,
-    body: { kelasId?: string | null; status?: string },
+    body: { classId?: string | null; status?: string },
     successMessage: string,
   ): Promise<void> {
     const response = await fetch(`/api/master/siswa/${id}`, {
@@ -80,11 +80,11 @@ export function SiswaTable({ siswaList, kelasOptions }: SiswaTableProps) {
                 </td>
                 <td className="px-4 py-3">
                   <select
-                    value={siswa.kelasId ?? ""}
+                    value={siswa.classId ?? ""}
                     onChange={(e) =>
                       patch(
                         siswa.id,
-                        { kelasId: e.target.value || null },
+                        { classId: e.target.value || null },
                         "Kelas siswa diperbarui",
                       )
                     }
@@ -93,7 +93,7 @@ export function SiswaTable({ siswaList, kelasOptions }: SiswaTableProps) {
                     <option value="">— Belum ditempatkan —</option>
                     {kelasOptions.map((kelas) => (
                       <option key={kelas.id} value={kelas.id}>
-                        {kelas.nama}
+                        {kelas.name}
                       </option>
                     ))}
                   </select>

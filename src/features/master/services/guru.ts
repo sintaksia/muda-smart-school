@@ -1,29 +1,29 @@
 import { prisma } from "@/src/lib/prisma";
 import { createUser } from "@/src/features/auth/services/users";
-import type { Guru } from "@prisma/client";
-import type { CreateGuruInput, UpdateGuruInput } from "../types";
+import type { Teacher } from "@prisma/client";
+import type { CreateTeacherInput, UpdateTeacherInput } from "../types";
 
 export async function getGuruList() {
-  return prisma.guru.findMany({
+  return prisma.teacher.findMany({
     include: {
       user: { select: { name: true, email: true, status: true } },
-      mataPelajaran: {
-        include: { mataPelajaran: { select: { id: true, nama: true } } },
+      teacherSubjects: {
+        include: { subject: { select: { id: true, name: true } } },
       },
-      kelasWali: { select: { nama: true } },
+      homeroomClasses: { select: { name: true } },
     },
     orderBy: { user: { name: "asc" } },
   });
 }
 
 /**
- * Create a teacher account (Supabase Auth + User + Guru) with subject
+ * Create a teacher account (Supabase Auth + User + Teacher) with subject
  * qualifications (TeacherSubject mapping used by Process 0 validation).
  */
 export async function createGuru(
-  input: CreateGuruInput,
+  input: CreateTeacherInput,
   createdById?: string,
-): Promise<{ guru: Guru | null; error: string | null }> {
+): Promise<{ guru: Teacher | null; error: string | null }> {
   const { user, error: userError } = await createUser(
     {
       email: input.email,
@@ -38,20 +38,20 @@ export async function createGuru(
     return { guru: null, error: userError || "Gagal membuat akun user" };
   }
 
-  const guru = await prisma.guru.create({
+  const guru = await prisma.teacher.create({
     data: {
       userId: user.id,
       nip: input.nip || null,
       nuptk: input.nuptk || null,
       gender: input.gender,
-      tempatLahir: input.tempatLahir,
-      tanggalLahir: new Date(`${input.tanggalLahir}T00:00:00.000Z`),
+      birthPlace: input.birthPlace,
+      birthDate: new Date(`${input.birthDate}T00:00:00.000Z`),
       education: input.education,
-      jabatan: input.jabatan || null,
-      statusKepegawaian: input.statusKepegawaian,
-      mataPelajaran: {
-        create: input.mataPelajaranIds.map((mataPelajaranId) => ({
-          mataPelajaranId,
+      position: input.position || null,
+      employmentStatus: input.employmentStatus,
+      teacherSubjects: {
+        create: input.subjectIds.map((subjectId) => ({
+          subjectId,
         })),
       },
     },
@@ -61,29 +61,30 @@ export async function createGuru(
 
 export async function updateGuru(
   id: string,
-  input: UpdateGuruInput,
-): Promise<{ guru: Guru | null; error: string | null }> {
-  const existing = await prisma.guru.findUnique({ where: { id } });
+  input: UpdateTeacherInput,
+): Promise<{ guru: Teacher | null; error: string | null }> {
+  const existing = await prisma.teacher.findUnique({ where: { id } });
   if (!existing) {
     return { guru: null, error: "Guru tidak ditemukan" };
   }
 
-  const guru = await prisma.guru.update({
+  const guru = await prisma.teacher.update({
     where: { id },
     data: {
       nip: input.nip !== undefined ? input.nip || null : undefined,
       nuptk: input.nuptk !== undefined ? input.nuptk || null : undefined,
-      jabatan: input.jabatan !== undefined ? input.jabatan || null : undefined,
-      statusKepegawaian: input.statusKepegawaian,
+      position:
+        input.position !== undefined ? input.position || null : undefined,
+      employmentStatus: input.employmentStatus,
     },
   });
 
-  if (input.mataPelajaranIds) {
-    await prisma.guruMataPelajaran.deleteMany({ where: { guruId: id } });
-    await prisma.guruMataPelajaran.createMany({
-      data: input.mataPelajaranIds.map((mataPelajaranId) => ({
-        guruId: id,
-        mataPelajaranId,
+  if (input.subjectIds) {
+    await prisma.teacherSubject.deleteMany({ where: { teacherId: id } });
+    await prisma.teacherSubject.createMany({
+      data: input.subjectIds.map((subjectId) => ({
+        teacherId: id,
+        subjectId,
       })),
     });
   }

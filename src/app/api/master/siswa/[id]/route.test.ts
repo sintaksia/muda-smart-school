@@ -33,7 +33,7 @@ describe("PATCH /api/master/siswa/[id]", () => {
       role: "STUDENT",
     } as SessionUser);
 
-    const response = await PATCH(buildRequest({ kelasId: "k1" }), routeParams);
+    const response = await PATCH(buildRequest({ classId: "k1" }), routeParams);
     expect(response.status).toBe(403);
   });
 
@@ -43,14 +43,14 @@ describe("PATCH /api/master/siswa/[id]", () => {
       role: "ADMIN",
     } as SessionUser);
     vi.mocked(updateSiswa).mockResolvedValue({
-      siswa: { id: "s1", kelasId: "k1" } as Student,
+      siswa: { id: "s1", classId: "k1" } as Student,
       error: null,
     });
 
-    const response = await PATCH(buildRequest({ kelasId: "k1" }), routeParams);
+    const response = await PATCH(buildRequest({ classId: "k1" }), routeParams);
 
     expect(response.status).toBe(200);
-    expect(updateSiswa).toHaveBeenCalledWith("s1", { kelasId: "k1" });
+    expect(updateSiswa).toHaveBeenCalledWith("s1", { classId: "k1" });
   });
 
   it("returns 400 for an invalid status", async () => {

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function KelasPage() {
   const [kelasList, guruList] = await Promise.all([
     getKelasList(),
-    prisma.guru.findMany({
+    prisma.teacher.findMany({
       select: { id: true, user: { select: { name: true } } },
       orderBy: { user: { name: "asc" } },
     }),
@@ -23,15 +23,15 @@ export default async function KelasPage() {
       <KelasManager
         kelasList={kelasList.map((kelas) => ({
           id: kelas.id,
-          nama: kelas.nama,
-          tingkat: kelas.tingkat,
+          name: kelas.name,
+          gradeLevel: kelas.gradeLevel,
           specialization: kelas.specialization,
-          tahunAjaran: kelas.tahunAjaran,
-          waliKelasId: kelas.waliKelas?.id ?? null,
-          waliKelas: kelas.waliKelas?.user.name ?? null,
+          academicYear: kelas.academicYear,
+          homeroomTeacherId: kelas.homeroomTeacher?.id ?? null,
+          homeroomTeacher: kelas.homeroomTeacher?.user.name ?? null,
           jumlahSiswa: kelas._count.students,
         }))}
-        guruOptions={guruList.map((g) => ({ id: g.id, nama: g.user.name }))}
+        guruOptions={guruList.map((g) => ({ id: g.id, name: g.user.name }))}
       />
     </div>
   );

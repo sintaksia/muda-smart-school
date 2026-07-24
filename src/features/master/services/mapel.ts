@@ -1,42 +1,42 @@
 import { prisma } from "@/src/lib/prisma";
-import type { MataPelajaran } from "@prisma/client";
-import type { MapelInput } from "../types";
+import type { Subject } from "@prisma/client";
+import type { SubjectInput } from "../types";
 
 export async function getMapelList() {
-  return prisma.mataPelajaran.findMany({
-    include: { _count: { select: { guru: true, jadwal: true } } },
-    orderBy: { nama: "asc" },
+  return prisma.subject.findMany({
+    include: { _count: { select: { teacherSubjects: true, jadwal: true } } },
+    orderBy: { name: "asc" },
   });
 }
 
 export async function createMapel(
-  input: MapelInput,
-): Promise<{ mapel: MataPelajaran | null; error: string | null }> {
-  const existing = await prisma.mataPelajaran.findUnique({
-    where: { kode: input.kode },
+  input: SubjectInput,
+): Promise<{ mapel: Subject | null; error: string | null }> {
+  const existing = await prisma.subject.findUnique({
+    where: { code: input.code },
   });
   if (existing) {
     return { mapel: null, error: "Kode mapel sudah digunakan" };
   }
-  const mapel = await prisma.mataPelajaran.create({ data: input });
+  const mapel = await prisma.subject.create({ data: input });
   return { mapel, error: null };
 }
 
 export async function updateMapel(
   id: string,
-  input: MapelInput,
-): Promise<{ mapel: MataPelajaran | null; error: string | null }> {
-  const existing = await prisma.mataPelajaran.findUnique({ where: { id } });
+  input: SubjectInput,
+): Promise<{ mapel: Subject | null; error: string | null }> {
+  const existing = await prisma.subject.findUnique({ where: { id } });
   if (!existing) {
     return { mapel: null, error: "Mapel tidak ditemukan" };
   }
-  const duplicate = await prisma.mataPelajaran.findUnique({
-    where: { kode: input.kode },
+  const duplicate = await prisma.subject.findUnique({
+    where: { code: input.code },
   });
   if (duplicate && duplicate.id !== id) {
     return { mapel: null, error: "Kode mapel sudah digunakan" };
   }
-  const mapel = await prisma.mataPelajaran.update({
+  const mapel = await prisma.subject.update({
     where: { id },
     data: input,
   });
@@ -46,9 +46,9 @@ export async function updateMapel(
 export async function deleteMapel(
   id: string,
 ): Promise<{ ok: boolean; error: string | null }> {
-  const usage = await prisma.mataPelajaran.findUnique({
+  const usage = await prisma.subject.findUnique({
     where: { id },
-    include: { _count: { select: { guru: true, jadwal: true } } },
+    include: { _count: { select: { teacherSubjects: true, jadwal: true } } },
   });
   if (!usage) {
     return { ok: false, error: "Mapel tidak ditemukan" };
@@ -59,7 +59,7 @@ export async function deleteMapel(
       error: "Mapel masih dipakai di jadwal — tidak dapat dihapus",
     };
   }
-  await prisma.guruMataPelajaran.deleteMany({ where: { mataPelajaranId: id } });
-  await prisma.mataPelajaran.delete({ where: { id } });
+  await prisma.teacherSubject.deleteMany({ where: { subjectId: id } });
+  await prisma.subject.delete({ where: { id } });
   return { ok: true, error: null };
 }

@@ -31,7 +31,9 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         include: {
           student: {
             select: {
-              kelas: { select: { waliKelas: { select: { userId: true } } } },
+              schoolClass: {
+                select: { homeroomTeacher: { select: { userId: true } } },
+              },
             },
           },
         },
@@ -42,7 +44,9 @@ export async function PATCH(request: Request, { params }: RouteParams) {
           { status: 404 },
         );
       }
-      if (izin.student.kelas?.waliKelas?.userId !== currentUser.id) {
+      if (
+        izin.student.schoolClass?.homeroomTeacher?.userId !== currentUser.id
+      ) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
     }

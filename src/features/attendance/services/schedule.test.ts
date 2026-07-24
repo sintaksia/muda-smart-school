@@ -3,12 +3,12 @@ import { prisma } from "@/src/lib/prisma";
 import { validateJadwal, createJadwal, updateJadwal } from "./schedule";
 import { getAttendanceSettings } from "./settings";
 import type { AttendanceSettings } from "../types";
-import type { GuruMataPelajaran, Jadwal } from "@prisma/client";
+import type { TeacherSubject, Jadwal } from "@prisma/client";
 import type { JadwalInput } from "../types";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
-    guruMataPelajaran: { findUnique: vi.fn() },
+    teacherSubject: { findUnique: vi.fn() },
     jadwal: {
       findMany: vi.fn(),
       findUnique: vi.fn(),
@@ -35,9 +35,9 @@ beforeEach(() => {
   vi.mocked(getAttendanceSettings).mockResolvedValue({
     maxWeeklyHours: 24,
   } as AttendanceSettings);
-  vi.mocked(prisma.guruMataPelajaran.findUnique).mockResolvedValue({
+  vi.mocked(prisma.teacherSubject.findUnique).mockResolvedValue({
     id: "gmp-1",
-  } as GuruMataPelajaran);
+  } as TeacherSubject);
   vi.mocked(prisma.jadwal.findMany).mockResolvedValue([]);
 });
 
@@ -48,7 +48,7 @@ describe("validateJadwal", () => {
   });
 
   it("rejects an unqualified teacher with the specific message", async () => {
-    vi.mocked(prisma.guruMataPelajaran.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.teacherSubject.findUnique).mockResolvedValue(null);
     const result = await validateJadwal(input);
     expect(result.valid).toBe(false);
     expect(result.errors).toContain(
@@ -117,7 +117,7 @@ describe("createJadwal", () => {
   });
 
   it("returns errors without creating when invalid", async () => {
-    vi.mocked(prisma.guruMataPelajaran.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.teacherSubject.findUnique).mockResolvedValue(null);
     const result = await createJadwal(input);
     expect(result.jadwal).toBeNull();
     expect(prisma.jadwal.create).not.toHaveBeenCalled();

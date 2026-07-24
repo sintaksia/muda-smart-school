@@ -2,26 +2,26 @@ import type {
   Gender,
   Education,
   Specialization,
-  StatusKepegawaian,
+  EmploymentStatus,
   StudentStatus,
 } from "@prisma/client";
 
-export interface KelasInput {
-  nama: string;
-  tingkat: number;
+export interface SchoolClassInput {
+  name: string;
+  gradeLevel: number;
   specialization: Specialization;
-  tahunAjaran: string;
-  waliKelasId?: string | null;
+  academicYear: string;
+  homeroomTeacherId?: string | null;
 }
 
-export interface MapelInput {
-  nama: string;
-  kode: string;
+export interface SubjectInput {
+  name: string;
+  code: string;
   specialization?: Specialization | null;
-  tingkat?: number | null;
+  gradeLevel?: number | null;
 }
 
-export interface CreateGuruInput {
+export interface CreateTeacherInput {
   name: string;
   email: string;
   password: string;
@@ -29,23 +29,23 @@ export interface CreateGuruInput {
   nip?: string;
   nuptk?: string;
   gender: Gender;
-  tempatLahir: string;
-  tanggalLahir: string; // YYYY-MM-DD
+  birthPlace: string;
+  birthDate: string; // YYYY-MM-DD
   education: Education;
-  jabatan?: string;
-  statusKepegawaian: StatusKepegawaian;
-  mataPelajaranIds: string[];
+  position?: string;
+  employmentStatus: EmploymentStatus;
+  subjectIds: string[];
 }
 
-export interface UpdateGuruInput {
+export interface UpdateTeacherInput {
   nip?: string | null;
   nuptk?: string | null;
-  jabatan?: string | null;
-  statusKepegawaian?: StatusKepegawaian;
-  mataPelajaranIds?: string[];
+  position?: string | null;
+  employmentStatus?: EmploymentStatus;
+  subjectIds?: string[];
 }
 
-export interface UpdateSiswaInput {
-  kelasId?: string | null;
+export interface UpdateStudentInput {
+  classId?: string | null;
   status?: StudentStatus;
 }

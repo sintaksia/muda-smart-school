@@ -8,7 +8,7 @@ import type { AbsensiSiswa } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
-    guru: { findUnique: vi.fn() },
+    teacher: { findUnique: vi.fn() },
     absensiSiswa: { findUnique: vi.fn() },
   },
 }));
@@ -39,7 +39,7 @@ describe("PATCH /api/attendance/records/[id]", () => {
       id: "u1",
       role: "TEACHER",
     } as SessionUser);
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
     } as never);
     vi.mocked(prisma.absensiSiswa.findUnique).mockResolvedValue({
@@ -68,7 +68,7 @@ describe("PATCH /api/attendance/records/[id]", () => {
       id: "u1",
       role: "TEACHER",
     } as SessionUser);
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-9",
     } as never);
     vi.mocked(prisma.absensiSiswa.findUnique).mockResolvedValue({

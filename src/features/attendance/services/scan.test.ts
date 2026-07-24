@@ -10,7 +10,7 @@ vi.mock("@/src/lib/prisma", () => ({
     sesi: { findUnique: vi.fn() },
     student: { findUnique: vi.fn() },
     absensiSiswa: { findUnique: vi.fn(), create: vi.fn() },
-    guru: { findUnique: vi.fn() },
+    teacher: { findUnique: vi.fn() },
     notification: { create: vi.fn() },
   },
 }));
@@ -44,7 +44,7 @@ const baseSesi = {
 
 const student = {
   id: "student-1",
-  kelasId: "kelas-1",
+  classId: "kelas-1",
 } as Student;
 
 beforeEach(() => {
@@ -125,7 +125,7 @@ describe("recordScan", () => {
   it("rejects a student from another class", async () => {
     vi.mocked(prisma.student.findUnique).mockResolvedValue({
       ...student,
-      kelasId: "other-class",
+      classId: "other-class",
     } as Student);
     const result = await recordScan(input);
     expect(result.error).toBe("Tidak terdaftar di kelas ini");

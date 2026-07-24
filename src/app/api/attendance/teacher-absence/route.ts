@@ -40,8 +40,8 @@ export async function GET(request: Request) {
           select: {
             jamMulai: true,
             jamSelesai: true,
-            kelas: { select: { nama: true } },
-            mataPelajaran: { select: { nama: true } },
+            kelas: { select: { name: true } },
+            mataPelajaran: { select: { name: true } },
           },
         },
       },
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     let guruId = result.data.guruId;
     if (!canAccessAdmin(currentUser.role)) {
       // Self-report path: teachers may only report themselves (not Alpa).
-      const guru = await prisma.guru.findUnique({
+      const guru = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
       if (!guru || currentUser.role !== "TEACHER") {

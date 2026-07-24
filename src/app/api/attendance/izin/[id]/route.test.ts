@@ -40,7 +40,7 @@ describe("PATCH /api/attendance/izin/[id]", () => {
     } as SessionUser);
     vi.mocked(prisma.pengajuanIzin.findUnique).mockResolvedValue({
       id: "izin-1",
-      student: { kelas: { waliKelas: { userId: "wali-user" } } },
+      student: { schoolClass: { homeroomTeacher: { userId: "wali-user" } } },
     } as unknown as PengajuanIzin);
     vi.mocked(reviewIzin).mockResolvedValue({
       izin: { id: "izin-1", status: "APPROVED" } as PengajuanIzin,
@@ -68,7 +68,7 @@ describe("PATCH /api/attendance/izin/[id]", () => {
     } as SessionUser);
     vi.mocked(prisma.pengajuanIzin.findUnique).mockResolvedValue({
       id: "izin-1",
-      student: { kelas: { waliKelas: { userId: "wali-user" } } },
+      student: { schoolClass: { homeroomTeacher: { userId: "wali-user" } } },
     } as unknown as PengajuanIzin);
 
     const response = await PATCH(

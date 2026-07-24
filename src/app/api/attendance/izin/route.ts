@@ -38,15 +38,15 @@ export async function GET() {
       where = { studentId: student.id };
     } else if (!canAccessAdmin(currentUser.role)) {
       // Teacher: submissions from classes they are wali kelas of.
-      const guru = await prisma.guru.findUnique({
+      const guru = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
-        include: { kelasWali: { select: { id: true } } },
+        include: { homeroomClasses: { select: { id: true } } },
       });
-      if (!guru || guru.kelasWali.length === 0) {
+      if (!guru || guru.homeroomClasses.length === 0) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
       where = {
-        student: { kelasId: { in: guru.kelasWali.map((k) => k.id) } },
+        student: { classId: { in: guru.homeroomClasses.map((k) => k.id) } },
       };
     }
 
@@ -56,9 +56,9 @@ export async function GET() {
         student: {
           select: {
             nis: true,
-            kelasId: true,
+            classId: true,
             user: { select: { name: true } },
-            kelas: { select: { nama: true } },
+            schoolClass: { select: { name: true } },
           },
         },
         reviewedBy: { select: { name: true } },

@@ -9,21 +9,21 @@ export default async function JadwalPage() {
     prisma.jadwal.findMany({
       where: { isActive: true },
       include: {
-        kelas: { select: { id: true, nama: true } },
-        mataPelajaran: { select: { id: true, nama: true } },
+        kelas: { select: { id: true, name: true } },
+        mataPelajaran: { select: { id: true, name: true } },
         guru: { select: { id: true, user: { select: { name: true } } } },
       },
       orderBy: [{ hari: "asc" }, { jamMulai: "asc" }],
     }),
-    prisma.kelas.findMany({
-      select: { id: true, nama: true },
-      orderBy: { nama: "asc" },
+    prisma.schoolClass.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
     }),
-    prisma.mataPelajaran.findMany({
-      select: { id: true, nama: true },
-      orderBy: { nama: "asc" },
+    prisma.subject.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
     }),
-    prisma.guru.findMany({
+    prisma.teacher.findMany({
       select: { id: true, user: { select: { name: true } } },
       orderBy: { user: { name: "asc" } },
     }),
@@ -42,13 +42,13 @@ export default async function JadwalPage() {
           jamMulai: j.jamMulai,
           jamSelesai: j.jamSelesai,
           kelasId: j.kelas.id,
-          kelas: j.kelas.nama,
+          kelas: j.kelas.name,
           guruId: j.guru.id,
           guru: j.guru.user.name,
-          mataPelajaran: j.mataPelajaran.nama,
+          mataPelajaran: j.mataPelajaran.name,
         }))}
-        kelasOptions={kelasList}
-        mapelOptions={mapelList}
+        kelasOptions={kelasList.map((k) => ({ id: k.id, nama: k.name }))}
+        mapelOptions={mapelList.map((m) => ({ id: m.id, nama: m.name }))}
         guruOptions={guruList.map((g) => ({ id: g.id, nama: g.user.name }))}
       />
     </div>

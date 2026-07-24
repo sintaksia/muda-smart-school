@@ -3,22 +3,22 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { STATUS_KEPEGAWAIAN_LABELS } from "@/src/lib/constants";
+import { EMPLOYMENT_STATUS_LABELS } from "@/src/lib/constants";
 import { GuruForm } from "./GuruForm";
 
 export interface GuruRow {
   id: string;
-  nama: string;
+  name: string;
   email: string;
   nip: string | null;
-  statusKepegawaian: string;
-  mapel: string[];
-  waliDari: string[];
+  employmentStatus: string;
+  subjects: string[];
+  homeroomClasses: string[];
 }
 
 interface GuruManagerProps {
   guruList: GuruRow[];
-  mapelOptions: { id: string; nama: string }[];
+  mapelOptions: { id: string; name: string }[];
 }
 
 export function GuruManager({ guruList, mapelOptions }: GuruManagerProps) {
@@ -61,7 +61,7 @@ export function GuruManager({ guruList, mapelOptions }: GuruManagerProps) {
                   className="border-hairline border-b last:border-b-0"
                 >
                   <td className="px-5 py-3">
-                    <p className="text-ink font-semibold">{guru.nama}</p>
+                    <p className="text-ink font-semibold">{guru.name}</p>
                     {guru.nip && (
                       <p className="text-ink-muted text-xs tabular-nums">
                         NIP {guru.nip}
@@ -70,17 +70,17 @@ export function GuruManager({ guruList, mapelOptions }: GuruManagerProps) {
                   </td>
                   <td className="text-ink-secondary px-4 py-3">{guru.email}</td>
                   <td className="text-ink-secondary px-4 py-3">
-                    {STATUS_KEPEGAWAIAN_LABELS[guru.statusKepegawaian]}
+                    {EMPLOYMENT_STATUS_LABELS[guru.employmentStatus]}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex max-w-64 flex-wrap gap-1">
-                      {guru.mapel.length > 0 ? (
-                        guru.mapel.map((nama) => (
+                      {guru.subjects.length > 0 ? (
+                        guru.subjects.map((name) => (
                           <span
-                            key={nama}
+                            key={name}
                             className="bg-brand-50 text-brand rounded-full px-2.5 py-0.5 text-xs font-medium"
                           >
-                            {nama}
+                            {name}
                           </span>
                         ))
                       ) : (
@@ -91,7 +91,7 @@ export function GuruManager({ guruList, mapelOptions }: GuruManagerProps) {
                     </div>
                   </td>
                   <td className="text-ink-secondary px-4 py-3">
-                    {guru.waliDari.join(", ") || "—"}
+                    {guru.homeroomClasses.join(", ") || "—"}
                   </td>
                 </tr>
               ))}

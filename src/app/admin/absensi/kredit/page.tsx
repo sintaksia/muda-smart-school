@@ -12,11 +12,11 @@ export default async function CreditAdminPage() {
         id: true,
         nis: true,
         user: { select: { name: true } },
-        kelas: { select: { nama: true } },
+        schoolClass: { select: { name: true } },
       },
       orderBy: { nis: "asc" },
     }),
-    prisma.guru.findMany({
+    prisma.teacher.findMany({
       select: { id: true, user: { select: { name: true } } },
       orderBy: { user: { name: "asc" } },
     }),
@@ -35,7 +35,7 @@ export default async function CreditAdminPage() {
       <CreditManager
         students={students.map((s) => ({
           id: s.id,
-          nama: `${s.user.name} (${s.kelas?.nama ?? s.nis})`,
+          nama: `${s.user.name} (${s.schoolClass?.name ?? s.nis})`,
         }))}
         gurus={gurus.map((g) => ({ id: g.id, nama: g.user.name }))}
         categories={categories.map((c) => ({

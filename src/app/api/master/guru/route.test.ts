@@ -3,7 +3,7 @@ import { POST } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { createGuru } from "@/src/features/master/services/guru";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { Guru } from "@prisma/client";
+import type { Teacher } from "@prisma/client";
 
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
@@ -26,11 +26,11 @@ const validBody = {
   email: "sari@muda.sch.id",
   password: "Password123",
   gender: "FEMALE",
-  tempatLahir: "Bandung",
-  tanggalLahir: "1990-05-01",
+  birthPlace: "Bandung",
+  birthDate: "1990-05-01",
   education: "S1",
-  statusKepegawaian: "GTY",
-  mataPelajaranIds: ["m1"],
+  employmentStatus: "GTY",
+  subjectIds: ["m1"],
 };
 
 describe("POST /api/master/guru", () => {
@@ -54,7 +54,7 @@ describe("POST /api/master/guru", () => {
       role: "ADMIN",
     } as SessionUser);
     vi.mocked(createGuru).mockResolvedValue({
-      guru: { id: "guru-1" } as Guru,
+      guru: { id: "guru-1" } as Teacher,
       error: null,
     });
 
@@ -70,9 +70,7 @@ describe("POST /api/master/guru", () => {
       role: "ADMIN",
     } as SessionUser);
 
-    const response = await POST(
-      buildRequest({ ...validBody, mataPelajaranIds: [] }),
-    );
+    const response = await POST(buildRequest({ ...validBody, subjectIds: [] }));
     expect(response.status).toBe(400);
     expect(createGuru).not.toHaveBeenCalled();
   });

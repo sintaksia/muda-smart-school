@@ -2,18 +2,18 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
 import { createUser } from "@/src/features/auth/services/users";
 import { createGuru, updateGuru } from "./guru";
-import type { Guru, User } from "@prisma/client";
-import type { CreateGuruInput } from "../types";
+import type { Teacher, User } from "@prisma/client";
+import type { CreateTeacherInput } from "../types";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
-    guru: {
+    teacher: {
       findUnique: vi.fn(),
       findMany: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
     },
-    guruMataPelajaran: { deleteMany: vi.fn(), createMany: vi.fn() },
+    teacherSubject: { deleteMany: vi.fn(), createMany: vi.fn() },
   },
 }));
 
@@ -21,16 +21,16 @@ vi.mock("@/src/features/auth/services/users", () => ({
   createUser: vi.fn(),
 }));
 
-const input: CreateGuruInput = {
+const input: CreateTeacherInput = {
   name: "Bu Sari",
   email: "sari@muda.sch.id",
   password: "Password123",
   gender: "FEMALE",
-  tempatLahir: "Bandung",
-  tanggalLahir: "1990-05-01",
+  birthPlace: "Bandung",
+  birthDate: "1990-05-01",
   education: "S1",
-  statusKepegawaian: "GTY",
-  mataPelajaranIds: ["m1", "m2"],
+  employmentStatus: "GTY",
+  subjectIds: ["m1", "m2"],
 };
 
 beforeEach(() => {
@@ -43,7 +43,9 @@ describe("createGuru", () => {
       user: { id: "user-1" } as User,
       error: null,
     });
-    vi.mocked(prisma.guru.create).mockResolvedValue({ id: "guru-1" } as Guru);
+    vi.mocked(prisma.teacher.create).mockResolvedValue({
+      id: "guru-1",
+    } as Teacher);
 
     const result = await createGuru(input, "admin-1");
 
@@ -52,10 +54,10 @@ describe("createGuru", () => {
       expect.objectContaining({ role: "TEACHER", email: input.email }),
       "admin-1",
     );
-    const createArgs = vi.mocked(prisma.guru.create).mock.calls[0][0];
+    const createArgs = vi.mocked(prisma.teacher.create).mock.calls[0][0];
     expect(createArgs.data.userId).toBe("user-1");
-    expect(createArgs.data.mataPelajaran).toEqual({
-      create: [{ mataPelajaranId: "m1" }, { mataPelajaranId: "m2" }],
+    expect(createArgs.data.teacherSubjects).toEqual({
+      create: [{ subjectId: "m1" }, { subjectId: "m2" }],
     });
   });
 
@@ -69,31 +71,33 @@ describe("createGuru", () => {
 
     expect(result.guru).toBeNull();
     expect(result.error).toBe("Email sudah terdaftar");
-    expect(prisma.guru.create).not.toHaveBeenCalled();
+    expect(prisma.teacher.create).not.toHaveBeenCalled();
   });
 });
 
 describe("updateGuru", () => {
   it("replaces subject qualifications when provided", async () => {
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
-    } as Guru);
-    vi.mocked(prisma.guru.update).mockResolvedValue({ id: "guru-1" } as Guru);
+    } as Teacher);
+    vi.mocked(prisma.teacher.update).mockResolvedValue({
+      id: "guru-1",
+    } as Teacher);
 
-    const result = await updateGuru("guru-1", { mataPelajaranIds: ["m3"] });
+    const result = await updateGuru("guru-1", { subjectIds: ["m3"] });
 
     expect(result.error).toBeNull();
-    expect(prisma.guruMataPelajaran.deleteMany).toHaveBeenCalledWith({
-      where: { guruId: "guru-1" },
+    expect(prisma.teacherSubject.deleteMany).toHaveBeenCalledWith({
+      where: { teacherId: "guru-1" },
     });
-    expect(prisma.guruMataPelajaran.createMany).toHaveBeenCalledWith({
-      data: [{ guruId: "guru-1", mataPelajaranId: "m3" }],
+    expect(prisma.teacherSubject.createMany).toHaveBeenCalledWith({
+      data: [{ teacherId: "guru-1", subjectId: "m3" }],
     });
   });
 
   it("errors for a missing guru", async () => {
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue(null);
-    const result = await updateGuru("missing", { jabatan: "Wakasek" });
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue(null);
+    const result = await updateGuru("missing", { position: "Wakasek" });
     expect(result.error).toBe("Guru tidak ditemukan");
   });
 });

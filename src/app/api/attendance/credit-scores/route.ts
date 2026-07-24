@@ -52,7 +52,7 @@ export async function GET(request: Request) {
       ownerType = "STUDENT";
       ownerId = student.id;
     } else if (currentUser.role === "TEACHER" && !ownerId) {
-      const guru = await prisma.guru.findUnique({
+      const guru = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
       if (!guru) {
@@ -72,7 +72,7 @@ export async function GET(request: Request) {
     // Teachers may inspect their own students; only Kepsek/admin may
     // inspect other teachers' scores.
     if (currentUser.role === "TEACHER" && ownerType === "TEACHER") {
-      const guru = await prisma.guru.findUnique({
+      const guru = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
       if (guru?.id !== ownerId) {
@@ -91,7 +91,7 @@ export async function GET(request: Request) {
         refSesi: {
           select: {
             tanggal: true,
-            jadwal: { select: { mataPelajaran: { select: { nama: true } } } },
+            jadwal: { select: { mataPelajaran: { select: { name: true } } } },
           },
         },
       },

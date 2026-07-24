@@ -12,7 +12,7 @@ export default async function GuruDashboardPage() {
   if (!user) {
     redirect("/login");
   }
-  const guru = await prisma.guru.findUnique({ where: { userId: user.id } });
+  const guru = await prisma.teacher.findUnique({ where: { userId: user.id } });
   if (!guru) {
     redirect("/login");
   }
@@ -22,8 +22,8 @@ export default async function GuruDashboardPage() {
     ? await prisma.jadwal.findMany({
         where: { hari, isActive: true, guruId: guru.id },
         include: {
-          kelas: { select: { nama: true } },
-          mataPelajaran: { select: { nama: true } },
+          kelas: { select: { name: true } },
+          mataPelajaran: { select: { name: true } },
           sesi: { where: { tanggal: dateOnlyUtc(dateISO) } },
         },
         orderBy: { jamMulai: "asc" },
@@ -44,8 +44,8 @@ export default async function GuruDashboardPage() {
         items={jadwal.map((row) => ({
           jadwalId: row.id,
           jam: `${row.jamMulai}–${row.jamSelesai}`,
-          kelas: row.kelas.nama,
-          mapel: row.mataPelajaran.nama,
+          kelas: row.kelas.name,
+          mapel: row.mataPelajaran.name,
           sesiId: row.sesi[0]?.id ?? null,
           sesiStatus: row.sesi[0]?.status ?? null,
         }))}

@@ -16,10 +16,10 @@ export interface SessionDetail {
     jamMulai: string;
     jamSelesai: string;
     kelas: {
-      nama: string;
+      name: string;
       students: { id: string; nis: string; user: { name: string } }[];
     };
-    mataPelajaran: { nama: string };
+    mataPelajaran: { name: string };
   };
   absensiSiswa: {
     id: string;

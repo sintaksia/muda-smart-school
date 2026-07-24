@@ -3,7 +3,7 @@ import { POST } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { createKelas } from "@/src/features/master/services/kelas";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { Kelas } from "@prisma/client";
+import type { SchoolClass } from "@prisma/client";
 
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
@@ -22,10 +22,10 @@ function buildRequest(body: unknown): Request {
 }
 
 const validBody = {
-  nama: "X PPLG 1",
-  tingkat: 10,
+  name: "X PPLG 1",
+  gradeLevel: 10,
   specialization: "SOFTWARE_AND_GAME_DEVELOPMENT",
-  tahunAjaran: "2026/2027",
+  academicYear: "2026/2027",
 };
 
 describe("POST /api/master/kelas", () => {
@@ -49,7 +49,7 @@ describe("POST /api/master/kelas", () => {
       role: "ADMIN",
     } as SessionUser);
     vi.mocked(createKelas).mockResolvedValue({
-      kelas: { id: "k1" } as Kelas,
+      kelas: { id: "k1" } as SchoolClass,
       error: null,
     });
 
@@ -64,7 +64,7 @@ describe("POST /api/master/kelas", () => {
     } as SessionUser);
 
     const response = await POST(
-      buildRequest({ ...validBody, tahunAjaran: "2026" }),
+      buildRequest({ ...validBody, academicYear: "2026" }),
     );
     expect(response.status).toBe(400);
     expect(createKelas).not.toHaveBeenCalled();

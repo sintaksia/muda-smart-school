@@ -31,11 +31,11 @@ export async function validateJadwal(
   }
 
   // Teacher-subject qualification (TeacherSubject mapping).
-  const qualification = await prisma.guruMataPelajaran.findUnique({
+  const qualification = await prisma.teacherSubject.findUnique({
     where: {
-      guruId_mataPelajaranId: {
-        guruId: input.guruId,
-        mataPelajaranId: input.mataPelajaranId,
+      teacherId_subjectId: {
+        teacherId: input.guruId,
+        subjectId: input.mataPelajaranId,
       },
     },
   });

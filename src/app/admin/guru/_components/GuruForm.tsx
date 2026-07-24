@@ -12,13 +12,13 @@ import {
 import {
   genderOptions,
   educationOptions,
-  statusKepegawaianOptions,
+  employmentStatusOptions,
 } from "@/src/lib/constants";
 
 interface GuruFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  mapelOptions: { id: string; nama: string }[];
+  mapelOptions: { id: string; name: string }[];
 }
 
 const inputClass =
@@ -31,10 +31,10 @@ const initialState = {
   phone: "",
   nip: "",
   gender: "MALE",
-  tempatLahir: "",
-  tanggalLahir: "1990-01-01",
+  birthPlace: "",
+  birthDate: "1990-01-01",
   education: "S1",
-  statusKepegawaian: "GTY",
+  employmentStatus: "GTY",
 };
 
 export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
@@ -70,7 +70,7 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
           ...form,
           phone: form.phone || undefined,
           nip: form.nip || undefined,
-          mataPelajaranIds: mapelIds,
+          subjectIds: mapelIds,
         }),
       });
       const data = await response.json();
@@ -146,19 +146,19 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
               ))}
             </select>
             <select
-              value={form.statusKepegawaian}
-              onChange={(e) => set("statusKepegawaian", e.target.value)}
+              value={form.employmentStatus}
+              onChange={(e) => set("employmentStatus", e.target.value)}
               className={inputClass}
             >
-              {statusKepegawaianOptions.map((o) => (
+              {employmentStatusOptions.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
                 </option>
               ))}
             </select>
             <input
-              value={form.tempatLahir}
-              onChange={(e) => set("tempatLahir", e.target.value)}
+              value={form.birthPlace}
+              onChange={(e) => set("birthPlace", e.target.value)}
               placeholder="Tempat lahir"
               required
               minLength={2}
@@ -166,8 +166,8 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
             />
             <input
               type="date"
-              value={form.tanggalLahir}
-              onChange={(e) => set("tanggalLahir", e.target.value)}
+              value={form.birthDate}
+              onChange={(e) => set("birthDate", e.target.value)}
               required
               className={inputClass}
             />
@@ -205,7 +205,7 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
                       onChange={() => toggleMapel(mapel.id)}
                       className="accent-[var(--color-brand)]"
                     />
-                    {mapel.nama}
+                    {mapel.name}
                   </label>
                 ))}
               </div>

@@ -10,7 +10,7 @@ interface RouteParams {
 }
 
 const updateSiswaSchema = z.object({
-  kelasId: z.string().optional().nullable(),
+  classId: z.string().optional().nullable(),
   status: z
     .enum(STUDENT_STATUS_VALUES as ["AKTIF", "LULUS", "PINDAH", "DROPOUT"], {
       message: "Status tidak valid",

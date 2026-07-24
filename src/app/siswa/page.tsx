@@ -26,7 +26,7 @@ export default async function SiswaDashboardPage() {
     prisma.absensiSiswa.findMany({
       where: { studentId: student.id },
       include: {
-        jadwal: { select: { mataPelajaran: { select: { nama: true } } } },
+        jadwal: { select: { mataPelajaran: { select: { name: true } } } },
       },
       orderBy: { tanggal: "desc" },
       take: 20,
@@ -55,7 +55,7 @@ export default async function SiswaDashboardPage() {
         records={history.map((record) => ({
           id: record.id,
           tanggal: record.tanggal.toISOString().slice(0, 10),
-          mapel: record.jadwal.mataPelajaran.nama,
+          mapel: record.jadwal.mataPelajaran.name,
           status: record.status,
         }))}
       />

@@ -1,23 +1,25 @@
 import { prisma } from "@/src/lib/prisma";
-import type { Kelas } from "@prisma/client";
-import type { KelasInput } from "../types";
+import type { SchoolClass } from "@prisma/client";
+import type { SchoolClassInput } from "../types";
 
 export async function getKelasList() {
-  return prisma.kelas.findMany({
+  return prisma.schoolClass.findMany({
     include: {
-      waliKelas: { select: { id: true, user: { select: { name: true } } } },
+      homeroomTeacher: {
+        select: { id: true, user: { select: { name: true } } },
+      },
       _count: { select: { students: true } },
     },
-    orderBy: [{ tingkat: "asc" }, { nama: "asc" }],
+    orderBy: [{ gradeLevel: "asc" }, { name: "asc" }],
   });
 }
 
 export async function createKelas(
-  input: KelasInput,
-): Promise<{ kelas: Kelas | null; error: string | null }> {
-  const existing = await prisma.kelas.findUnique({
+  input: SchoolClassInput,
+): Promise<{ kelas: SchoolClass | null; error: string | null }> {
+  const existing = await prisma.schoolClass.findUnique({
     where: {
-      nama_tahunAjaran: { nama: input.nama, tahunAjaran: input.tahunAjaran },
+      name_academicYear: { name: input.name, academicYear: input.academicYear },
     },
   });
   if (existing) {
@@ -26,23 +28,23 @@ export async function createKelas(
       error: "Kelas dengan nama dan tahun ajaran ini sudah ada",
     };
   }
-  const kelas = await prisma.kelas.create({
-    data: { ...input, waliKelasId: input.waliKelasId || null },
+  const kelas = await prisma.schoolClass.create({
+    data: { ...input, homeroomTeacherId: input.homeroomTeacherId || null },
   });
   return { kelas, error: null };
 }
 
 export async function updateKelas(
   id: string,
-  input: KelasInput,
-): Promise<{ kelas: Kelas | null; error: string | null }> {
-  const existing = await prisma.kelas.findUnique({ where: { id } });
+  input: SchoolClassInput,
+): Promise<{ kelas: SchoolClass | null; error: string | null }> {
+  const existing = await prisma.schoolClass.findUnique({ where: { id } });
   if (!existing) {
     return { kelas: null, error: "Kelas tidak ditemukan" };
   }
-  const kelas = await prisma.kelas.update({
+  const kelas = await prisma.schoolClass.update({
     where: { id },
-    data: { ...input, waliKelasId: input.waliKelasId || null },
+    data: { ...input, homeroomTeacherId: input.homeroomTeacherId || null },
   });
   return { kelas, error: null };
 }
@@ -50,7 +52,7 @@ export async function updateKelas(
 export async function deleteKelas(
   id: string,
 ): Promise<{ ok: boolean; error: string | null }> {
-  const usage = await prisma.kelas.findUnique({
+  const usage = await prisma.schoolClass.findUnique({
     where: { id },
     include: { _count: { select: { students: true, jadwal: true } } },
   });
@@ -63,6 +65,6 @@ export async function deleteKelas(
       error: "Kelas masih memiliki siswa atau jadwal — tidak dapat dihapus",
     };
   }
-  await prisma.kelas.delete({ where: { id } });
+  await prisma.schoolClass.delete({ where: { id } });
   return { ok: true, error: null };
 }

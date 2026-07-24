@@ -4,11 +4,11 @@ import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { reportTeacherAbsence } from "@/src/features/attendance/services/teacher-attendance";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { AbsensiGuru, Guru } from "@prisma/client";
+import type { AbsensiGuru, Teacher } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
-    guru: { findUnique: vi.fn() },
+    teacher: { findUnique: vi.fn() },
     absensiGuru: { findMany: vi.fn() },
   },
 }));
@@ -37,9 +37,9 @@ describe("POST /api/attendance/teacher-absence", () => {
       id: "u1",
       role: "TEACHER",
     } as SessionUser);
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
-    } as Guru);
+    } as Teacher);
     vi.mocked(reportTeacherAbsence).mockResolvedValue({
       records: [{ id: "ag-1" } as AbsensiGuru],
       error: null,
@@ -64,9 +64,9 @@ describe("POST /api/attendance/teacher-absence", () => {
       id: "u1",
       role: "TEACHER",
     } as SessionUser);
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
-    } as Guru);
+    } as Teacher);
 
     const response = await POST(
       buildRequest({ tanggal: "2026-07-09", status: "ALPHA" }),

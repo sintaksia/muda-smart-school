@@ -16,11 +16,11 @@ export default async function MapelPage() {
       <MapelManager
         mapelList={mapelList.map((mapel) => ({
           id: mapel.id,
-          nama: mapel.nama,
-          kode: mapel.kode,
+          name: mapel.name,
+          code: mapel.code,
           specialization: mapel.specialization,
-          tingkat: mapel.tingkat,
-          jumlahGuru: mapel._count.guru,
+          gradeLevel: mapel.gradeLevel,
+          jumlahGuru: mapel._count.teacherSubjects,
           jumlahJadwal: mapel._count.jadwal,
         }))}
       />

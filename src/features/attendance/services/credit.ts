@@ -74,12 +74,12 @@ async function checkThresholds(
   if (ownerType === "STUDENT") {
     const student = await prisma.student.findUnique({
       where: { id: ownerId },
-      select: { kelasId: true, userId: true, user: { select: { name: true } } },
+      select: { classId: true, userId: true, user: { select: { name: true } } },
     });
     if (!student) {
       return;
     }
-    const waliUserId = await getWaliKelasUserId(student.kelasId);
+    const waliUserId = await getWaliKelasUserId(student.classId);
     if (crossedCritical) {
       // BK is mapped to ADMIN; parent notification goes to the student's
       // own account until a parent role exists (flagged in docs).
@@ -104,7 +104,7 @@ async function checkThresholds(
     return;
   }
 
-  const guru = await prisma.guru.findUnique({
+  const guru = await prisma.teacher.findUnique({
     where: { id: ownerId },
     select: { user: { select: { name: true } } },
   });

@@ -5,7 +5,7 @@ import { getAttendanceSettings } from "./settings";
 import { createCreditEntry } from "./credit";
 import { notifyUsers } from "./notifications";
 import type { AttendanceSettings } from "../types";
-import type { AbsensiGuru, Guru, Jadwal } from "@prisma/client";
+import type { AbsensiGuru, Teacher, Jadwal } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
@@ -13,7 +13,7 @@ vi.mock("@/src/lib/prisma", () => ({
     absensiGuru: { upsert: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
     creditScore: { findFirst: vi.fn() },
     student: { findMany: vi.fn() },
-    guru: { findUnique: vi.fn() },
+    teacher: { findUnique: vi.fn() },
     sesi: { upsert: vi.fn() },
   },
 }));
@@ -111,9 +111,9 @@ describe("assignSubstitute", () => {
       id: "ag-1",
       substituteGuruId: "guru-2",
     } as AbsensiGuru);
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       userId: "guru2-user",
-    } as Guru);
+    } as Teacher);
 
     const result = await assignSubstitute("ag-1", "guru-2");
 

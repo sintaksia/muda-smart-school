@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   genderOptions,
   educationOptions,
-  STATUS_KEPEGAWAIAN_VALUES,
+  EMPLOYMENT_STATUS_VALUES,
 } from "@/src/lib/constants";
 
 const GENDER_VALUES = genderOptions.map((o) => o.value) as ["MALE", "FEMALE"];
@@ -33,19 +33,19 @@ export const createGuruSchema = z.object({
   gender: z.enum(GENDER_VALUES, {
     message: "Jenis kelamin wajib dipilih",
   }),
-  tempatLahir: z.string({ message: "Tempat lahir wajib diisi" }).min(2),
-  tanggalLahir: z
+  birthPlace: z.string({ message: "Tempat lahir wajib diisi" }).min(2),
+  birthDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Tanggal lahir tidak valid" }),
   education: z.enum(EDUCATION_VALUES, {
     message: "Pendidikan wajib dipilih",
   }),
-  jabatan: z.string().optional(),
-  statusKepegawaian: z.enum(
-    STATUS_KEPEGAWAIAN_VALUES as ["PNS", "PPPK", "GTY", "GTT"],
+  position: z.string().optional(),
+  employmentStatus: z.enum(
+    EMPLOYMENT_STATUS_VALUES as ["PNS", "PPPK", "GTY", "GTT"],
     { message: "Status kepegawaian wajib dipilih" },
   ),
-  mataPelajaranIds: z
+  subjectIds: z
     .array(z.string())
     .min(1, { message: "Pilih minimal satu mapel" }),
 });
@@ -53,11 +53,11 @@ export const createGuruSchema = z.object({
 export const updateGuruSchema = z.object({
   nip: z.string().optional().nullable(),
   nuptk: z.string().optional().nullable(),
-  jabatan: z.string().optional().nullable(),
-  statusKepegawaian: z
-    .enum(STATUS_KEPEGAWAIAN_VALUES as ["PNS", "PPPK", "GTY", "GTT"])
+  position: z.string().optional().nullable(),
+  employmentStatus: z
+    .enum(EMPLOYMENT_STATUS_VALUES as ["PNS", "PPPK", "GTY", "GTT"])
     .optional(),
-  mataPelajaranIds: z.array(z.string()).min(1).optional(),
+  subjectIds: z.array(z.string()).min(1).optional(),
 });
 
 export type CreateGuruFormData = z.infer<typeof createGuruSchema>;

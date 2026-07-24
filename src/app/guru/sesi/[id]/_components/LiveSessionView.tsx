@@ -94,10 +94,10 @@ export function LiveSessionView({
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-ink text-[28px] font-bold tracking-tight">
-            {sesi.jadwal.mataPelajaran.nama}
+            {sesi.jadwal.mataPelajaran.name}
           </h1>
           <p className="text-ink-secondary mt-1 text-sm">
-            {sesi.jadwal.kelas.nama} · {sesi.jadwal.jamMulai}–
+            {sesi.jadwal.kelas.name} · {sesi.jadwal.jamMulai}–
             {sesi.jadwal.jamSelesai}
           </p>
         </div>

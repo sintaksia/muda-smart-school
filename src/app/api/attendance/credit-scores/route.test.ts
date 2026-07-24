@@ -12,7 +12,7 @@ import type { CreditScore, Student } from "@prisma/client";
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
     student: { findUnique: vi.fn() },
-    guru: { findUnique: vi.fn() },
+    teacher: { findUnique: vi.fn() },
     creditScore: { findMany: vi.fn() },
   },
 }));
@@ -65,7 +65,7 @@ describe("GET /api/attendance/credit-scores", () => {
       id: "u1",
       role: "TEACHER",
     } as SessionUser);
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
     } as never);
 

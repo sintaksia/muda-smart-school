@@ -17,8 +17,8 @@ export default async function AbsensiMonitorPage() {
     ? await prisma.jadwal.findMany({
         where: { hari, isActive: true },
         include: {
-          kelas: { select: { nama: true } },
-          mataPelajaran: { select: { nama: true } },
+          kelas: { select: { name: true } },
+          mataPelajaran: { select: { name: true } },
           guru: { select: { user: { select: { name: true } } } },
           sesi: {
             where: { tanggal: dateOnlyUtc(dateISO) },
@@ -63,9 +63,9 @@ export default async function AbsensiMonitorPage() {
                     <td className="text-ink px-5 py-3 font-semibold tabular-nums">
                       {row.jamMulai}–{row.jamSelesai}
                     </td>
-                    <td className="text-ink px-4 py-3">{row.kelas.nama}</td>
+                    <td className="text-ink px-4 py-3">{row.kelas.name}</td>
                     <td className="text-ink-secondary px-4 py-3">
-                      {row.mataPelajaran.nama}
+                      {row.mataPelajaran.name}
                     </td>
                     <td className="text-ink-secondary px-4 py-3">
                       {row.guru.user.name}

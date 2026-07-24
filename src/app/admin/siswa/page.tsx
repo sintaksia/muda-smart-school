@@ -8,9 +8,9 @@ export const dynamic = "force-dynamic";
 export default async function SiswaPage() {
   const [siswaList, kelasList] = await Promise.all([
     getSiswaList(),
-    prisma.kelas.findMany({
-      select: { id: true, nama: true },
-      orderBy: [{ tingkat: "asc" }, { nama: "asc" }],
+    prisma.schoolClass.findMany({
+      select: { id: true, name: true },
+      orderBy: [{ gradeLevel: "asc" }, { name: "asc" }],
     }),
   ]);
 
@@ -27,7 +27,7 @@ export default async function SiswaPage() {
           nis: siswa.nis,
           specialization: siswa.specialization,
           angkatan: siswa.angkatan,
-          kelasId: siswa.kelas?.id ?? null,
+          classId: siswa.schoolClass?.id ?? null,
           status: siswa.status,
         }))}
         kelasOptions={kelasList}

@@ -101,7 +101,7 @@ export async function reportTeacherAbsence(
 
     const waliUserId = await getWaliKelasUserId(jadwal.kelasId);
     const students = await prisma.student.findMany({
-      where: { kelasId: jadwal.kelasId, status: "AKTIF" },
+      where: { classId: jadwal.kelasId, status: "AKTIF" },
       select: { userId: true },
     });
     await notifyUsers(
@@ -136,7 +136,7 @@ export async function assignSubstitute(
     where: { id: absensiGuruId },
     data: { substituteGuruId },
   });
-  const substitute = await prisma.guru.findUnique({
+  const substitute = await prisma.teacher.findUnique({
     where: { id: substituteGuruId },
     select: { userId: true },
   });

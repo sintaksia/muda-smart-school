@@ -14,15 +14,15 @@ export default async function TeacherAbsencePage() {
           select: {
             jamMulai: true,
             jamSelesai: true,
-            kelas: { select: { nama: true } },
-            mataPelajaran: { select: { nama: true } },
+            kelas: { select: { name: true } },
+            mataPelajaran: { select: { name: true } },
           },
         },
       },
       orderBy: [{ tanggal: "desc" }, { createdAt: "desc" }],
       take: 100,
     }),
-    prisma.guru.findMany({
+    prisma.teacher.findMany({
       select: { id: true, user: { select: { name: true } } },
       orderBy: { user: { name: "asc" } },
     }),
@@ -40,8 +40,8 @@ export default async function TeacherAbsencePage() {
           guru: record.guru.user.name,
           tanggal: record.tanggal.toISOString().slice(0, 10),
           status: record.status,
-          kelas: record.jadwal.kelas.nama,
-          mapel: record.jadwal.mataPelajaran.nama,
+          kelas: record.jadwal.kelas.name,
+          mapel: record.jadwal.mataPelajaran.name,
           jam: `${record.jadwal.jamMulai}–${record.jadwal.jamSelesai}`,
           substitute: record.substituteGuru?.user.name ?? null,
         }))}

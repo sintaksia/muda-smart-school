@@ -6,7 +6,7 @@ import {
   getWaliKelasUserId,
   markNotificationRead,
 } from "./notifications";
-import type { Kelas, Notification } from "@prisma/client";
+import type { SchoolClass, Notification } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
@@ -17,7 +17,7 @@ vi.mock("@/src/lib/prisma", () => ({
       update: vi.fn(),
     },
     user: { findMany: vi.fn() },
-    kelas: { findUnique: vi.fn() },
+    schoolClass: { findUnique: vi.fn() },
   },
 }));
 
@@ -79,16 +79,16 @@ describe("notifyUsers", () => {
 
 describe("getWaliKelasUserId", () => {
   it("returns the wali kelas user id", async () => {
-    vi.mocked(prisma.kelas.findUnique).mockResolvedValue({
-      waliKelas: { userId: "wali-user" },
-    } as unknown as Kelas);
+    vi.mocked(prisma.schoolClass.findUnique).mockResolvedValue({
+      homeroomTeacher: { userId: "wali-user" },
+    } as unknown as SchoolClass);
 
     expect(await getWaliKelasUserId("k1")).toBe("wali-user");
   });
 
   it("returns null without a kelas", async () => {
     expect(await getWaliKelasUserId(null)).toBeNull();
-    expect(prisma.kelas.findUnique).not.toHaveBeenCalled();
+    expect(prisma.schoolClass.findUnique).not.toHaveBeenCalled();
   });
 });
 

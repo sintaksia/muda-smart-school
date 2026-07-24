@@ -7,8 +7,12 @@ const SPECIALIZATION_VALUES = specializationOptions.map((o) => o.value) as [
 ];
 
 export const kelasSchema = z.object({
-  nama: z.string({ message: "Nama kelas wajib diisi" }).min(2),
-  tingkat: z.number({ message: "Tingkat wajib dipilih" }).int().min(10).max(12),
+  name: z.string({ message: "Nama kelas wajib diisi" }).min(2),
+  gradeLevel: z
+    .number({ message: "Tingkat wajib dipilih" })
+    .int()
+    .min(10)
+    .max(12),
   specialization: z.enum(
     SPECIALIZATION_VALUES as [
       "AUTOMOTIVE_ENGINEERING",
@@ -19,10 +23,10 @@ export const kelasSchema = z.object({
     ],
     { message: "Program keahlian wajib dipilih" },
   ),
-  tahunAjaran: z
+  academicYear: z
     .string()
     .regex(/^\d{4}\/\d{4}$/, { message: "Format tahun ajaran: 2026/2027" }),
-  waliKelasId: z.string().optional().nullable(),
+  homeroomTeacherId: z.string().optional().nullable(),
 });
 
 export type KelasFormData = z.infer<typeof kelasSchema>;

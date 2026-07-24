@@ -4,11 +4,11 @@ import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { openSession } from "@/src/features/attendance/services/session";
 import type { SessionUser } from "@/src/features/auth/types";
-import type { Guru, Jadwal, Sesi } from "@prisma/client";
+import type { Teacher, Jadwal, Sesi } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
-    guru: { findUnique: vi.fn() },
+    teacher: { findUnique: vi.fn() },
     jadwal: { findMany: vi.fn(), findUnique: vi.fn() },
     absensiGuru: { findFirst: vi.fn() },
   },
@@ -44,9 +44,9 @@ describe("POST /api/attendance/sessions", () => {
       id: "u1",
       role: "TEACHER",
     } as SessionUser);
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
-    } as Guru);
+    } as Teacher);
     vi.mocked(prisma.jadwal.findUnique).mockResolvedValue({
       id: "j1",
       guruId: "other-guru",
@@ -64,9 +64,9 @@ describe("POST /api/attendance/sessions", () => {
       id: "u1",
       role: "TEACHER",
     } as SessionUser);
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue({
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
-    } as Guru);
+    } as Teacher);
     vi.mocked(prisma.jadwal.findUnique).mockResolvedValue({
       id: "j1",
       guruId: "guru-1",
@@ -89,7 +89,7 @@ describe("POST /api/attendance/sessions", () => {
       id: "u1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(prisma.guru.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.teacher.findUnique).mockResolvedValue(null);
     vi.mocked(openSession).mockResolvedValue({
       sesi: null,
       error: "Jadwal bukan untuk hari ini",

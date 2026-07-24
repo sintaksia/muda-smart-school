@@ -11,10 +11,10 @@ import {
 
 export interface MapelRow {
   id: string;
-  nama: string;
-  kode: string;
+  name: string;
+  code: string;
   specialization: string | null;
-  tingkat: number | null;
+  gradeLevel: number | null;
   jumlahGuru: number;
   jumlahJadwal: number;
 }
@@ -28,8 +28,8 @@ const inputClass =
 
 export function MapelManager({ mapelList }: MapelManagerProps) {
   const router = useRouter();
-  const [nama, setNama] = useState<string>("");
-  const [kode, setKode] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [code, setCode] = useState<string>("");
   const [specialization, setSpecialization] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
@@ -43,8 +43,8 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nama,
-          kode,
+          name,
+          code,
           specialization: specialization || null,
         }),
       });
@@ -53,8 +53,8 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
         throw new Error(data.error ?? "Gagal membuat mapel");
       }
       toast.success("Mapel dibuat");
-      setNama("");
-      setKode("");
+      setName("");
+      setCode("");
       router.refresh();
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Terjadi kesalahan");
@@ -90,16 +90,16 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <input
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             placeholder="Nama (mis. Matematika)"
             required
             minLength={2}
             className={inputClass}
           />
           <input
-            value={kode}
-            onChange={(e) => setKode(e.target.value.toUpperCase())}
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="Kode (mis. MTK)"
             required
             minLength={2}
@@ -148,9 +148,9 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
                   className="border-hairline border-b last:border-b-0"
                 >
                   <td className="text-ink px-5 py-3 font-mono font-semibold">
-                    {row.kode}
+                    {row.code}
                   </td>
-                  <td className="text-ink px-4 py-3">{row.nama}</td>
+                  <td className="text-ink px-4 py-3">{row.name}</td>
                   <td className="text-ink-secondary px-4 py-3">
                     {row.specialization
                       ? SPECIALIZATION_SHORT_LABELS[row.specialization]

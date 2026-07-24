@@ -11,7 +11,7 @@ export default async function IzinAdminPage() {
         select: {
           nis: true,
           user: { select: { name: true } },
-          kelas: { select: { nama: true } },
+          schoolClass: { select: { name: true } },
         },
       },
       reviewedBy: { select: { name: true } },
@@ -30,7 +30,7 @@ export default async function IzinAdminPage() {
         submissions={submissions.map((izin) => ({
           id: izin.id,
           nama: izin.student.user.name,
-          kelas: izin.student.kelas?.nama ?? "—",
+          kelas: izin.student.schoolClass?.name ?? "—",
           jenis: izin.jenis,
           tanggal: izin.tanggal.toISOString().slice(0, 10),
           alasan: izin.alasan,

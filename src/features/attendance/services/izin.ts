@@ -40,7 +40,7 @@ export async function submitIzin(
     },
   });
 
-  const waliUserId = await getWaliKelasUserId(student.kelasId);
+  const waliUserId = await getWaliKelasUserId(student.classId);
   const reviewers = waliUserId ? [waliUserId] : await getAdminUserIds();
   await notifyUsers(reviewers, {
     title: "Pengajuan izin/sakit baru",

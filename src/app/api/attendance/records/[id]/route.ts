@@ -31,7 +31,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     if (!canAccessAdmin(currentUser.role)) {
-      const guru = await prisma.guru.findUnique({
+      const guru = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
       const record = await prisma.absensiSiswa.findUnique({

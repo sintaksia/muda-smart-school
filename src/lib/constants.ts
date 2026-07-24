@@ -189,19 +189,19 @@ export const CREDIT_OWNER_TYPE_VALUES = creditOwnerTypeOptions.map(
 export const CREDIT_OWNER_TYPE_LABELS: Record<string, string> =
   Object.fromEntries(creditOwnerTypeOptions.map((o) => [o.value, o.label]));
 
-export const statusKepegawaianOptions = [
+export const employmentStatusOptions = [
   { value: "PNS", label: "PNS" },
   { value: "PPPK", label: "PPPK" },
   { value: "GTY", label: "Guru Tetap Yayasan" },
   { value: "GTT", label: "Guru Tidak Tetap" },
 ] as const;
 
-export const STATUS_KEPEGAWAIAN_VALUES = statusKepegawaianOptions.map(
+export const EMPLOYMENT_STATUS_VALUES = employmentStatusOptions.map(
   (o) => o.value,
 );
 
-export const STATUS_KEPEGAWAIAN_LABELS: Record<string, string> =
-  Object.fromEntries(statusKepegawaianOptions.map((o) => [o.value, o.label]));
+export const EMPLOYMENT_STATUS_LABELS: Record<string, string> =
+  Object.fromEntries(employmentStatusOptions.map((o) => [o.value, o.label]));
 
 export const studentStatusOptions = [
   { value: "AKTIF", label: "Aktif", badge: "success" as const },
@@ -221,7 +221,7 @@ export const STUDENT_STATUS_BADGES: Record<
   "success" | "info" | "warning" | "destructive"
 > = Object.fromEntries(studentStatusOptions.map((o) => [o.value, o.badge]));
 
-export const tingkatOptions = [
+export const gradeLevelOptions = [
   { value: 10, label: "Kelas 10" },
   { value: 11, label: "Kelas 11" },
   { value: 12, label: "Kelas 12" },

@@ -26,7 +26,7 @@ export async function GET() {
 
     let guruFilter: { guruId?: string } = {};
     if (!canAccessAdmin(currentUser.role)) {
-      const guru = await prisma.guru.findUnique({
+      const guru = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
       if (!guru) {
@@ -38,8 +38,8 @@ export async function GET() {
     const jadwal = await prisma.jadwal.findMany({
       where: { hari, isActive: true, ...guruFilter },
       include: {
-        kelas: { select: { id: true, nama: true } },
-        mataPelajaran: { select: { id: true, nama: true } },
+        kelas: { select: { id: true, name: true } },
+        mataPelajaran: { select: { id: true, name: true } },
         guru: { select: { id: true, user: { select: { name: true } } } },
         sesi: { where: { tanggal: dateOnlyUtc(dateISO) } },
       },
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const guru = await prisma.guru.findUnique({
+    const guru = await prisma.teacher.findUnique({
       where: { userId: currentUser.id },
     });
 

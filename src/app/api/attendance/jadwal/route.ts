@@ -15,8 +15,8 @@ export async function GET() {
     const jadwal = await prisma.jadwal.findMany({
       where: { isActive: true },
       include: {
-        kelas: { select: { id: true, nama: true } },
-        mataPelajaran: { select: { id: true, nama: true } },
+        kelas: { select: { id: true, name: true } },
+        mataPelajaran: { select: { id: true, name: true } },
         guru: { select: { id: true, user: { select: { name: true } } } },
       },
       orderBy: [{ hari: "asc" }, { jamMulai: "asc" }],

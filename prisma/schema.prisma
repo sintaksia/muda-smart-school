@@ -21,7 +21,7 @@ model User {
   createdBy    User?      @relation("CreatedByUser", fields: [createdById], references: [id])
   createdUsers User[]     @relation("CreatedByUser")
   student      Student?
-  guru         Guru?
+  teacher      Teacher?
 
   notifications        Notification[]
   creditScoresReported CreditScore[]   @relation("CreditReporter")
@@ -90,14 +90,14 @@ model Student {
   nisn           String         @unique
   specialization Specialization @map("specialization")
   angkatan       Int
-  kelasId        String?        @map("kelas_id")
+  classId        String?        @map("class_id")
   status         StudentStatus  @default(AKTIF)
   createdAt      DateTime       @default(now()) @map("created_at")
   updatedAt      DateTime       @updatedAt @map("updated_at")
 
   user          User            @relation(fields: [userId], references: [id])
   registration  Registration?   @relation(fields: [registrationId], references: [id])
-  kelas         Kelas?          @relation(fields: [kelasId], references: [id])
+  schoolClass   SchoolClass?    @relation(fields: [classId], references: [id])
   absensiSiswa  AbsensiSiswa[]
   creditScores  CreditScore[]
   pengajuanIzin PengajuanIzin[]
@@ -105,76 +105,76 @@ model Student {
   @@map("students")
 }
 
-model Guru {
-  id                   String            @id @default(cuid())
-  userId               String            @unique @map("user_id")
-  nip                  String?           @unique
-  nuptk                String?           @unique
-  gender               Gender            @map("gender")
-  tempatLahir          String            @map("tempat_lahir")
-  tanggalLahir         DateTime          @map("tanggal_lahir")
-  education            Education         @map("education")
-  jabatan              String?
-  statusKepegawaian    StatusKepegawaian @map("status_kepegawaian")
-  tanggalMulaiMengajar DateTime?         @map("tanggal_mulai_mengajar")
-  createdAt            DateTime          @default(now()) @map("created_at")
-  updatedAt            DateTime          @updatedAt @map("updated_at")
+model Teacher {
+  id                String           @id @default(cuid())
+  userId            String           @unique @map("user_id")
+  nip               String?          @unique
+  nuptk             String?          @unique
+  gender            Gender           @map("gender")
+  birthPlace        String           @map("birth_place")
+  birthDate         DateTime         @map("birth_date")
+  education         Education        @map("education")
+  position          String?
+  employmentStatus  EmploymentStatus @map("employment_status")
+  teachingStartDate DateTime?        @map("teaching_start_date")
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
 
-  user                 User                @relation(fields: [userId], references: [id])
-  mataPelajaran        GuruMataPelajaran[]
-  kelasWali            Kelas[]
+  user                 User             @relation(fields: [userId], references: [id])
+  teacherSubjects      TeacherSubject[]
+  homeroomClasses      SchoolClass[]
   jadwal               Jadwal[]
   absensiGuru          AbsensiGuru[]
-  absensiGuruPengganti AbsensiGuru[]       @relation("SubstituteGuru")
-  sesiDibuka           Sesi[]              @relation("SesiActualGuru")
+  absensiGuruPengganti AbsensiGuru[]    @relation("SubstituteGuru")
+  sesiDibuka           Sesi[]           @relation("SesiActualGuru")
   creditScores         CreditScore[]
 
-  @@map("guru")
+  @@map("teachers")
 }
 
-model Kelas {
-  id             String         @id @default(cuid())
-  nama           String
-  tingkat        Int
-  specialization Specialization @map("specialization")
-  tahunAjaran    String         @map("tahun_ajaran")
-  waliKelasId    String?        @map("wali_kelas_id")
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
+model SchoolClass {
+  id                String         @id @default(cuid())
+  name              String
+  gradeLevel        Int            @map("grade_level")
+  specialization    Specialization @map("specialization")
+  academicYear      String         @map("academic_year")
+  homeroomTeacherId String?        @map("homeroom_teacher_id")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
 
-  waliKelas Guru?     @relation(fields: [waliKelasId], references: [id])
-  students  Student[]
-  jadwal    Jadwal[]
+  homeroomTeacher Teacher?  @relation(fields: [homeroomTeacherId], references: [id])
+  students        Student[]
+  jadwal          Jadwal[]
 
-  @@unique([nama, tahunAjaran])
-  @@map("kelas")
+  @@unique([name, academicYear])
+  @@map("school_classes")
 }
 
-model MataPelajaran {
+model Subject {
   id             String          @id @default(cuid())
-  nama           String
-  kode           String          @unique
+  name           String
+  code           String          @unique
   specialization Specialization? @map("specialization")
-  tingkat        Int?
+  gradeLevel     Int?            @map("grade_level")
   createdAt      DateTime        @default(now()) @map("created_at")
   updatedAt      DateTime        @updatedAt @map("updated_at")
 
-  guru   GuruMataPelajaran[]
-  jadwal Jadwal[]
+  teacherSubjects TeacherSubject[]
+  jadwal          Jadwal[]
 
-  @@map("mata_pelajaran")
+  @@map("subjects")
 }
 
-model GuruMataPelajaran {
-  id              String @id @default(cuid())
-  guruId          String @map("guru_id")
-  mataPelajaranId String @map("mata_pelajaran_id")
+model TeacherSubject {
+  id        String @id @default(cuid())
+  teacherId String @map("teacher_id")
+  subjectId String @map("subject_id")
 
-  guru          Guru          @relation(fields: [guruId], references: [id])
-  mataPelajaran MataPelajaran @relation(fields: [mataPelajaranId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
 
-  @@unique([guruId, mataPelajaranId])
-  @@map("guru_mata_pelajaran")
+  @@unique([teacherId, subjectId])
+  @@map("teacher_subjects")
 }
 
 model Jadwal {
@@ -190,9 +190,9 @@ model Jadwal {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  kelas         Kelas           @relation(fields: [kelasId], references: [id])
-  mataPelajaran MataPelajaran   @relation(fields: [mataPelajaranId], references: [id])
-  guru          Guru            @relation(fields: [guruId], references: [id])
+  kelas         SchoolClass     @relation(fields: [kelasId], references: [id])
+  mataPelajaran Subject         @relation(fields: [mataPelajaranId], references: [id])
+  guru          Teacher         @relation(fields: [guruId], references: [id])
   absensiSiswa  AbsensiSiswa[]
   absensiGuru   AbsensiGuru[]
   sesi          Sesi[]
@@ -215,7 +215,7 @@ model Sesi {
   updatedAt       DateTime   @updatedAt @map("updated_at")
 
   jadwal        Jadwal          @relation(fields: [jadwalId], references: [id])
-  actualGuru    Guru?           @relation("SesiActualGuru", fields: [actualGuruId], references: [id])
+  actualGuru    Teacher?        @relation("SesiActualGuru", fields: [actualGuruId], references: [id])
   absensiSiswa  AbsensiSiswa[]
   creditScores  CreditScore[]
   pengajuanIzin PengajuanIzin[]
@@ -262,10 +262,10 @@ model AbsensiGuru {
   createdAt        DateTime      @default(now()) @map("created_at")
   updatedAt        DateTime      @updatedAt @map("updated_at")
 
-  jadwal         Jadwal @relation(fields: [jadwalId], references: [id])
-  guru           Guru   @relation(fields: [guruId], references: [id])
-  reportedBy     User?  @relation("AbsensiGuruReporter", fields: [reportedById], references: [id])
-  substituteGuru Guru?  @relation("SubstituteGuru", fields: [substituteGuruId], references: [id])
+  jadwal         Jadwal   @relation(fields: [jadwalId], references: [id])
+  guru           Teacher  @relation(fields: [guruId], references: [id])
+  reportedBy     User?    @relation("AbsensiGuruReporter", fields: [reportedById], references: [id])
+  substituteGuru Teacher? @relation("SubstituteGuru", fields: [substituteGuruId], references: [id])
 
   @@unique([jadwalId, guruId, tanggal])
   @@map("absensi_guru")
@@ -287,7 +287,7 @@ model CreditScore {
   createdAt    DateTime        @default(now()) @map("created_at")
 
   student    Student? @relation(fields: [studentId], references: [id])
-  guru       Guru?    @relation(fields: [guruId], references: [id])
+  guru       Teacher? @relation(fields: [guruId], references: [id])
   refSesi    Sesi?    @relation(fields: [refSesiId], references: [id])
   reportedBy User?    @relation("CreditReporter", fields: [reportedById], references: [id])
 
@@ -710,7 +710,7 @@ enum StudentStatus {
   DROPOUT
 }
 
-enum StatusKepegawaian {
+enum EmploymentStatus {
   PNS
   PPPK
   GTY

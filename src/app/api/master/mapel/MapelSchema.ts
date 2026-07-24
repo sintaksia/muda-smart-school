@@ -10,14 +10,14 @@ const SPECIALIZATION_VALUES = specializationOptions.map((o) => o.value) as [
 ];
 
 export const mapelSchema = z.object({
-  nama: z.string({ message: "Nama mapel wajib diisi" }).min(2),
-  kode: z
+  name: z.string({ message: "Nama mapel wajib diisi" }).min(2),
+  code: z
     .string({ message: "Kode mapel wajib diisi" })
     .min(2)
     .max(12)
     .transform((value) => value.toUpperCase()),
   specialization: z.enum(SPECIALIZATION_VALUES).optional().nullable(),
-  tingkat: z.number().int().min(10).max(12).optional().nullable(),
+  gradeLevel: z.number().int().min(10).max(12).optional().nullable(),
 });
 
 export type MapelFormData = z.infer<typeof mapelSchema>;
