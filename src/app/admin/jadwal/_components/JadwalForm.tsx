@@ -22,9 +22,9 @@ import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
 import { dayOfWeekOptions } from "@/src/lib/constants";
 import {
-  jadwalSchema,
-  type JadwalFormData,
-} from "@/src/app/api/attendance/jadwal/JadwalSchema";
+  scheduleSchema,
+  type ScheduleFormData,
+} from "@/src/app/api/attendance/schedules/ScheduleSchema";
 import { JadwalSelectField } from "./JadwalSelectField";
 
 interface JadwalFormProps {
@@ -46,14 +46,14 @@ export function JadwalForm({
   teacherOptions,
 }: JadwalFormProps) {
   const router = useRouter();
-  const form = useForm<JadwalFormData>({
-    resolver: zodResolver(jadwalSchema),
+  const form = useForm<ScheduleFormData>({
+    resolver: zodResolver(scheduleSchema),
     defaultValues: { startTime: "07:00", endTime: "08:30" },
   });
 
-  async function onSubmit(values: JadwalFormData): Promise<void> {
+  async function onSubmit(values: ScheduleFormData): Promise<void> {
     try {
-      const response = await fetch("/api/attendance/jadwal", {
+      const response = await fetch("/api/attendance/schedules", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

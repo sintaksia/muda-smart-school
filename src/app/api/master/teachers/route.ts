@@ -4,10 +4,10 @@ import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import {
   getTeacherList,
   createTeacher,
-} from "@/src/features/master/services/guru";
-import { createGuruSchema } from "./GuruSchema";
+} from "@/src/features/master/services/teacher";
+import { createTeacherSchema } from "./TeacherSchema";
 
-// GET /api/master/guru
+// GET /api/master/teachers
 export async function GET() {
   try {
     const currentUser = await getCurrentUser();
@@ -24,7 +24,7 @@ export async function GET() {
   }
 }
 
-// POST /api/master/guru - create teacher account + profile + qualifications
+// POST /api/master/teachers - create teacher account + profile + qualifications
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     const body = await request.json();
-    const result = createGuruSchema.safeParse(body);
+    const result = createTeacherSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },

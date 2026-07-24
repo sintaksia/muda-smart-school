@@ -9,7 +9,7 @@ import {
   specializationOptions,
 } from "@/src/lib/constants";
 
-export interface MapelRow {
+export interface SubjectRow {
   id: string;
   name: string;
   code: string;
@@ -19,14 +19,14 @@ export interface MapelRow {
   jumlahJadwal: number;
 }
 
-interface MapelManagerProps {
-  subjectList: MapelRow[];
+interface SubjectManagerProps {
+  subjectList: SubjectRow[];
 }
 
 const inputClass =
   "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
 
-export function MapelManager({ subjectList }: MapelManagerProps) {
+export function SubjectManager({ subjectList }: SubjectManagerProps) {
   const router = useRouter();
   const [name, setName] = useState<string>("");
   const [code, setCode] = useState<string>("");
@@ -39,7 +39,7 @@ export function MapelManager({ subjectList }: MapelManagerProps) {
     event.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch("/api/master/mapel", {
+      const response = await fetch("/api/master/subjects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -67,7 +67,7 @@ export function MapelManager({ subjectList }: MapelManagerProps) {
     if (!window.confirm("Hapus mata pelajaran ini?")) {
       return;
     }
-    const response = await fetch(`/api/master/mapel/${id}`, {
+    const response = await fetch(`/api/master/subjects/${id}`, {
       method: "DELETE",
     });
     if (response.ok) {

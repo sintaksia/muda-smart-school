@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { EMPLOYMENT_STATUS_LABELS } from "@/src/lib/constants";
-import { GuruForm } from "./GuruForm";
+import { TeacherForm } from "./TeacherForm";
 
-export interface GuruRow {
+export interface TeacherRow {
   id: string;
   name: string;
   email: string;
@@ -16,12 +16,15 @@ export interface GuruRow {
   homeroomClasses: string[];
 }
 
-interface GuruManagerProps {
-  teacherList: GuruRow[];
+interface TeacherManagerProps {
+  teacherList: TeacherRow[];
   subjectOptions: { id: string; name: string }[];
 }
 
-export function GuruManager({ teacherList, subjectOptions }: GuruManagerProps) {
+export function TeacherManager({
+  teacherList,
+  subjectOptions,
+}: TeacherManagerProps) {
   const [formOpen, setFormOpen] = useState<boolean>(false);
 
   return (
@@ -36,7 +39,7 @@ export function GuruManager({ teacherList, subjectOptions }: GuruManagerProps) {
         </Button>
       </div>
 
-      <GuruForm
+      <TeacherForm
         open={formOpen}
         onOpenChange={setFormOpen}
         subjectOptions={subjectOptions}

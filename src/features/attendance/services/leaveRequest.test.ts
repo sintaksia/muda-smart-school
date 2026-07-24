@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
-import { submitLeaveRequest, reviewLeaveRequest } from "./izin";
+import { submitLeaveRequest, reviewLeaveRequest } from "./leaveRequest";
 import { getAttendanceSettings } from "./settings";
 import { reverseAutoDeduction } from "./credit";
 import {

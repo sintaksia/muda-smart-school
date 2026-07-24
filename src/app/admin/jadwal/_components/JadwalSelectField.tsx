@@ -15,11 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import type { JadwalFormData } from "@/src/app/api/attendance/jadwal/JadwalSchema";
+import type { ScheduleFormData } from "@/src/app/api/attendance/schedules/ScheduleSchema";
 
 interface JadwalSelectFieldProps {
-  control: Control<JadwalFormData>;
-  name: FieldPath<JadwalFormData>;
+  control: Control<ScheduleFormData>;
+  name: FieldPath<ScheduleFormData>;
   label: string;
   options: ReadonlyArray<{ value: string; label: string }>;
 }

@@ -4,10 +4,10 @@ import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import {
   getSubjectList,
   createSubject,
-} from "@/src/features/master/services/mapel";
-import { mapelSchema } from "./MapelSchema";
+} from "@/src/features/master/services/subject";
+import { subjectSchema } from "./SubjectSchema";
 
-// GET /api/master/mapel
+// GET /api/master/subjects
 export async function GET() {
   try {
     const currentUser = await getCurrentUser();
@@ -24,7 +24,7 @@ export async function GET() {
   }
 }
 
-// POST /api/master/mapel
+// POST /api/master/subjects
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     const body = await request.json();
-    const result = mapelSchema.safeParse(body);
+    const result = subjectSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },

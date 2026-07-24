@@ -1,7 +1,7 @@
 import { PageHeader } from "../_components/PageHeader";
-import { getClassList } from "@/src/features/master/services/kelas";
+import { getClassList } from "@/src/features/master/services/schoolClass";
 import { prisma } from "@/src/lib/prisma";
-import { KelasManager } from "./_components/KelasManager";
+import { ClassManager } from "./_components/ClassManager";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,7 @@ export default async function KelasPage() {
         title="Kelas"
         description="Kelola rombongan belajar dan wali kelas"
       />
-      <KelasManager
+      <ClassManager
         classList={classList.map((schoolClass) => ({
           id: schoolClass.id,
           name: schoolClass.name,

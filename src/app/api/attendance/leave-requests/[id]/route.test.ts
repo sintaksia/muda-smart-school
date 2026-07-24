@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PATCH } from "./route";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { reviewLeaveRequest } from "@/src/features/attendance/services/izin";
+import { reviewLeaveRequest } from "@/src/features/attendance/services/leaveRequest";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { LeaveRequest } from "@prisma/client";
 
@@ -14,12 +14,12 @@ vi.mock("@/src/lib/prisma", () => ({
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
-vi.mock("@/src/features/attendance/services/izin", () => ({
+vi.mock("@/src/features/attendance/services/leaveRequest", () => ({
   reviewLeaveRequest: vi.fn(),
 }));
 
 function buildRequest(body: unknown): Request {
-  return new Request("http://localhost/api/attendance/izin/izin-1", {
+  return new Request("http://localhost/api/attendance/leave-requests/izin-1", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -28,7 +28,7 @@ function buildRequest(body: unknown): Request {
 
 const routeParams = { params: Promise.resolve({ id: "izin-1" }) };
 
-describe("PATCH /api/attendance/izin/[id]", () => {
+describe("PATCH /api/attendance/leave-requests/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

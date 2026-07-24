@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { submitLeaveRequest } from "@/src/features/attendance/services/izin";
+import { submitLeaveRequest } from "@/src/features/attendance/services/leaveRequest";
 import { LEAVE_TYPE_VALUES } from "@/src/lib/constants";
 
 const submitSchema = z.object({
@@ -19,7 +19,7 @@ const submitSchema = z.object({
   attachment: z.string().optional(),
 });
 
-// GET /api/attendance/izin - list submissions (role-scoped)
+// GET /api/attendance/leave-requests - list submissions (role-scoped)
 export async function GET() {
   try {
     const currentUser = await getCurrentUser();
@@ -75,7 +75,7 @@ export async function GET() {
   }
 }
 
-// POST /api/attendance/izin - submit izin/sakit (Process 5)
+// POST /api/attendance/leave-requests - submit izin/sakit (Process 5)
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();

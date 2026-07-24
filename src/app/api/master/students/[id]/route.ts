@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { updateStudent } from "@/src/features/master/services/siswa";
+import { updateStudent } from "@/src/features/master/services/student";
 import { STUDENT_STATUS_VALUES } from "@/src/lib/constants";
 
 interface RouteParams {
@@ -18,7 +18,7 @@ const updateSiswaSchema = z.object({
     .optional(),
 });
 
-// PATCH /api/master/siswa/[id] - assign class / change status
+// PATCH /api/master/students/[id] - assign class / change status
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;

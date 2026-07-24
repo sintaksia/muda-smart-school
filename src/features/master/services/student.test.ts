@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
-import { updateStudent } from "./siswa";
+import { updateStudent } from "./student";
 import type { SchoolClass, Student } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({

@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { updateTeacher } from "@/src/features/master/services/guru";
-import { updateGuruSchema } from "../GuruSchema";
+import { updateTeacher } from "@/src/features/master/services/teacher";
+import { updateTeacherSchema } from "../TeacherSchema";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// PUT /api/master/guru/[id] - update profile + subject qualifications
+// PUT /api/master/teachers/[id] - update profile + subject qualifications
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -17,7 +17,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     const body = await request.json();
-    const result = updateGuruSchema.safeParse(body);
+    const result = updateTeacherSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },

@@ -9,7 +9,7 @@ import {
   specializationOptions,
 } from "@/src/lib/constants";
 
-export interface KelasRow {
+export interface ClassRow {
   id: string;
   name: string;
   gradeLevel: number;
@@ -20,15 +20,15 @@ export interface KelasRow {
   jumlahSiswa: number;
 }
 
-interface KelasManagerProps {
-  classList: KelasRow[];
+interface ClassManagerProps {
+  classList: ClassRow[];
   teacherOptions: { id: string; name: string }[];
 }
 
 const inputClass =
   "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
 
-export function KelasManager({ classList, teacherOptions }: KelasManagerProps) {
+export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
   const router = useRouter();
   const currentYear = new Date().getFullYear();
   const [name, setName] = useState<string>("");
@@ -66,7 +66,7 @@ export function KelasManager({ classList, teacherOptions }: KelasManagerProps) {
   ): Promise<void> {
     event.preventDefault();
     setSubmitting(true);
-    const ok = await request("/api/master/kelas", "POST", {
+    const ok = await request("/api/master/classes", "POST", {
       name,
       gradeLevel: Number(gradeLevel),
       specialization,
@@ -80,8 +80,8 @@ export function KelasManager({ classList, teacherOptions }: KelasManagerProps) {
     setSubmitting(false);
   }
 
-  async function changeWali(row: KelasRow, newWaliId: string): Promise<void> {
-    const ok = await request(`/api/master/kelas/${row.id}`, "PUT", {
+  async function changeWali(row: ClassRow, newWaliId: string): Promise<void> {
+    const ok = await request(`/api/master/classes/${row.id}`, "PUT", {
       name: row.name,
       gradeLevel: row.gradeLevel,
       specialization: row.specialization,
@@ -97,7 +97,7 @@ export function KelasManager({ classList, teacherOptions }: KelasManagerProps) {
     if (!window.confirm("Hapus kelas ini?")) {
       return;
     }
-    const ok = await request(`/api/master/kelas/${id}`, "DELETE");
+    const ok = await request(`/api/master/classes/${id}`, "DELETE");
     if (ok) {
       toast.success("Kelas dihapus");
     }

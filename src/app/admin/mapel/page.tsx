@@ -1,6 +1,6 @@
 import { PageHeader } from "../_components/PageHeader";
-import { getSubjectList } from "@/src/features/master/services/mapel";
-import { MapelManager } from "./_components/MapelManager";
+import { getSubjectList } from "@/src/features/master/services/subject";
+import { SubjectManager } from "./_components/SubjectManager";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +13,7 @@ export default async function MapelPage() {
         title="Mata Pelajaran"
         description="Kelola daftar mata pelajaran"
       />
-      <MapelManager
+      <SubjectManager
         subjectList={subjectList.map((subject) => ({
           id: subject.id,
           name: subject.name,

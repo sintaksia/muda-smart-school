@@ -52,7 +52,7 @@ export function JadwalManager({
 
   async function handleDelete(id: string): Promise<void> {
     try {
-      const response = await fetch(`/api/attendance/jadwal/${id}`, {
+      const response = await fetch(`/api/attendance/schedules/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {

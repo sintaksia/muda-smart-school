@@ -21,7 +21,7 @@ const EDUCATION_VALUES = educationOptions.map((o) => o.value) as [
   "S3",
 ];
 
-export const createGuruSchema = z.object({
+export const createTeacherSchema = z.object({
   name: z.string({ message: "Nama wajib diisi" }).min(3),
   email: z.email({ message: "Email tidak valid" }),
   password: z
@@ -50,7 +50,7 @@ export const createGuruSchema = z.object({
     .min(1, { message: "Pilih minimal satu mapel" }),
 });
 
-export const updateGuruSchema = z.object({
+export const updateTeacherSchema = z.object({
   nip: z.string().optional().nullable(),
   nuptk: z.string().optional().nullable(),
   position: z.string().optional().nullable(),
@@ -60,4 +60,4 @@ export const updateGuruSchema = z.object({
   subjectIds: z.array(z.string()).min(1).optional(),
 });
 
-export type CreateGuruFormData = z.infer<typeof createGuruSchema>;
+export type CreateTeacherFormData = z.infer<typeof createTeacherSchema>;

@@ -1,20 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { createTeacher } from "@/src/features/master/services/guru";
+import { createTeacher } from "@/src/features/master/services/teacher";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { Teacher } from "@prisma/client";
 
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
-vi.mock("@/src/features/master/services/guru", () => ({
+vi.mock("@/src/features/master/services/teacher", () => ({
   getTeacherList: vi.fn(),
   createTeacher: vi.fn(),
 }));
 
 function buildRequest(body: unknown): Request {
-  return new Request("http://localhost/api/master/guru", {
+  return new Request("http://localhost/api/master/teachers", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -33,7 +33,7 @@ const validBody = {
   subjectIds: ["m1"],
 };
 
-describe("POST /api/master/guru", () => {
+describe("POST /api/master/teachers", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

@@ -1,28 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PATCH } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { updateStudent } from "@/src/features/master/services/siswa";
+import { updateStudent } from "@/src/features/master/services/student";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { Student } from "@prisma/client";
 
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
-vi.mock("@/src/features/master/services/siswa", () => ({
+vi.mock("@/src/features/master/services/student", () => ({
   updateStudent: vi.fn(),
 }));
 
 const routeParams = { params: Promise.resolve({ id: "s1" }) };
 
 function buildRequest(body: unknown): Request {
-  return new Request("http://localhost/api/master/siswa/s1", {
+  return new Request("http://localhost/api/master/students/s1", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 }
 
-describe("PATCH /api/master/siswa/[id]", () => {
+describe("PATCH /api/master/students/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

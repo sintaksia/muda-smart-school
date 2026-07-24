@@ -4,14 +4,14 @@ import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import {
   updateSubject,
   deleteSubject,
-} from "@/src/features/master/services/mapel";
-import { mapelSchema } from "../MapelSchema";
+} from "@/src/features/master/services/subject";
+import { subjectSchema } from "../SubjectSchema";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// PUT /api/master/mapel/[id]
+// PUT /api/master/subjects/[id]
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -20,7 +20,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     const body = await request.json();
-    const result = mapelSchema.safeParse(body);
+    const result = subjectSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },
@@ -44,7 +44,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
   }
 }
 
-// DELETE /api/master/mapel/[id]
+// DELETE /api/master/subjects/[id]
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;

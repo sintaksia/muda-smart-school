@@ -4,10 +4,10 @@ import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import {
   getClassList,
   createClass,
-} from "@/src/features/master/services/kelas";
-import { kelasSchema } from "./KelasSchema";
+} from "@/src/features/master/services/schoolClass";
+import { classSchema } from "./ClassSchema";
 
-// GET /api/master/kelas
+// GET /api/master/classes
 export async function GET() {
   try {
     const currentUser = await getCurrentUser();
@@ -24,7 +24,7 @@ export async function GET() {
   }
 }
 
-// POST /api/master/kelas
+// POST /api/master/classes
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     const body = await request.json();
-    const result = kelasSchema.safeParse(body);
+    const result = classSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },

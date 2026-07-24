@@ -16,7 +16,7 @@ vi.mock("@/src/features/attendance/services/schedule", () => ({
 }));
 
 function buildRequest(body: unknown): Request {
-  return new Request("http://localhost/api/attendance/jadwal", {
+  return new Request("http://localhost/api/attendance/schedules", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -32,7 +32,7 @@ const validBody = {
   endTime: "08:30",
 };
 
-describe("POST /api/attendance/jadwal", () => {
+describe("POST /api/attendance/schedules", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

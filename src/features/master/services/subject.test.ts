@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
-import { createSubject, updateSubject, deleteSubject } from "./mapel";
+import { createSubject, updateSubject, deleteSubject } from "./subject";
 import type { Subject } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { reviewLeaveRequest } from "@/src/features/attendance/services/izin";
+import { reviewLeaveRequest } from "@/src/features/attendance/services/leaveRequest";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -16,7 +16,7 @@ const reviewSchema = z.object({
   reviewNote: z.string().optional(),
 });
 
-// PATCH /api/attendance/izin/[id] - approve/reject (wali kelas or admin)
+// PATCH /api/attendance/leave-requests/[id] - approve/reject (wali kelas or admin)
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;

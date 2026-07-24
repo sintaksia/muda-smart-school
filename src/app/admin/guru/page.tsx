@@ -1,7 +1,7 @@
 import { PageHeader } from "../_components/PageHeader";
-import { getTeacherList } from "@/src/features/master/services/guru";
-import { getSubjectList } from "@/src/features/master/services/mapel";
-import { GuruManager } from "./_components/GuruManager";
+import { getTeacherList } from "@/src/features/master/services/teacher";
+import { getSubjectList } from "@/src/features/master/services/subject";
+import { TeacherManager } from "./_components/TeacherManager";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +17,7 @@ export default async function GuruPage() {
         title="Guru"
         description="Kelola akun guru dan kualifikasi mata pelajaran"
       />
-      <GuruManager
+      <TeacherManager
         teacherList={teacherList.map((teacher) => ({
           id: teacher.id,
           name: teacher.user.name,

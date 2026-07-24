@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
-import { createClass, updateClass, deleteClass } from "./kelas";
+import { createClass, updateClass, deleteClass } from "./schoolClass";
 import type { SchoolClass } from "@prisma/client";
 import type { SchoolClassInput } from "../types";
 

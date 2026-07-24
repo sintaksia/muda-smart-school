@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { DELETE } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { deleteSubject } from "@/src/features/master/services/mapel";
+import { deleteSubject } from "@/src/features/master/services/subject";
 import type { SessionUser } from "@/src/features/auth/types";
 
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
-vi.mock("@/src/features/master/services/mapel", () => ({
+vi.mock("@/src/features/master/services/subject", () => ({
   updateSubject: vi.fn(),
   deleteSubject: vi.fn(),
 }));
@@ -15,12 +15,12 @@ vi.mock("@/src/features/master/services/mapel", () => ({
 const routeParams = { params: Promise.resolve({ id: "m1" }) };
 
 function buildRequest(): Request {
-  return new Request("http://localhost/api/master/mapel/m1", {
+  return new Request("http://localhost/api/master/subjects/m1", {
     method: "DELETE",
   });
 }
 
-describe("DELETE /api/master/mapel/[id]", () => {
+describe("DELETE /api/master/subjects/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

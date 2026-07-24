@@ -6,7 +6,7 @@ const SPECIALIZATION_VALUES = specializationOptions.map((o) => o.value) as [
   ...string[],
 ];
 
-export const kelasSchema = z.object({
+export const classSchema = z.object({
   name: z.string({ message: "Nama kelas wajib diisi" }).min(2),
   gradeLevel: z
     .number({ message: "Tingkat wajib dipilih" })
@@ -29,4 +29,4 @@ export const kelasSchema = z.object({
   homeroomTeacherId: z.string().optional().nullable(),
 });
 
-export type KelasFormData = z.infer<typeof kelasSchema>;
+export type ClassFormData = z.infer<typeof classSchema>;

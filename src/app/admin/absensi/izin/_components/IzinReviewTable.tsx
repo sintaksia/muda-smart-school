@@ -40,7 +40,7 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
         : undefined;
     setBusyId(id);
     try {
-      const response = await fetch(`/api/attendance/izin/${id}`, {
+      const response = await fetch(`/api/attendance/leave-requests/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ decision, reviewNote }),

@@ -37,7 +37,7 @@ export function IzinSection({ submissions }: IzinSectionProps) {
     event.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch("/api/attendance/izin", {
+      const response = await fetch("/api/attendance/leave-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type, date, reason }),

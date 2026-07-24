@@ -3,9 +3,9 @@ import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
 import { createSchedule } from "@/src/features/attendance/services/schedule";
-import { jadwalSchema } from "./JadwalSchema";
+import { scheduleSchema } from "./ScheduleSchema";
 
-// GET /api/attendance/jadwal - active timetable
+// GET /api/attendance/schedules - active timetable
 export async function GET() {
   try {
     const currentUser = await getCurrentUser();
@@ -31,7 +31,7 @@ export async function GET() {
   }
 }
 
-// POST /api/attendance/jadwal - create with Process 0 validation
+// POST /api/attendance/schedules - create with Process 0 validation
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const result = jadwalSchema.safeParse(body);
+    const result = scheduleSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },

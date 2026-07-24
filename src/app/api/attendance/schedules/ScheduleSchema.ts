@@ -3,7 +3,7 @@ import { DAY_OF_WEEK_VALUES } from "@/src/lib/constants";
 
 const timePattern = /^([01]?\d|2[0-3]):[0-5]\d$/;
 
-export const jadwalSchema = z.object({
+export const scheduleSchema = z.object({
   classId: z.string({ message: "Kelas wajib dipilih" }).min(1),
   subjectId: z.string({ message: "Mapel wajib dipilih" }).min(1),
   teacherId: z.string({ message: "Guru wajib dipilih" }).min(1),
@@ -27,4 +27,4 @@ export const jadwalSchema = z.object({
   academicYear: z.string().optional(),
 });
 
-export type JadwalFormData = z.infer<typeof jadwalSchema>;
+export type ScheduleFormData = z.infer<typeof scheduleSchema>;

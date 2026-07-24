@@ -28,14 +28,14 @@ const validBody = {
 };
 
 function buildRequest(method: string, body?: unknown): Request {
-  return new Request("http://localhost/api/attendance/jadwal/j1", {
+  return new Request("http://localhost/api/attendance/schedules/j1", {
     method,
     headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
   });
 }
 
-describe("PUT /api/attendance/jadwal/[id]", () => {
+describe("PUT /api/attendance/schedules/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -70,7 +70,7 @@ describe("PUT /api/attendance/jadwal/[id]", () => {
   });
 });
 
-describe("DELETE /api/attendance/jadwal/[id]", () => {
+describe("DELETE /api/attendance/schedules/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

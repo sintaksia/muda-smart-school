@@ -5,13 +5,13 @@ import {
   updateSchedule,
   deactivateSchedule,
 } from "@/src/features/attendance/services/schedule";
-import { jadwalSchema } from "../JadwalSchema";
+import { scheduleSchema } from "../ScheduleSchema";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// PUT /api/attendance/jadwal/[id] - effective-dated update (new version)
+// PUT /api/attendance/schedules/[id] - effective-dated update (new version)
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -21,7 +21,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     }
 
     const body = await request.json();
-    const result = jadwalSchema.safeParse(body);
+    const result = scheduleSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },
@@ -49,7 +49,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
   }
 }
 
-// DELETE /api/attendance/jadwal/[id] - deactivate (history stays intact)
+// DELETE /api/attendance/schedules/[id] - deactivate (history stays intact)
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;

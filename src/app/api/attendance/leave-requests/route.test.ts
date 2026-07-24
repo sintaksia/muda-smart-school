@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { submitLeaveRequest } from "@/src/features/attendance/services/izin";
+import { submitLeaveRequest } from "@/src/features/attendance/services/leaveRequest";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { LeaveRequest, Student } from "@prisma/client";
 
@@ -16,12 +16,12 @@ vi.mock("@/src/lib/prisma", () => ({
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
-vi.mock("@/src/features/attendance/services/izin", () => ({
+vi.mock("@/src/features/attendance/services/leaveRequest", () => ({
   submitLeaveRequest: vi.fn(),
 }));
 
 function buildRequest(body: unknown): Request {
-  return new Request("http://localhost/api/attendance/izin", {
+  return new Request("http://localhost/api/attendance/leave-requests", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -34,7 +34,7 @@ const validBody = {
   reason: "Demam tinggi",
 };
 
-describe("POST /api/attendance/izin", () => {
+describe("POST /api/attendance/leave-requests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

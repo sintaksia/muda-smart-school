@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
 import { createUser } from "@/src/features/auth/services/users";
-import { createTeacher, updateTeacher } from "./guru";
+import { createTeacher, updateTeacher } from "./teacher";
 import type { Teacher, User } from "@prisma/client";
 import type { CreateTeacherInput } from "../types";
 

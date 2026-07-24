@@ -15,7 +15,7 @@ import {
   employmentStatusOptions,
 } from "@/src/lib/constants";
 
-interface GuruFormProps {
+interface TeacherFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   subjectOptions: { id: string; name: string }[];
@@ -37,11 +37,11 @@ const initialState = {
   employmentStatus: "GTY",
 };
 
-export function GuruForm({
+export function TeacherForm({
   open,
   onOpenChange,
   subjectOptions,
-}: GuruFormProps) {
+}: TeacherFormProps) {
   const router = useRouter();
   const [form, setForm] = useState(initialState);
   const [subjectIds, setSubjectIds] = useState<string[]>([]);
@@ -67,7 +67,7 @@ export function GuruForm({
     }
     setSubmitting(true);
     try {
-      const response = await fetch("/api/master/guru", {
+      const response = await fetch("/api/master/teachers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

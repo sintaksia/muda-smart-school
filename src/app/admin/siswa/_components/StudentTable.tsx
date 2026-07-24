@@ -10,7 +10,7 @@ import {
   studentStatusOptions,
 } from "@/src/lib/constants";
 
-export interface SiswaRow {
+export interface StudentRow {
   id: string;
   name: string;
   nis: string;
@@ -20,12 +20,12 @@ export interface SiswaRow {
   status: string;
 }
 
-interface SiswaTableProps {
-  studentList: SiswaRow[];
+interface StudentTableProps {
+  studentList: StudentRow[];
   classOptions: { id: string; name: string }[];
 }
 
-export function SiswaTable({ studentList, classOptions }: SiswaTableProps) {
+export function StudentTable({ studentList, classOptions }: StudentTableProps) {
   const router = useRouter();
 
   async function patch(
@@ -33,7 +33,7 @@ export function SiswaTable({ studentList, classOptions }: SiswaTableProps) {
     body: { classId?: string | null; status?: string },
     successMessage: string,
   ): Promise<void> {
-    const response = await fetch(`/api/master/siswa/${id}`, {
+    const response = await fetch(`/api/master/students/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
