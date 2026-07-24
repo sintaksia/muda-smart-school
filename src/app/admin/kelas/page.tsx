@@ -1,4 +1,5 @@
 import { PageHeader } from "../_components/PageHeader";
+import { ENTITY_LABELS } from "@/src/lib/constants";
 import { getClassList } from "@/src/features/master/services/schoolClass";
 import { prisma } from "@/src/lib/prisma";
 import { ClassManager } from "./_components/ClassManager";
@@ -17,7 +18,7 @@ export default async function KelasPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Kelas"
+        title={ENTITY_LABELS.CLASS}
         description="Kelola rombongan belajar dan wali kelas"
       />
       <ClassManager

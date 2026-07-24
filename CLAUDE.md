@@ -180,6 +180,16 @@ pnpx prisma generate       # NOT npx prisma generate
 - **API routes:** kebab-case folders (`api/courses/`)
 - **Page-specific:** Add context prefix (`PublicCourseCard`, `DashboardCourseCard`)
 
+### English for Code — STRICTLY FOLLOW
+
+All code identifiers must be English, regardless of the domain being modeled. This applies to Prisma models/fields/enum names/enum values, TypeScript types/interfaces, variables, function names, component names, file names, and API route segments (`src/app/api/**`).
+
+- **Only user-facing, human-readable text stays Indonesian**: JSX text content, toast/error message strings, `placeholder`/`label` props, and the `label` field in `constants.ts` options arrays (e.g. `{ value: "SCOUTING", label: "Kepanduan" }`). Never translate the `value`/`key` side of these pairs.
+- **Admin/dashboard page routes (`src/app/admin/**`, `src/app/guru/**`, `src/app/siswa/**`, etc.) may keep their existing Indonesian URL segments** (`/admin/guru`, `/admin/kelas`, `/admin/mapel`, `/admin/siswa`, `/admin/jadwal`, `/admin/absensi`) — these are established public-facing paths and renaming them is out of scope unless explicitly requested. `src/app/api/\*\*`route segments, by contrast, must be English (e.g.`api/master/teachers`, not `api/master/guru`).
+- **Before writing a new model/field/function/component for an Indonesian-named domain concept, check for the English equivalent already established in this codebase** — e.g. `Teacher` (not `Guru`), `SchoolClass` (not `Kelas`), `Subject` (not `MataPelajaran`/`Mapel`), `Student` (not `Siswa`), `Schedule` (not `Jadwal`), `Session` (not `Sesi`), `LeaveRequest` (not `PengajuanIzin`/`Izin`), `Registration` (not `Pendaftaran`). Reuse the English name; don't introduce a parallel Indonesian-named copy.
+- If you find an existing Indonesian-named identifier, file, or API route while working nearby, rename it to English as part of the change rather than leaving it half-migrated — but do not go out of your way to do a repo-wide sweep unless asked.
+- **Domain-entity display nouns are single-sourced in `ENTITY_LABELS` (`src/lib/constants.ts`)** — e.g. `ENTITY_LABELS.STUDENT` ("Siswa"), `ENTITY_LABELS.TEACHER` ("Guru"), `ENTITY_LABELS.CLASS` ("Kelas"), `ENTITY_LABELS.SUBJECT` ("Mata Pelajaran"). Never hardcode these words as string literals in page titles, sidebar nav, table headers, toggle labels, export headers, or options-array `label` fields — import `ENTITY_LABELS` instead, so a wording change updates every consumer at once. Add a new key here before introducing another core entity noun.
+
 ---
 
 ## Code Standards

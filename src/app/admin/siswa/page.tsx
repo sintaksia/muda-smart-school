@@ -1,4 +1,5 @@
 import { PageHeader } from "../_components/PageHeader";
+import { ENTITY_LABELS } from "@/src/lib/constants";
 import { getStudentList } from "@/src/features/master/services/student";
 import { prisma } from "@/src/lib/prisma";
 import { StudentTable } from "./_components/StudentTable";
@@ -17,7 +18,7 @@ export default async function SiswaPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Siswa"
+        title={ENTITY_LABELS.STUDENT}
         description="Penempatan kelas dan status siswa — akun dibuat dari menu Pendaftaran"
       />
       <StudentTable

@@ -1,5 +1,9 @@
 import { utils, writeFile } from "xlsx";
-import { DAY_OF_WEEK_VALUES, DAY_OF_WEEK_LABELS } from "@/src/lib/constants";
+import {
+  DAY_OF_WEEK_VALUES,
+  DAY_OF_WEEK_LABELS,
+  ENTITY_LABELS,
+} from "@/src/lib/constants";
 import { parseTimeToMinutes } from "./time";
 import type { JadwalEntry } from "./jadwalGrid";
 
@@ -9,9 +13,9 @@ export function buildFlatRows(entries: JadwalEntry[]): string[][] {
     "Hari",
     "Jam Mulai",
     "Jam Selesai",
-    "Kelas",
-    "Mata Pelajaran",
-    "Guru",
+    ENTITY_LABELS.CLASS,
+    ENTITY_LABELS.SUBJECT,
+    ENTITY_LABELS.TEACHER,
   ];
   const dayOrder: Record<string, number> = Object.fromEntries(
     DAY_OF_WEEK_VALUES.map((value, index) => [value, index]),

@@ -1,6 +1,10 @@
 "use client";
 
-import { DAY_OF_WEEK_LABELS, DAY_OF_WEEK_VALUES } from "@/src/lib/constants";
+import {
+  DAY_OF_WEEK_LABELS,
+  DAY_OF_WEEK_VALUES,
+  ENTITY_LABELS,
+} from "@/src/lib/constants";
 import {
   summarizeByEntity,
   type JadwalEntry,
@@ -37,7 +41,7 @@ export function JadwalHeatmap({
         <thead>
           <tr>
             <th className="text-ink-muted w-40 px-3 py-2 text-left text-xs font-medium">
-              {mode === "class" ? "Kelas" : "Guru"}
+              {mode === "class" ? ENTITY_LABELS.CLASS : ENTITY_LABELS.TEACHER}
             </th>
             {DAY_OF_WEEK_VALUES.map((dayOfWeek) => (
               <th
@@ -106,9 +110,12 @@ export function JadwalHeatmap({
         </tbody>
       </table>
       <p className="text-ink-muted border-hairline border-t px-3 py-2 text-xs">
-        Klik nama {mode === "class" ? "kelas" : "guru"} untuk melihat detail
-        grid mingguan. Merah = jadwal bentrok, kuning = ada jam kosong di antara
-        sesi.
+        Klik nama{" "}
+        {mode === "class"
+          ? ENTITY_LABELS.CLASS.toLowerCase()
+          : ENTITY_LABELS.TEACHER.toLowerCase()}{" "}
+        untuk melihat detail grid mingguan. Merah = jadwal bentrok, kuning = ada
+        jam kosong di antara sesi.
       </p>
     </div>
   );

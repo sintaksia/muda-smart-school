@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ENTITY_LABELS } from "@/src/lib/constants";
 import {
   Select,
   SelectContent,
@@ -53,7 +54,8 @@ export function JadwalGridView({
                   : "text-ink-secondary hover:text-ink"
               }`}
             >
-              Per {value === "class" ? "Kelas" : "Guru"}
+              Per{" "}
+              {value === "class" ? ENTITY_LABELS.CLASS : ENTITY_LABELS.TEACHER}
             </button>
           ))}
         </div>
@@ -63,7 +65,8 @@ export function JadwalGridView({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ALL">
-              Ringkasan Semua {mode === "class" ? "Kelas" : "Guru"}
+              Ringkasan Semua{" "}
+              {mode === "class" ? ENTITY_LABELS.CLASS : ENTITY_LABELS.TEACHER}
             </SelectItem>
             {entityOptions.map((option) => (
               <SelectItem key={option.id} value={option.id}>

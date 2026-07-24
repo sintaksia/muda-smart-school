@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ENTITY_LABELS } from "@/src/lib/constants";
 import {
   LayoutDashboard,
   Users,
@@ -130,17 +131,17 @@ const cmsMenuItems = [
 // Manajemen Sekolah
 const managementMenuItems = [
   {
-    title: "Siswa",
+    title: ENTITY_LABELS.STUDENT,
     url: "/admin/siswa",
     icon: Users,
   },
   {
-    title: "Guru",
+    title: ENTITY_LABELS.TEACHER,
     url: "/admin/guru",
     icon: GraduationCap,
   },
   {
-    title: "Kelas",
+    title: ENTITY_LABELS.CLASS,
     url: "/admin/kelas",
     icon: School,
   },
@@ -150,7 +151,7 @@ const managementMenuItems = [
     icon: Calendar,
   },
   {
-    title: "Mata Pelajaran",
+    title: ENTITY_LABELS.SUBJECT,
     url: "/admin/mapel",
     icon: BookOpen,
   },

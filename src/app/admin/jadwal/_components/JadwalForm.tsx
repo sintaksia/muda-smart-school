@@ -20,7 +20,7 @@ import {
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
-import { dayOfWeekOptions } from "@/src/lib/constants";
+import { dayOfWeekOptions, ENTITY_LABELS } from "@/src/lib/constants";
 import {
   scheduleSchema,
   type ScheduleFormData,
@@ -77,17 +77,17 @@ export function JadwalForm({
   const selectFields = [
     {
       name: "classId" as const,
-      label: "Kelas",
+      label: ENTITY_LABELS.CLASS,
       options: toSelectOptions(classOptions),
     },
     {
       name: "subjectId" as const,
-      label: "Mata Pelajaran",
+      label: ENTITY_LABELS.SUBJECT,
       options: toSelectOptions(subjectOptions),
     },
     {
       name: "teacherId" as const,
-      label: "Guru",
+      label: ENTITY_LABELS.TEACHER,
       options: toSelectOptions(teacherOptions),
     },
     { name: "dayOfWeek" as const, label: "Hari", options: dayOfWeekOptions },

@@ -1,4 +1,5 @@
 import { PageHeader } from "../_components/PageHeader";
+import { ENTITY_LABELS } from "@/src/lib/constants";
 import { getSubjectList } from "@/src/features/master/services/subject";
 import { SubjectManager } from "./_components/SubjectManager";
 
@@ -10,7 +11,7 @@ export default async function MapelPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Mata Pelajaran"
+        title={ENTITY_LABELS.SUBJECT}
         description="Kelola daftar mata pelajaran"
       />
       <SubjectManager

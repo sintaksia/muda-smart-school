@@ -1,4 +1,5 @@
 import { PageHeader } from "../_components/PageHeader";
+import { ENTITY_LABELS } from "@/src/lib/constants";
 import { getTeacherList } from "@/src/features/master/services/teacher";
 import { getSubjectList } from "@/src/features/master/services/subject";
 import { TeacherManager } from "./_components/TeacherManager";
@@ -14,7 +15,7 @@ export default async function GuruPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Guru"
+        title={ENTITY_LABELS.TEACHER}
         description="Kelola akun guru dan kualifikasi mata pelajaran"
       />
       <TeacherManager

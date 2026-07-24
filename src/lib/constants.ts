@@ -1,3 +1,17 @@
+import { ROLE_LABELS } from "@/src/features/auth/types";
+
+/**
+ * Single source of truth for the Indonesian display noun of each core
+ * domain entity. Import this instead of hardcoding "Siswa"/"Guru"/"Kelas"/
+ * "Mata Pelajaran" — changing a noun here updates every consumer at once.
+ */
+export const ENTITY_LABELS = {
+  STUDENT: ROLE_LABELS.STUDENT,
+  TEACHER: ROLE_LABELS.TEACHER,
+  CLASS: "Kelas",
+  SUBJECT: "Mata Pelajaran",
+} as const;
+
 export const genderOptions = [
   { value: "MALE", label: "Laki-laki" },
   { value: "FEMALE", label: "Perempuan" },
@@ -179,8 +193,8 @@ export const CREDIT_ENTRY_TYPE_BADGES: Record<
 > = Object.fromEntries(creditEntryTypeOptions.map((o) => [o.value, o.badge]));
 
 export const creditOwnerTypeOptions = [
-  { value: "STUDENT", label: "Siswa" },
-  { value: "TEACHER", label: "Guru" },
+  { value: "STUDENT", label: ENTITY_LABELS.STUDENT },
+  { value: "TEACHER", label: ENTITY_LABELS.TEACHER },
 ] as const;
 
 export const CREDIT_OWNER_TYPE_VALUES = creditOwnerTypeOptions.map(
@@ -246,7 +260,7 @@ export const DAY_OF_WEEK_LABELS: Record<string, string> = Object.fromEntries(
 export const testimonialTypeOptions = [
   { value: "ALUMNI", label: "Alumni", badge: "info" as const },
   { value: "PARENT", label: "Orang Tua", badge: "success" as const },
-  { value: "TEACHER", label: "Guru", badge: "warning" as const },
+  { value: "TEACHER", label: ENTITY_LABELS.TEACHER, badge: "warning" as const },
   { value: "PARTNER", label: "Mitra", badge: "secondary" as const },
 ] as const;
 
