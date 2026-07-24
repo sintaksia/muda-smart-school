@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const galleryCategories = [
-  { value: "FASILITAS", label: "Fasilitas" },
-  { value: "KEGIATAN", label: "Kegiatan" },
-  { value: "PRESTASI", label: "Prestasi" },
-  { value: "EKSKUL", label: "Ekskul" },
-  { value: "LAINNYA", label: "Lainnya" },
+  { value: "FACILITIES", label: "Fasilitas" },
+  { value: "ACTIVITIES", label: "Kegiatan" },
+  { value: "ACHIEVEMENTS", label: "Prestasi" },
+  { value: "EXTRACURRICULAR", label: "Ekskul" },
+  { value: "OTHER", label: "Lainnya" },
 ] as const;
 
 const galleryCategoryValues = galleryCategories.map((c) => c.value) as [

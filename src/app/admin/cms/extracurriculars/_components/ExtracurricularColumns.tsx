@@ -15,21 +15,21 @@ const getCategoryLabel = (category: string): string => {
 
 const getCategoryColor = (category: string): string => {
   switch (category) {
-    case "ORGANISASI":
+    case "ORGANIZATION":
       return "bg-primary-100 text-primary-700";
-    case "KEPANDUAN":
+    case "SCOUTING":
       return "bg-green-100 text-green-700";
-    case "BELADIRI":
+    case "MARTIAL_ARTS":
       return "bg-red-100 text-red-700";
-    case "OLAHRAGA":
+    case "SPORTS":
       return "bg-blue-100 text-blue-700";
-    case "SENI":
+    case "ARTS":
       return "bg-purple-100 text-purple-700";
-    case "AKADEMIK":
+    case "ACADEMIC":
       return "bg-yellow-100 text-yellow-700";
-    case "KEAGAMAAN":
+    case "RELIGIOUS":
       return "bg-emerald-100 text-emerald-700";
-    case "LAINNYA":
+    case "OTHER":
       return "bg-gray-100 text-gray-700";
     default:
       return "bg-gray-100 text-gray-700";

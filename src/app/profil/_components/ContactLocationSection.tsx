@@ -6,7 +6,7 @@ import { getSettingsMap } from "@/src/features/cms/services/school-settings";
 
 export default async function ContactLocationSection() {
   const [locationImage, contacts, socialLinks, settings] = await Promise.all([
-    getGalleryByCategory("FASILITAS"),
+    getGalleryByCategory("FACILITIES"),
     getActiveContacts(),
     getActiveSocialLinks(),
     getSettingsMap([

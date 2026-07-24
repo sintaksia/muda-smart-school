@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default async function LocationInfo() {
   const [locationImage, contacts, socialLinks, settings] = await Promise.all([
-    getGalleryByCategory("FASILITAS"),
+    getGalleryByCategory("FACILITIES"),
     getActiveContacts(),
     getActiveSocialLinks(),
     getSettingsMap([

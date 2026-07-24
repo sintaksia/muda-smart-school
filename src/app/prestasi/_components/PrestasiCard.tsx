@@ -10,7 +10,7 @@ export default function PrestasiCard({ achievement }: PrestasiCardProps) {
   const getMedalInfo = (medalType: string | null) => {
     switch (medalType) {
       case "GOLD":
-      case "JUARA_1":
+      case "FIRST_PLACE":
         return {
           icon: Trophy,
           bgColor: "bg-gradient-to-br from-yellow-400 to-amber-500",
@@ -19,7 +19,7 @@ export default function PrestasiCard({ achievement }: PrestasiCardProps) {
           cardBg: "bg-yellow-50",
         };
       case "SILVER":
-      case "JUARA_2":
+      case "SECOND_PLACE":
         return {
           icon: medalType === "SILVER" ? Medal : Trophy,
           bgColor: "bg-gradient-to-br from-gray-300 to-gray-400",
@@ -28,7 +28,7 @@ export default function PrestasiCard({ achievement }: PrestasiCardProps) {
           cardBg: "bg-gray-50",
         };
       case "BRONZE":
-      case "JUARA_3":
+      case "THIRD_PLACE":
         return {
           icon: medalType === "BRONZE" ? Medal : Trophy,
           bgColor: "bg-gradient-to-br from-orange-400 to-orange-500",
@@ -36,9 +36,9 @@ export default function PrestasiCard({ achievement }: PrestasiCardProps) {
           borderColor: "border-orange-300",
           cardBg: "bg-orange-50",
         };
-      case "HARAPAN_1":
-      case "HARAPAN_2":
-      case "HARAPAN_3":
+      case "HONORABLE_MENTION_1":
+      case "HONORABLE_MENTION_2":
+      case "HONORABLE_MENTION_3":
         return {
           icon: Award,
           bgColor: "bg-gradient-to-br from-primary-400 to-primary-500",
@@ -92,9 +92,9 @@ export default function PrestasiCard({ achievement }: PrestasiCardProps) {
             <div className="flex items-center gap-2 flex-wrap">
               <span
                 className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  achievement.level === "NASIONAL"
+                  achievement.level === "NATIONAL"
                     ? "bg-red-100 text-red-700"
-                    : achievement.level === "PROVINSI"
+                    : achievement.level === "PROVINCE"
                       ? "bg-blue-100 text-blue-700"
                       : "bg-green-100 text-green-700"
                 }`}

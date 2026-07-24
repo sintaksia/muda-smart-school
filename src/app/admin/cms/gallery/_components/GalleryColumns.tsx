@@ -16,15 +16,15 @@ const getCategoryLabel = (category: string) => {
 
 const getCategoryColor = (category: string) => {
   switch (category) {
-    case "FASILITAS":
+    case "FACILITIES":
       return "bg-primary-100 text-primary-700";
-    case "KEGIATAN":
+    case "ACTIVITIES":
       return "bg-green-100 text-green-700";
-    case "PRESTASI":
+    case "ACHIEVEMENTS":
       return "bg-yellow-100 text-yellow-700";
-    case "EKSKUL":
+    case "EXTRACURRICULAR":
       return "bg-purple-100 text-purple-700";
-    case "LAINNYA":
+    case "OTHER":
       return "bg-gray-100 text-gray-700";
     default:
       return "bg-gray-100 text-gray-700";

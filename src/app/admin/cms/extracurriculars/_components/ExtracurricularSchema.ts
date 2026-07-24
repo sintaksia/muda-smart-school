@@ -1,14 +1,14 @@
 import { z } from "zod";
 
 export const ekskulCategories = [
-  { value: "ORGANISASI", label: "Organisasi" },
-  { value: "KEPANDUAN", label: "Kepanduan" },
-  { value: "BELADIRI", label: "Beladiri" },
-  { value: "OLAHRAGA", label: "Olahraga" },
-  { value: "SENI", label: "Seni" },
-  { value: "AKADEMIK", label: "Akademik" },
-  { value: "KEAGAMAAN", label: "Keagamaan" },
-  { value: "LAINNYA", label: "Lainnya" },
+  { value: "ORGANIZATION", label: "Organisasi" },
+  { value: "SCOUTING", label: "Kepanduan" },
+  { value: "MARTIAL_ARTS", label: "Beladiri" },
+  { value: "SPORTS", label: "Olahraga" },
+  { value: "ARTS", label: "Seni" },
+  { value: "ACADEMIC", label: "Akademik" },
+  { value: "RELIGIOUS", label: "Keagamaan" },
+  { value: "OTHER", label: "Lainnya" },
 ] as const;
 
 const ekskulCategoryValues = ekskulCategories.map((c) => c.value) as [

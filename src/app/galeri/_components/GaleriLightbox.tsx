@@ -6,11 +6,11 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Gallery } from "@/src/features/cms/services/gallery";
 
 const categoryLabels: Record<string, string> = {
-  FASILITAS: "Fasilitas",
-  KEGIATAN: "Kegiatan",
-  PRESTASI: "Prestasi",
-  EKSKUL: "Ekskul",
-  LAINNYA: "Lainnya",
+  FACILITIES: "Fasilitas",
+  ACTIVITIES: "Kegiatan",
+  ACHIEVEMENTS: "Prestasi",
+  EXTRACURRICULAR: "Ekskul",
+  OTHER: "Lainnya",
 };
 
 interface GaleriLightboxProps {

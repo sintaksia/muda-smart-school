@@ -8,27 +8,27 @@ import GaleriLightbox from "./GaleriLightbox";
 
 type CategoryFilter =
   | "SEMUA"
-  | "FASILITAS"
-  | "KEGIATAN"
-  | "PRESTASI"
-  | "EKSKUL"
-  | "LAINNYA";
+  | "FACILITIES"
+  | "ACTIVITIES"
+  | "ACHIEVEMENTS"
+  | "EXTRACURRICULAR"
+  | "OTHER";
 
 const categories: { value: CategoryFilter; label: string }[] = [
   { value: "SEMUA", label: "Semua" },
-  { value: "FASILITAS", label: "Fasilitas" },
-  { value: "KEGIATAN", label: "Kegiatan" },
-  { value: "PRESTASI", label: "Prestasi" },
-  { value: "EKSKUL", label: "Ekskul" },
-  { value: "LAINNYA", label: "Lainnya" },
+  { value: "FACILITIES", label: "Fasilitas" },
+  { value: "ACTIVITIES", label: "Kegiatan" },
+  { value: "ACHIEVEMENTS", label: "Prestasi" },
+  { value: "EXTRACURRICULAR", label: "Ekskul" },
+  { value: "OTHER", label: "Lainnya" },
 ];
 
 const categoryLabels: Record<string, string> = {
-  FASILITAS: "Fasilitas",
-  KEGIATAN: "Kegiatan",
-  PRESTASI: "Prestasi",
-  EKSKUL: "Ekskul",
-  LAINNYA: "Lainnya",
+  FACILITIES: "Fasilitas",
+  ACTIVITIES: "Kegiatan",
+  ACHIEVEMENTS: "Prestasi",
+  EXTRACURRICULAR: "Ekskul",
+  OTHER: "Lainnya",
 };
 
 interface GaleriGallerySectionProps {

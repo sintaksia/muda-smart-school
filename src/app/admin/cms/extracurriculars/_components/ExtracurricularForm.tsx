@@ -62,7 +62,7 @@ export function ExtracurricularForm({
     defaultValues: {
       name: "",
       description: "",
-      category: "LAINNYA",
+      category: "OTHER",
       icon: "",
       image: "",
       order: 0,

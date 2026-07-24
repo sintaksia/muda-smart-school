@@ -7,7 +7,7 @@ import type { Achievement } from "@/src/features/cms/services/achievements";
 export default async function AwardsSection() {
   const achievements: Achievement[] = await getHighlightedAchievements(5);
   const goldCount = achievements.filter(
-    (a: Achievement) => a.medalType === "GOLD" || a.medalType === "JUARA_1",
+    (a: Achievement) => a.medalType === "GOLD" || a.medalType === "FIRST_PLACE",
   ).length;
   const achievementsWithImage = achievements.filter(
     (a: Achievement) => a.image,
@@ -55,7 +55,7 @@ export default async function AwardsSection() {
             {achievements.map((achievement) => {
               const isGold =
                 achievement.medalType === "GOLD" ||
-                achievement.medalType === "JUARA_1";
+                achievement.medalType === "FIRST_PLACE";
               return (
                 <div
                   key={achievement.id}
@@ -97,7 +97,7 @@ export default async function AwardsSection() {
                       </h3>
                       <span
                         className={`text-[10px] ${
-                          achievement.level === "NASIONAL"
+                          achievement.level === "NATIONAL"
                             ? "bg-red-500/20 text-red-400"
                             : "bg-blue-500/20 text-blue-400"
                         } px-2 py-0.5 rounded-full font-bold`}

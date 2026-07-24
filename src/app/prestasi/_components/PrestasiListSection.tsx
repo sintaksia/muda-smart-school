@@ -19,13 +19,13 @@ export default function PrestasiListSection({
   }
 
   const juara1Count = achievements.filter(
-    (a) => a.medalType === "GOLD" || a.medalType === "JUARA_1",
+    (a) => a.medalType === "GOLD" || a.medalType === "FIRST_PLACE",
   ).length;
   const juara2Count = achievements.filter(
-    (a) => a.medalType === "SILVER" || a.medalType === "JUARA_2",
+    (a) => a.medalType === "SILVER" || a.medalType === "SECOND_PLACE",
   ).length;
   const juara3Count = achievements.filter(
-    (a) => a.medalType === "BRONZE" || a.medalType === "JUARA_3",
+    (a) => a.medalType === "BRONZE" || a.medalType === "THIRD_PLACE",
   ).length;
 
   return (

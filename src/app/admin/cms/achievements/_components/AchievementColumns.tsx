@@ -26,15 +26,15 @@ const getMedalColor = (medalType: string | null) => {
       return "text-gray-600 bg-gray-100";
     case "BRONZE":
       return "text-orange-700 bg-orange-100";
-    case "JUARA_1":
+    case "FIRST_PLACE":
       return "text-yellow-700 bg-yellow-100";
-    case "JUARA_2":
+    case "SECOND_PLACE":
       return "text-gray-700 bg-gray-100";
-    case "JUARA_3":
+    case "THIRD_PLACE":
       return "text-orange-700 bg-orange-100";
-    case "HARAPAN_1":
-    case "HARAPAN_2":
-    case "HARAPAN_3":
+    case "HONORABLE_MENTION_1":
+    case "HONORABLE_MENTION_2":
+    case "HONORABLE_MENTION_3":
       return "text-primary-700 bg-primary-100";
     default:
       return "";
@@ -43,17 +43,17 @@ const getMedalColor = (medalType: string | null) => {
 
 const getLevelColor = (level: string) => {
   switch (level) {
-    case "INTERNASIONAL":
+    case "INTERNATIONAL":
       return "bg-primary-100 text-primary-700";
-    case "NASIONAL":
+    case "NATIONAL":
       return "bg-green-100 text-green-700";
-    case "PROVINSI":
+    case "PROVINCE":
       return "bg-blue-100 text-blue-700";
-    case "KOTA":
+    case "CITY":
       return "bg-purple-100 text-purple-700";
-    case "KECAMATAN":
+    case "DISTRICT":
       return "bg-orange-100 text-orange-700";
-    case "SEKOLAH":
+    case "SCHOOL":
       return "bg-gray-100 text-gray-700";
     default:
       return "bg-gray-100 text-gray-700";

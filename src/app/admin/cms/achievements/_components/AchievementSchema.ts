@@ -1,24 +1,24 @@
 import { z } from "zod";
 
 export const achievementLevels = [
-  { value: "INTERNASIONAL", label: "Internasional" },
-  { value: "NASIONAL", label: "Nasional" },
-  { value: "PROVINSI", label: "Provinsi" },
-  { value: "KOTA", label: "Kota/Kabupaten" },
-  { value: "KECAMATAN", label: "Kecamatan" },
-  { value: "SEKOLAH", label: "Sekolah" },
+  { value: "INTERNATIONAL", label: "Internasional" },
+  { value: "NATIONAL", label: "Nasional" },
+  { value: "PROVINCE", label: "Provinsi" },
+  { value: "CITY", label: "Kota/Kabupaten" },
+  { value: "DISTRICT", label: "Kecamatan" },
+  { value: "SCHOOL", label: "Sekolah" },
 ] as const;
 
 export const medalTypes = [
   { value: "GOLD", label: "Medali Emas" },
   { value: "SILVER", label: "Medali Perak" },
   { value: "BRONZE", label: "Medali Perunggu" },
-  { value: "JUARA_1", label: "Juara 1" },
-  { value: "JUARA_2", label: "Juara 2" },
-  { value: "JUARA_3", label: "Juara 3" },
-  { value: "HARAPAN_1", label: "Harapan 1" },
-  { value: "HARAPAN_2", label: "Harapan 2" },
-  { value: "HARAPAN_3", label: "Harapan 3" },
+  { value: "FIRST_PLACE", label: "Juara 1" },
+  { value: "SECOND_PLACE", label: "Juara 2" },
+  { value: "THIRD_PLACE", label: "Juara 3" },
+  { value: "HONORABLE_MENTION_1", label: "Harapan 1" },
+  { value: "HONORABLE_MENTION_2", label: "Harapan 2" },
+  { value: "HONORABLE_MENTION_3", label: "Harapan 3" },
 ] as const;
 
 const achievementLevelValues = achievementLevels.map((l) => l.value) as [

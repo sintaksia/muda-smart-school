@@ -58,7 +58,7 @@ export function GalleryForm({ defaultValues, galleryId }: GalleryFormProps) {
       title: "",
       description: null,
       image: "",
-      category: "LAINNYA",
+      category: "OTHER",
       order: 0,
       isActive: true,
       ...defaultValues,

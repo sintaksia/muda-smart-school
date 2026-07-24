@@ -60,7 +60,7 @@ export function AchievementForm({
     defaultValues: {
       title: "",
       event: "",
-      level: "NASIONAL",
+      level: "NATIONAL",
       medalType: null,
       year: new Date().getFullYear(),
       image: "",
