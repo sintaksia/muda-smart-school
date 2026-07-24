@@ -17,11 +17,11 @@ export interface GuruRow {
 }
 
 interface GuruManagerProps {
-  guruList: GuruRow[];
-  mapelOptions: { id: string; name: string }[];
+  teacherList: GuruRow[];
+  subjectOptions: { id: string; name: string }[];
 }
 
-export function GuruManager({ guruList, mapelOptions }: GuruManagerProps) {
+export function GuruManager({ teacherList, subjectOptions }: GuruManagerProps) {
   const [formOpen, setFormOpen] = useState<boolean>(false);
 
   return (
@@ -39,7 +39,7 @@ export function GuruManager({ guruList, mapelOptions }: GuruManagerProps) {
       <GuruForm
         open={formOpen}
         onOpenChange={setFormOpen}
-        mapelOptions={mapelOptions}
+        subjectOptions={subjectOptions}
       />
 
       <section className="border-hairline rounded-card border bg-white">
@@ -55,27 +55,29 @@ export function GuruManager({ guruList, mapelOptions }: GuruManagerProps) {
               </tr>
             </thead>
             <tbody>
-              {guruList.map((guru) => (
+              {teacherList.map((teacher) => (
                 <tr
-                  key={guru.id}
+                  key={teacher.id}
                   className="border-hairline border-b last:border-b-0"
                 >
                   <td className="px-5 py-3">
-                    <p className="text-ink font-semibold">{guru.name}</p>
-                    {guru.nip && (
+                    <p className="text-ink font-semibold">{teacher.name}</p>
+                    {teacher.nip && (
                       <p className="text-ink-muted text-xs tabular-nums">
-                        NIP {guru.nip}
+                        NIP {teacher.nip}
                       </p>
                     )}
                   </td>
-                  <td className="text-ink-secondary px-4 py-3">{guru.email}</td>
                   <td className="text-ink-secondary px-4 py-3">
-                    {EMPLOYMENT_STATUS_LABELS[guru.employmentStatus]}
+                    {teacher.email}
+                  </td>
+                  <td className="text-ink-secondary px-4 py-3">
+                    {EMPLOYMENT_STATUS_LABELS[teacher.employmentStatus]}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex max-w-64 flex-wrap gap-1">
-                      {guru.subjects.length > 0 ? (
-                        guru.subjects.map((name) => (
+                      {teacher.subjects.length > 0 ? (
+                        teacher.subjects.map((name) => (
                           <span
                             key={name}
                             className="bg-brand-50 text-brand rounded-full px-2.5 py-0.5 text-xs font-medium"
@@ -91,11 +93,11 @@ export function GuruManager({ guruList, mapelOptions }: GuruManagerProps) {
                     </div>
                   </td>
                   <td className="text-ink-secondary px-4 py-3">
-                    {guru.homeroomClasses.join(", ") || "—"}
+                    {teacher.homeroomClasses.join(", ") || "—"}
                   </td>
                 </tr>
               ))}
-              {guruList.length === 0 && (
+              {teacherList.length === 0 && (
                 <tr>
                   <td
                     colSpan={5}

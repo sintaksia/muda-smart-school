@@ -1,11 +1,11 @@
 import { PageHeader } from "../_components/PageHeader";
-import { getMapelList } from "@/src/features/master/services/mapel";
+import { getSubjectList } from "@/src/features/master/services/mapel";
 import { MapelManager } from "./_components/MapelManager";
 
 export const dynamic = "force-dynamic";
 
 export default async function MapelPage() {
-  const mapelList = await getMapelList();
+  const subjectList = await getSubjectList();
 
   return (
     <div className="space-y-6">
@@ -14,14 +14,14 @@ export default async function MapelPage() {
         description="Kelola daftar mata pelajaran"
       />
       <MapelManager
-        mapelList={mapelList.map((mapel) => ({
-          id: mapel.id,
-          name: mapel.name,
-          code: mapel.code,
-          specialization: mapel.specialization,
-          gradeLevel: mapel.gradeLevel,
-          jumlahGuru: mapel._count.teacherSubjects,
-          jumlahJadwal: mapel._count.schedules,
+        subjectList={subjectList.map((subject) => ({
+          id: subject.id,
+          name: subject.name,
+          code: subject.code,
+          specialization: subject.specialization,
+          gradeLevel: subject.gradeLevel,
+          jumlahGuru: subject._count.teacherSubjects,
+          jumlahJadwal: subject._count.schedules,
         }))}
       />
     </div>

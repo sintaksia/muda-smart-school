@@ -39,8 +39,8 @@ function mockSesi(overrides: {
     scheduleId: "jadwal-1",
     date,
     status: overrides.status ?? "CLOSED",
-    jadwal: {
-      kelas: { students: overrides.students ?? [] },
+    schedule: {
+      schoolClass: { students: overrides.students ?? [] },
     },
     studentAttendance: overrides.absensi ?? [],
   } as unknown as Session);

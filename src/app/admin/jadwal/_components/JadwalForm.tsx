@@ -30,20 +30,20 @@ import { JadwalSelectField } from "./JadwalSelectField";
 interface JadwalFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  kelasOptions: { id: string; nama: string }[];
-  mapelOptions: { id: string; nama: string }[];
-  guruOptions: { id: string; nama: string }[];
+  classOptions: { id: string; name: string }[];
+  subjectOptions: { id: string; name: string }[];
+  teacherOptions: { id: string; name: string }[];
 }
 
-const toSelectOptions = (items: { id: string; nama: string }[]) =>
-  items.map((item) => ({ value: item.id, label: item.nama }));
+const toSelectOptions = (items: { id: string; name: string }[]) =>
+  items.map((item) => ({ value: item.id, label: item.name }));
 
 export function JadwalForm({
   open,
   onOpenChange,
-  kelasOptions,
-  mapelOptions,
-  guruOptions,
+  classOptions,
+  subjectOptions,
+  teacherOptions,
 }: JadwalFormProps) {
   const router = useRouter();
   const form = useForm<JadwalFormData>({
@@ -78,17 +78,17 @@ export function JadwalForm({
     {
       name: "classId" as const,
       label: "Kelas",
-      options: toSelectOptions(kelasOptions),
+      options: toSelectOptions(classOptions),
     },
     {
       name: "subjectId" as const,
       label: "Mata Pelajaran",
-      options: toSelectOptions(mapelOptions),
+      options: toSelectOptions(subjectOptions),
     },
     {
       name: "teacherId" as const,
       label: "Guru",
-      options: toSelectOptions(guruOptions),
+      options: toSelectOptions(teacherOptions),
     },
     { name: "dayOfWeek" as const, label: "Hari", options: dayOfWeekOptions },
   ];

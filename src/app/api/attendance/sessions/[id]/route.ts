@@ -44,21 +44,22 @@ async function authorizeSessionAccess(
   if (canAccessAdmin(currentUser.role)) {
     return { status: 200 };
   }
-  const guru = await prisma.teacher.findUnique({
+  const teacher = await prisma.teacher.findUnique({
     where: { userId: currentUser.id },
   });
-  if (!guru) {
+  if (!teacher) {
     return { status: 403, error: "Unauthorized" };
   }
   const session = await prisma.session.findUnique({
     where: { id: sesiId },
-    include: { jadwal: { select: { teacherId: true } } },
+    include: { schedule: { select: { teacherId: true } } },
   });
   if (!session) {
     return { status: 404, error: "Sesi tidak ditemukan" };
   }
   const isOwner =
-    session.jadwal.teacherId === guru.id || session.actualTeacherId === guru.id;
+    session.schedule.teacherId === teacher.id ||
+    session.actualTeacherId === teacher.id;
   return isOwner ? { status: 200 } : { status: 403, error: "Unauthorized" };
 }
 
@@ -74,9 +75,9 @@ export async function GET(request: Request, { params }: RouteParams) {
     const session = await prisma.session.findUnique({
       where: { id },
       include: {
-        jadwal: {
+        schedule: {
           include: {
-            kelas: {
+            schoolClass: {
               include: {
                 students: {
                   where: { status: "AKTIF" },
@@ -85,7 +86,7 @@ export async function GET(request: Request, { params }: RouteParams) {
                 },
               },
             },
-            mataPelajaran: { select: { name: true } },
+            subject: { select: { name: true } },
           },
         },
         studentAttendance: true,

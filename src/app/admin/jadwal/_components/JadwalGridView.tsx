@@ -15,21 +15,21 @@ import { JadwalHeatmap } from "./JadwalHeatmap";
 interface JadwalGridViewProps {
   entries: JadwalEntry[];
   conflictIds: Set<string>;
-  kelasOptions: { id: string; nama: string }[];
-  guruOptions: { id: string; nama: string }[];
+  classOptions: { id: string; name: string }[];
+  teacherOptions: { id: string; name: string }[];
 }
 
 export function JadwalGridView({
   entries,
   conflictIds,
-  kelasOptions,
-  guruOptions,
+  classOptions,
+  teacherOptions,
 }: JadwalGridViewProps) {
-  const [mode, setMode] = useState<"kelas" | "guru">("kelas");
+  const [mode, setMode] = useState<"class" | "teacher">("class");
   const [entityId, setEntityId] = useState<string>("ALL");
 
-  const entityOptions = mode === "kelas" ? kelasOptions : guruOptions;
-  const entityKey = mode === "kelas" ? "classId" : "teacherId";
+  const entityOptions = mode === "class" ? classOptions : teacherOptions;
+  const entityKey = mode === "class" ? "classId" : "teacherId";
   const entityEntries =
     entityId === "ALL"
       ? entries
@@ -39,7 +39,7 @@ export function JadwalGridView({
     <div className="border-hairline rounded-card border bg-white">
       <div className="border-hairline flex flex-wrap items-center gap-3 border-b px-5 py-4">
         <div className="border-hairline flex overflow-hidden rounded-full border text-sm font-medium">
-          {(["kelas", "guru"] as const).map((value) => (
+          {(["class", "teacher"] as const).map((value) => (
             <button
               key={value}
               type="button"
@@ -53,7 +53,7 @@ export function JadwalGridView({
                   : "text-ink-secondary hover:text-ink"
               }`}
             >
-              Per {value === "kelas" ? "Kelas" : "Guru"}
+              Per {value === "class" ? "Kelas" : "Guru"}
             </button>
           ))}
         </div>
@@ -63,11 +63,11 @@ export function JadwalGridView({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ALL">
-              Ringkasan Semua {mode === "kelas" ? "Kelas" : "Guru"}
+              Ringkasan Semua {mode === "class" ? "Kelas" : "Guru"}
             </SelectItem>
             {entityOptions.map((option) => (
               <SelectItem key={option.id} value={option.id}>
-                {option.nama}
+                {option.name}
               </SelectItem>
             ))}
           </SelectContent>

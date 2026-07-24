@@ -32,16 +32,16 @@ export async function GET(request: Request) {
     const records = await prisma.teacherAttendance.findMany({
       where,
       include: {
-        guru: { select: { id: true, user: { select: { name: true } } } },
-        substituteGuru: {
+        teacher: { select: { id: true, user: { select: { name: true } } } },
+        substituteTeacher: {
           select: { id: true, user: { select: { name: true } } },
         },
-        jadwal: {
+        schedule: {
           select: {
             startTime: true,
             endTime: true,
-            kelas: { select: { name: true } },
-            mataPelajaran: { select: { name: true } },
+            schoolClass: { select: { name: true } },
+            subject: { select: { name: true } },
           },
         },
       },
@@ -77,10 +77,10 @@ export async function POST(request: Request) {
     let teacherId = result.data.teacherId;
     if (!canAccessAdmin(currentUser.role)) {
       // Self-report path: teachers may only report themselves (not Alpa).
-      const guru = await prisma.teacher.findUnique({
+      const teacher = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
-      if (!guru || currentUser.role !== "TEACHER") {
+      if (!teacher || currentUser.role !== "TEACHER") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
       if (result.data.status === "ABSENT") {
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
           { status: 403 },
         );
       }
-      teacherId = guru.id;
+      teacherId = teacher.id;
     } else if (!teacherId) {
       return NextResponse.json(
         { error: "guruId wajib diisi" },

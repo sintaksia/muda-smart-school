@@ -27,7 +27,7 @@ export async function openSession(
   const schedule = await prisma.schedule.findUnique({
     where: { id: scheduleId },
     include: {
-      kelas: { include: { students: { where: { status: "AKTIF" } } } },
+      schoolClass: { include: { students: { where: { status: "AKTIF" } } } },
     },
   });
   if (!schedule || !schedule.isActive) {
@@ -64,7 +64,7 @@ export async function openSession(
     const session = await prisma.session.create({
       data: { scheduleId, date, status: "NO_CLASS" },
     });
-    const studentUserIds = schedule.kelas.students.map(
+    const studentUserIds = schedule.schoolClass.students.map(
       (student) => student.userId,
     );
     const waliUserId = await getWaliKelasUserId(schedule.classId);
@@ -149,14 +149,14 @@ export async function autoCloseDueSessions(
   const settings = await getAttendanceSettings();
   const openSessions = await prisma.session.findMany({
     where: { status: "OPEN" },
-    include: { jadwal: { select: { endTime: true } } },
+    include: { schedule: { select: { endTime: true } } },
   });
 
   let closed = 0;
   for (const session of openSessions) {
     const dateISO = session.date.toISOString().slice(0, 10);
     const cutoff = new Date(
-      wibInstant(dateISO, session.jadwal.endTime).getTime() +
+      wibInstant(dateISO, session.schedule.endTime).getTime() +
         settings.sessionGracePeriodMinutes * 60 * 1000,
     );
     if (now > cutoff) {

@@ -5,17 +5,17 @@ import { TeacherAbsenceManager } from "./_components/TeacherAbsenceManager";
 export const dynamic = "force-dynamic";
 
 export default async function TeacherAbsencePage() {
-  const [records, guruList] = await Promise.all([
+  const [records, teacherList] = await Promise.all([
     prisma.teacherAttendance.findMany({
       include: {
-        guru: { select: { user: { select: { name: true } } } },
-        substituteGuru: { select: { user: { select: { name: true } } } },
-        jadwal: {
+        teacher: { select: { user: { select: { name: true } } } },
+        substituteTeacher: { select: { user: { select: { name: true } } } },
+        schedule: {
           select: {
             startTime: true,
             endTime: true,
-            kelas: { select: { name: true } },
-            mataPelajaran: { select: { name: true } },
+            schoolClass: { select: { name: true } },
+            subject: { select: { name: true } },
           },
         },
       },
@@ -37,15 +37,18 @@ export default async function TeacherAbsencePage() {
       <TeacherAbsenceManager
         records={records.map((record) => ({
           id: record.id,
-          guru: record.guru.user.name,
-          tanggal: record.date.toISOString().slice(0, 10),
+          teacherName: record.teacher.user.name,
+          date: record.date.toISOString().slice(0, 10),
           status: record.status,
-          kelas: record.jadwal.kelas.name,
-          mapel: record.jadwal.mataPelajaran.name,
-          jam: `${record.jadwal.startTime}–${record.jadwal.endTime}`,
-          substitute: record.substituteGuru?.user.name ?? null,
+          className: record.schedule.schoolClass.name,
+          subjectName: record.schedule.subject.name,
+          time: `${record.schedule.startTime}–${record.schedule.endTime}`,
+          substitute: record.substituteTeacher?.user.name ?? null,
         }))}
-        guruOptions={guruList.map((g) => ({ id: g.id, nama: g.user.name }))}
+        teacherOptions={teacherList.map((t) => ({
+          id: t.id,
+          name: t.user.name,
+        }))}
       />
     </div>
   );

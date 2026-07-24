@@ -3,7 +3,7 @@ import { createUser } from "@/src/features/auth/services/users";
 import type { Teacher } from "@prisma/client";
 import type { CreateTeacherInput, UpdateTeacherInput } from "../types";
 
-export async function getGuruList() {
+export async function getTeacherList() {
   return prisma.teacher.findMany({
     include: {
       user: { select: { name: true, email: true, status: true } },
@@ -20,10 +20,10 @@ export async function getGuruList() {
  * Create a teacher account (Supabase Auth + User + Teacher) with subject
  * qualifications (TeacherSubject mapping used by Process 0 validation).
  */
-export async function createGuru(
+export async function createTeacher(
   input: CreateTeacherInput,
   createdById?: string,
-): Promise<{ guru: Teacher | null; error: string | null }> {
+): Promise<{ teacher: Teacher | null; error: string | null }> {
   const { user, error: userError } = await createUser(
     {
       email: input.email,
@@ -35,10 +35,10 @@ export async function createGuru(
     createdById,
   );
   if (userError || !user) {
-    return { guru: null, error: userError || "Gagal membuat akun user" };
+    return { teacher: null, error: userError || "Gagal membuat akun user" };
   }
 
-  const guru = await prisma.teacher.create({
+  const teacher = await prisma.teacher.create({
     data: {
       userId: user.id,
       nip: input.nip || null,
@@ -56,19 +56,19 @@ export async function createGuru(
       },
     },
   });
-  return { guru, error: null };
+  return { teacher, error: null };
 }
 
-export async function updateGuru(
+export async function updateTeacher(
   id: string,
   input: UpdateTeacherInput,
-): Promise<{ guru: Teacher | null; error: string | null }> {
+): Promise<{ teacher: Teacher | null; error: string | null }> {
   const existing = await prisma.teacher.findUnique({ where: { id } });
   if (!existing) {
-    return { guru: null, error: "Guru tidak ditemukan" };
+    return { teacher: null, error: "Guru tidak ditemukan" };
   }
 
-  const guru = await prisma.teacher.update({
+  const teacher = await prisma.teacher.update({
     where: { id },
     data: {
       nip: input.nip !== undefined ? input.nip || null : undefined,
@@ -88,5 +88,5 @@ export async function updateGuru(
       })),
     });
   }
-  return { guru, error: null };
+  return { teacher, error: null };
 }

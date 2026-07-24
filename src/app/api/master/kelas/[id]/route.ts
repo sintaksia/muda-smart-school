@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { updateKelas, deleteKelas } from "@/src/features/master/services/kelas";
+import { updateClass, deleteClass } from "@/src/features/master/services/kelas";
 import { kelasSchema } from "../KelasSchema";
 
 interface RouteParams {
@@ -24,14 +24,14 @@ export async function PUT(request: Request, { params }: RouteParams) {
         { status: 400 },
       );
     }
-    const { kelas, error } = await updateKelas(id, result.data);
-    if (error || !kelas) {
+    const { schoolClass, error } = await updateClass(id, result.data);
+    if (error || !schoolClass) {
       return NextResponse.json(
         { error: error ?? "Gagal memperbarui kelas" },
         { status: 400 },
       );
     }
-    return NextResponse.json(kelas);
+    return NextResponse.json(schoolClass);
   } catch (err: unknown) {
     console.error("Update kelas error:", err);
     return NextResponse.json(
@@ -49,7 +49,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     if (!currentUser || !canAccessAdmin(currentUser.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
-    const { ok, error } = await deleteKelas(id);
+    const { ok, error } = await deleteClass(id);
     if (!ok) {
       return NextResponse.json(
         { error: error ?? "Gagal menghapus kelas" },

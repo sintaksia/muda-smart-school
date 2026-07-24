@@ -2,48 +2,48 @@ import { prisma } from "@/src/lib/prisma";
 import type { Subject } from "@prisma/client";
 import type { SubjectInput } from "../types";
 
-export async function getMapelList() {
+export async function getSubjectList() {
   return prisma.subject.findMany({
     include: { _count: { select: { teacherSubjects: true, schedules: true } } },
     orderBy: { name: "asc" },
   });
 }
 
-export async function createMapel(
+export async function createSubject(
   input: SubjectInput,
-): Promise<{ mapel: Subject | null; error: string | null }> {
+): Promise<{ subject: Subject | null; error: string | null }> {
   const existing = await prisma.subject.findUnique({
     where: { code: input.code },
   });
   if (existing) {
-    return { mapel: null, error: "Kode mapel sudah digunakan" };
+    return { subject: null, error: "Kode mapel sudah digunakan" };
   }
-  const mapel = await prisma.subject.create({ data: input });
-  return { mapel, error: null };
+  const subject = await prisma.subject.create({ data: input });
+  return { subject, error: null };
 }
 
-export async function updateMapel(
+export async function updateSubject(
   id: string,
   input: SubjectInput,
-): Promise<{ mapel: Subject | null; error: string | null }> {
+): Promise<{ subject: Subject | null; error: string | null }> {
   const existing = await prisma.subject.findUnique({ where: { id } });
   if (!existing) {
-    return { mapel: null, error: "Mapel tidak ditemukan" };
+    return { subject: null, error: "Mapel tidak ditemukan" };
   }
   const duplicate = await prisma.subject.findUnique({
     where: { code: input.code },
   });
   if (duplicate && duplicate.id !== id) {
-    return { mapel: null, error: "Kode mapel sudah digunakan" };
+    return { subject: null, error: "Kode mapel sudah digunakan" };
   }
-  const mapel = await prisma.subject.update({
+  const subject = await prisma.subject.update({
     where: { id },
     data: input,
   });
-  return { mapel, error: null };
+  return { subject, error: null };
 }
 
-export async function deleteMapel(
+export async function deleteSubject(
   id: string,
 ): Promise<{ ok: boolean; error: string | null }> {
   const usage = await prisma.subject.findUnique({

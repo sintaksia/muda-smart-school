@@ -104,7 +104,7 @@ async function checkThresholds(
     return;
   }
 
-  const guru = await prisma.teacher.findUnique({
+  const teacher = await prisma.teacher.findUnique({
     where: { id: ownerId },
     select: { user: { select: { name: true } } },
   });
@@ -113,7 +113,7 @@ async function checkThresholds(
     title: crossedCritical
       ? "Skor kredit guru kritis"
       : "Peringatan skor kredit guru",
-    body: `Skor kredit guru ${guru?.user.name ?? ownerId} mencapai ${totalAfter}.`,
+    body: `Skor kredit guru ${teacher?.user.name ?? ownerId} mencapai ${totalAfter}.`,
     type: crossedCritical ? "CREDIT_CRITICAL" : "CREDIT_WARNING",
     refId,
   });

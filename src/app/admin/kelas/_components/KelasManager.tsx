@@ -21,14 +21,14 @@ export interface KelasRow {
 }
 
 interface KelasManagerProps {
-  kelasList: KelasRow[];
-  guruOptions: { id: string; name: string }[];
+  classList: KelasRow[];
+  teacherOptions: { id: string; name: string }[];
 }
 
 const inputClass =
   "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
 
-export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
+export function KelasManager({ classList, teacherOptions }: KelasManagerProps) {
   const router = useRouter();
   const currentYear = new Date().getFullYear();
   const [name, setName] = useState<string>("");
@@ -153,9 +153,9 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
             className={inputClass}
           >
             <option value="">Wali kelas (opsional)</option>
-            {guruOptions.map((guru) => (
-              <option key={guru.id} value={guru.id}>
-                {guru.name}
+            {teacherOptions.map((teacher) => (
+              <option key={teacher.id} value={teacher.id}>
+                {teacher.name}
               </option>
             ))}
           </select>
@@ -183,7 +183,7 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
               </tr>
             </thead>
             <tbody>
-              {kelasList.map((row) => (
+              {classList.map((row) => (
                 <tr
                   key={row.id}
                   className="border-hairline border-b last:border-b-0"
@@ -204,9 +204,9 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
                       className="border-hairline-strong text-ink-secondary rounded-input h-9 border bg-white px-2 text-xs"
                     >
                       <option value="">— Belum ada —</option>
-                      {guruOptions.map((guru) => (
-                        <option key={guru.id} value={guru.id}>
-                          {guru.name}
+                      {teacherOptions.map((teacher) => (
+                        <option key={teacher.id} value={teacher.id}>
+                          {teacher.name}
                         </option>
                       ))}
                     </select>
@@ -226,7 +226,7 @@ export function KelasManager({ kelasList, guruOptions }: KelasManagerProps) {
                   </td>
                 </tr>
               ))}
-              {kelasList.length === 0 && (
+              {classList.length === 0 && (
                 <tr>
                   <td
                     colSpan={6}

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
-import { createKelas, updateKelas, deleteKelas } from "./kelas";
+import { createClass, updateClass, deleteClass } from "./kelas";
 import type { SchoolClass } from "@prisma/client";
 import type { SchoolClassInput } from "../types";
 
@@ -28,17 +28,17 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("createKelas", () => {
+describe("createClass", () => {
   it("creates a class", async () => {
     vi.mocked(prisma.schoolClass.findUnique).mockResolvedValue(null);
     vi.mocked(prisma.schoolClass.create).mockResolvedValue({
       id: "k1",
     } as SchoolClass);
 
-    const result = await createKelas(input);
+    const result = await createClass(input);
 
     expect(result.error).toBeNull();
-    expect(result.kelas?.id).toBe("k1");
+    expect(result.schoolClass?.id).toBe("k1");
   });
 
   it("rejects duplicate nama + tahun ajaran", async () => {
@@ -46,9 +46,9 @@ describe("createKelas", () => {
       id: "existing",
     } as SchoolClass);
 
-    const result = await createKelas(input);
+    const result = await createClass(input);
 
-    expect(result.kelas).toBeNull();
+    expect(result.schoolClass).toBeNull();
     expect(result.error).toBe(
       "Kelas dengan nama dan tahun ajaran ini sudah ada",
     );
@@ -56,22 +56,22 @@ describe("createKelas", () => {
   });
 });
 
-describe("updateKelas", () => {
+describe("updateClass", () => {
   it("errors for a missing class", async () => {
     vi.mocked(prisma.schoolClass.findUnique).mockResolvedValue(null);
-    const result = await updateKelas("missing", input);
+    const result = await updateClass("missing", input);
     expect(result.error).toBe("Kelas tidak ditemukan");
   });
 });
 
-describe("deleteKelas", () => {
+describe("deleteClass", () => {
   it("refuses to delete a class with students or schedule", async () => {
     vi.mocked(prisma.schoolClass.findUnique).mockResolvedValue({
       id: "k1",
       _count: { students: 5, jadwal: 0 },
     } as unknown as SchoolClass);
 
-    const result = await deleteKelas("k1");
+    const result = await deleteClass("k1");
 
     expect(result.ok).toBe(false);
     expect(prisma.schoolClass.delete).not.toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe("deleteKelas", () => {
       _count: { students: 0, jadwal: 0 },
     } as unknown as SchoolClass);
 
-    const result = await deleteKelas("k1");
+    const result = await deleteClass("k1");
 
     expect(result.ok).toBe(true);
     expect(prisma.schoolClass.delete).toHaveBeenCalledWith({

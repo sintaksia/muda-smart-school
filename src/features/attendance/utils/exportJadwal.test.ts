@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   buildFlatRows,
-  buildKelasMatrix,
+  buildClassMatrix,
   exportJadwalToExcel,
   sanitizeSheetName,
 } from "./exportJadwal";
@@ -22,10 +22,10 @@ function entry(overrides: Partial<JadwalEntry> & { id: string }): JadwalEntry {
     startTime: "07:00",
     endTime: "08:30",
     classId: "k1",
-    kelas: "X-A",
+    className: "X-A",
     teacherId: "g1",
-    guru: "Budi",
-    mataPelajaran: "Matematika",
+    teacherName: "Budi",
+    subjectName: "Matematika",
     ...overrides,
   };
 }
@@ -58,17 +58,17 @@ describe("buildFlatRows", () => {
   });
 });
 
-describe("buildKelasMatrix", () => {
+describe("buildClassMatrix", () => {
   it("pivots time ranges into day columns", () => {
-    const rows = buildKelasMatrix([
+    const rows = buildClassMatrix([
       entry({ id: "a" }),
       entry({
         id: "b",
         dayOfWeek: "TUESDAY",
         startTime: "09:00",
         endTime: "10:00",
-        mataPelajaran: "Fisika",
-        guru: "Sari",
+        subjectName: "Fisika",
+        teacherName: "Sari",
       }),
     ]);
     expect(rows[0]).toEqual([
@@ -96,11 +96,11 @@ describe("sanitizeSheetName", () => {
 });
 
 describe("exportJadwalToExcel", () => {
-  it("writes a flat sheet plus one sheet per kelas", async () => {
+  it("writes a flat sheet plus one sheet per class", async () => {
     const xlsx = await import("xlsx");
     exportJadwalToExcel([
       entry({ id: "a" }),
-      entry({ id: "b", classId: "k2", kelas: "X-B" }),
+      entry({ id: "b", classId: "k2", className: "X-B" }),
     ]);
     const appendCalls = vi.mocked(xlsx.utils.book_append_sheet).mock.calls;
     expect(appendCalls.map((call) => call[2])).toEqual([

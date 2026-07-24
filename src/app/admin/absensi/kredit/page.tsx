@@ -5,7 +5,7 @@ import { CreditManager } from "./_components/CreditManager";
 export const dynamic = "force-dynamic";
 
 export default async function CreditAdminPage() {
-  const [students, gurus, categories] = await Promise.all([
+  const [students, teachers, categories] = await Promise.all([
     prisma.student.findMany({
       where: { status: "AKTIF" },
       select: {
@@ -35,13 +35,13 @@ export default async function CreditAdminPage() {
       <CreditManager
         students={students.map((s) => ({
           id: s.id,
-          nama: `${s.user.name} (${s.schoolClass?.name ?? s.nis})`,
+          name: `${s.user.name} (${s.schoolClass?.name ?? s.nis})`,
         }))}
-        gurus={gurus.map((g) => ({ id: g.id, nama: g.user.name }))}
+        teachers={teachers.map((t) => ({ id: t.id, name: t.user.name }))}
         categories={categories.map((c) => ({
           ownerType: c.ownerType,
           type: c.type,
-          nama: c.name,
+          name: c.name,
         }))}
       />
     </div>

@@ -34,7 +34,7 @@ const baseSession = {
   status: "OPEN",
   qrTokenIssuedAt: new Date("2026-07-08T23:59:00.000Z"),
   actualTeacherId: "guru-1",
-  jadwal: {
+  schedule: {
     id: "jadwal-1",
     classId: "kelas-1",
     startTime: "07:00",

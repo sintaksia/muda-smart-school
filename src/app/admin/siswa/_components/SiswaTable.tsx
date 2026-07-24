@@ -12,7 +12,7 @@ import {
 
 export interface SiswaRow {
   id: string;
-  nama: string;
+  name: string;
   nis: string;
   specialization: string;
   angkatan: number;
@@ -21,11 +21,11 @@ export interface SiswaRow {
 }
 
 interface SiswaTableProps {
-  siswaList: SiswaRow[];
-  kelasOptions: { id: string; name: string }[];
+  studentList: SiswaRow[];
+  classOptions: { id: string; name: string }[];
 }
 
-export function SiswaTable({ siswaList, kelasOptions }: SiswaTableProps) {
+export function SiswaTable({ studentList, classOptions }: SiswaTableProps) {
   const router = useRouter();
 
   async function patch(
@@ -61,29 +61,29 @@ export function SiswaTable({ siswaList, kelasOptions }: SiswaTableProps) {
             </tr>
           </thead>
           <tbody>
-            {siswaList.map((siswa) => (
+            {studentList.map((student) => (
               <tr
-                key={siswa.id}
+                key={student.id}
                 className="border-hairline border-b last:border-b-0"
               >
                 <td className="px-5 py-3">
-                  <p className="text-ink font-semibold">{siswa.nama}</p>
+                  <p className="text-ink font-semibold">{student.name}</p>
                   <p className="text-ink-muted text-xs tabular-nums">
-                    NIS {siswa.nis}
+                    NIS {student.nis}
                   </p>
                 </td>
                 <td className="text-ink-secondary px-4 py-3">
-                  {SPECIALIZATION_SHORT_LABELS[siswa.specialization]}
+                  {SPECIALIZATION_SHORT_LABELS[student.specialization]}
                 </td>
                 <td className="text-ink-secondary px-4 py-3 tabular-nums">
-                  {siswa.angkatan}
+                  {student.angkatan}
                 </td>
                 <td className="px-4 py-3">
                   <select
-                    value={siswa.classId ?? ""}
+                    value={student.classId ?? ""}
                     onChange={(e) =>
                       patch(
-                        siswa.id,
+                        student.id,
                         { classId: e.target.value || null },
                         "Kelas siswa diperbarui",
                       )
@@ -91,23 +91,23 @@ export function SiswaTable({ siswaList, kelasOptions }: SiswaTableProps) {
                     className="border-hairline-strong text-ink-secondary rounded-input h-9 border bg-white px-2 text-xs"
                   >
                     <option value="">— Belum ditempatkan —</option>
-                    {kelasOptions.map((kelas) => (
-                      <option key={kelas.id} value={kelas.id}>
-                        {kelas.name}
+                    {classOptions.map((schoolClass) => (
+                      <option key={schoolClass.id} value={schoolClass.id}>
+                        {schoolClass.name}
                       </option>
                     ))}
                   </select>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <Badge variant={STUDENT_STATUS_BADGES[siswa.status]}>
-                      {STUDENT_STATUS_LABELS[siswa.status]}
+                    <Badge variant={STUDENT_STATUS_BADGES[student.status]}>
+                      {STUDENT_STATUS_LABELS[student.status]}
                     </Badge>
                     <select
-                      value={siswa.status}
+                      value={student.status}
                       onChange={(e) =>
                         patch(
-                          siswa.id,
+                          student.id,
                           { status: e.target.value },
                           "Status siswa diperbarui",
                         )
@@ -124,7 +124,7 @@ export function SiswaTable({ siswaList, kelasOptions }: SiswaTableProps) {
                 </td>
               </tr>
             ))}
-            {siswaList.length === 0 && (
+            {studentList.length === 0 && (
               <tr>
                 <td
                   colSpan={5}

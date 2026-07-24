@@ -17,9 +17,9 @@ export default async function AbsensiMonitorPage() {
     ? await prisma.schedule.findMany({
         where: { dayOfWeek, isActive: true },
         include: {
-          kelas: { select: { name: true } },
-          mataPelajaran: { select: { name: true } },
-          guru: { select: { user: { select: { name: true } } } },
+          schoolClass: { select: { name: true } },
+          subject: { select: { name: true } },
+          teacher: { select: { user: { select: { name: true } } } },
           sessions: {
             where: { date: dateOnlyUtc(dateISO) },
             include: { studentAttendance: { select: { status: true } } },
@@ -63,12 +63,14 @@ export default async function AbsensiMonitorPage() {
                     <td className="text-ink px-5 py-3 font-semibold tabular-nums">
                       {row.startTime}–{row.endTime}
                     </td>
-                    <td className="text-ink px-4 py-3">{row.kelas.name}</td>
-                    <td className="text-ink-secondary px-4 py-3">
-                      {row.mataPelajaran.name}
+                    <td className="text-ink px-4 py-3">
+                      {row.schoolClass.name}
                     </td>
                     <td className="text-ink-secondary px-4 py-3">
-                      {row.guru.user.name}
+                      {row.subject.name}
+                    </td>
+                    <td className="text-ink-secondary px-4 py-3">
+                      {row.teacher.user.name}
                     </td>
                     <td className="px-4 py-3">
                       {session ? (

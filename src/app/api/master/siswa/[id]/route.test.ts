@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PATCH } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { updateSiswa } from "@/src/features/master/services/siswa";
+import { updateStudent } from "@/src/features/master/services/siswa";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { Student } from "@prisma/client";
 
@@ -9,7 +9,7 @@ vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
 vi.mock("@/src/features/master/services/siswa", () => ({
-  updateSiswa: vi.fn(),
+  updateStudent: vi.fn(),
 }));
 
 const routeParams = { params: Promise.resolve({ id: "s1" }) };
@@ -42,15 +42,15 @@ describe("PATCH /api/master/siswa/[id]", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(updateSiswa).mockResolvedValue({
-      siswa: { id: "s1", classId: "k1" } as Student,
+    vi.mocked(updateStudent).mockResolvedValue({
+      student: { id: "s1", classId: "k1" } as Student,
       error: null,
     });
 
     const response = await PATCH(buildRequest({ classId: "k1" }), routeParams);
 
     expect(response.status).toBe(200);
-    expect(updateSiswa).toHaveBeenCalledWith("s1", { classId: "k1" });
+    expect(updateStudent).toHaveBeenCalledWith("s1", { classId: "k1" });
   });
 
   it("returns 400 for an invalid status", async () => {
@@ -64,6 +64,6 @@ describe("PATCH /api/master/siswa/[id]", () => {
       routeParams,
     );
     expect(response.status).toBe(400);
-    expect(updateSiswa).not.toHaveBeenCalled();
+    expect(updateStudent).not.toHaveBeenCalled();
   });
 });

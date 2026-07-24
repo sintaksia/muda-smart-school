@@ -52,7 +52,7 @@ export function JadwalListView({
                         </td>
                         <td className="text-ink px-4 py-3">
                           <span className="flex items-center gap-2">
-                            {row.mataPelajaran}
+                            {row.subjectName}
                             {isConflict && (
                               <span className="text-danger flex items-center gap-1 text-xs font-semibold">
                                 <TriangleAlert
@@ -65,10 +65,10 @@ export function JadwalListView({
                           </span>
                         </td>
                         <td className="text-ink-secondary px-4 py-3">
-                          {row.kelas}
+                          {row.className}
                         </td>
                         <td className="text-ink-secondary px-4 py-3">
-                          {row.guru}
+                          {row.teacherName}
                         </td>
                         <td className="w-16 px-4 py-3 text-right">
                           <button

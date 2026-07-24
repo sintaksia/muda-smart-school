@@ -9,9 +9,9 @@ import {
 import { FREE_SLOT_CLASS, GAP_HIGHLIGHT_CLASS } from "./jadwalStyles";
 
 interface JadwalWeekGridProps {
-  /** Entries already filtered to a single kelas or guru. */
+  /** Entries already filtered to a single class or teacher. */
   entries: JadwalEntry[];
-  mode: "kelas" | "guru";
+  mode: "class" | "teacher";
   conflictIds: Set<string>;
 }
 
@@ -91,14 +91,14 @@ export function JadwalWeekGrid({
                         key={dayOfWeek}
                         className={`border-hairline border-l px-3 py-2 text-xs ${
                           insideSpan
-                            ? mode === "kelas"
+                            ? mode === "class"
                               ? GAP_HIGHLIGHT_CLASS
                               : FREE_SLOT_CLASS
                             : "text-ink-muted"
                         }`}
                       >
                         {insideSpan
-                          ? mode === "kelas"
+                          ? mode === "class"
                             ? "Kosong"
                             : "Bebas"
                           : ""}
@@ -123,10 +123,12 @@ export function JadwalWeekGrid({
                           {entry.startTime === slotStart ? (
                             <>
                               <p className="text-ink font-semibold">
-                                {entry.mataPelajaran}
+                                {entry.subjectName}
                               </p>
                               <p className="text-ink-secondary">
-                                {mode === "kelas" ? entry.guru : entry.kelas}
+                                {mode === "class"
+                                  ? entry.teacherName
+                                  : entry.className}
                               </p>
                             </>
                           ) : (

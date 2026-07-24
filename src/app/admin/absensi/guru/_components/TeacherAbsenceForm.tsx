@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface TeacherAbsenceFormProps {
-  guruOptions: { id: string; nama: string }[];
+  teacherOptions: { id: string; name: string }[];
 }
 
-export function TeacherAbsenceForm({ guruOptions }: TeacherAbsenceFormProps) {
+export function TeacherAbsenceForm({
+  teacherOptions,
+}: TeacherAbsenceFormProps) {
   const router = useRouter();
   const [teacherId, setTeacherId] = useState<string>("");
   const [date, setDate] = useState<string>(
@@ -65,9 +67,9 @@ export function TeacherAbsenceForm({ guruOptions }: TeacherAbsenceFormProps) {
           className={inputClass}
         >
           <option value="">Pilih guru…</option>
-          {guruOptions.map((guru) => (
-            <option key={guru.id} value={guru.id}>
-              {guru.nama}
+          {teacherOptions.map((teacher) => (
+            <option key={teacher.id} value={teacher.id}>
+              {teacher.name}
             </option>
           ))}
         </select>

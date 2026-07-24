@@ -20,7 +20,7 @@ export function buildFlatRows(entries: JadwalEntry[]): string[][] {
     (a, b) =>
       (dayOrder[a.dayOfWeek] ?? 99) - (dayOrder[b.dayOfWeek] ?? 99) ||
       parseTimeToMinutes(a.startTime) - parseTimeToMinutes(b.startTime) ||
-      a.kelas.localeCompare(b.kelas),
+      a.className.localeCompare(b.className),
   );
   return [
     header,
@@ -28,18 +28,18 @@ export function buildFlatRows(entries: JadwalEntry[]): string[][] {
       DAY_OF_WEEK_LABELS[entry.dayOfWeek] ?? entry.dayOfWeek,
       entry.startTime,
       entry.endTime,
-      entry.kelas,
-      entry.mataPelajaran,
-      entry.guru,
+      entry.className,
+      entry.subjectName,
+      entry.teacherName,
     ]),
   ];
 }
 
 /**
- * Per-kelas timetable matrix: rows = unique "HH:mm–HH:mm" ranges of that
- * kelas sorted by start, columns = days, cell = "Mapel — Guru".
+ * Per-class timetable matrix: rows = unique "HH:mm–HH:mm" ranges of that
+ * class sorted by start, columns = days, cell = "Subject — Teacher".
  */
-export function buildKelasMatrix(entries: JadwalEntry[]): string[][] {
+export function buildClassMatrix(entries: JadwalEntry[]): string[][] {
   const ranges = new Map<string, string>();
   for (const entry of entries) {
     ranges.set(`${entry.startTime}–${entry.endTime}`, entry.startTime);
@@ -65,7 +65,7 @@ export function buildKelasMatrix(entries: JadwalEntry[]): string[][] {
             entry.startTime === startTime &&
             entry.endTime === endTime,
         );
-        return match ? `${match.mataPelajaran} — ${match.guru}` : "";
+        return match ? `${match.subjectName} — ${match.teacherName}` : "";
       }),
     ];
   });
@@ -82,7 +82,7 @@ export function sanitizeSheetName(name: string): string {
   );
 }
 
-/** Build and download jadwal.xlsx: one flat sheet + one matrix per kelas. */
+/** Build and download jadwal.xlsx: one flat sheet + one matrix per class. */
 export function exportJadwalToExcel(entries: JadwalEntry[]): void {
   const workbook = utils.book_new();
   utils.book_append_sheet(
@@ -91,13 +91,15 @@ export function exportJadwalToExcel(entries: JadwalEntry[]): void {
     "Semua Jadwal",
   );
 
-  const kelasNames = Array.from(
-    new Map(entries.map((entry) => [entry.classId, entry.kelas])).values(),
+  const classNames = Array.from(
+    new Map(entries.map((entry) => [entry.classId, entry.className])).values(),
   ).sort((a, b) => a.localeCompare(b));
   const usedNames = new Set<string>(["Semua Jadwal"]);
-  for (const kelas of kelasNames) {
-    const kelasEntries = entries.filter((entry) => entry.kelas === kelas);
-    const base = sanitizeSheetName(kelas);
+  for (const className of classNames) {
+    const classEntries = entries.filter(
+      (entry) => entry.className === className,
+    );
+    const base = sanitizeSheetName(className);
     let sheetName = base;
     let suffix = 2;
     while (usedNames.has(sheetName)) {
@@ -107,7 +109,7 @@ export function exportJadwalToExcel(entries: JadwalEntry[]): void {
     usedNames.add(sheetName);
     utils.book_append_sheet(
       workbook,
-      utils.aoa_to_sheet(buildKelasMatrix(kelasEntries)),
+      utils.aoa_to_sheet(buildClassMatrix(classEntries)),
       sheetName,
     );
   }

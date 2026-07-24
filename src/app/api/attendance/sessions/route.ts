@@ -24,23 +24,23 @@ export async function GET() {
       return NextResponse.json({ date: dateISO, jadwal: [] });
     }
 
-    let guruFilter: { teacherId?: string } = {};
+    let teacherFilter: { teacherId?: string } = {};
     if (!canAccessAdmin(currentUser.role)) {
-      const guru = await prisma.teacher.findUnique({
+      const teacher = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
-      if (!guru) {
+      if (!teacher) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
-      guruFilter = { teacherId: guru.id };
+      teacherFilter = { teacherId: teacher.id };
     }
 
     const jadwal = await prisma.schedule.findMany({
-      where: { dayOfWeek, isActive: true, ...guruFilter },
+      where: { dayOfWeek, isActive: true, ...teacherFilter },
       include: {
-        kelas: { select: { id: true, name: true } },
-        mataPelajaran: { select: { id: true, name: true } },
-        guru: { select: { id: true, user: { select: { name: true } } } },
+        schoolClass: { select: { id: true, name: true } },
+        subject: { select: { id: true, name: true } },
+        teacher: { select: { id: true, user: { select: { name: true } } } },
         sessions: { where: { date: dateOnlyUtc(dateISO) } },
       },
       orderBy: { startTime: "asc" },
@@ -73,12 +73,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const guru = await prisma.teacher.findUnique({
+    const teacher = await prisma.teacher.findUnique({
       where: { userId: currentUser.id },
     });
 
     if (!canAccessAdmin(currentUser.role)) {
-      if (!guru) {
+      if (!teacher) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
       const jadwal = await prisma.schedule.findUnique({
@@ -91,12 +91,12 @@ export async function POST(request: Request) {
         );
       }
       // The scheduled teacher — or the assigned substitute — may open.
-      if (jadwal.teacherId !== guru.id) {
+      if (jadwal.teacherId !== teacher.id) {
         const substitution = await prisma.teacherAttendance.findFirst({
           where: {
             scheduleId: jadwal.id,
             date: dateOnlyUtc(toWibParts(new Date()).dateISO),
-            substituteTeacherId: guru.id,
+            substituteTeacherId: teacher.id,
           },
         });
         if (!substitution) {
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
     }
 
     const { session, error } = await openSession(result.data.jadwalId, {
-      byTeacherId: guru?.id,
+      byTeacherId: teacher?.id,
     });
     if (error || !session) {
       return NextResponse.json(

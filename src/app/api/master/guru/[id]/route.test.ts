@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PUT } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { updateGuru } from "@/src/features/master/services/guru";
+import { updateTeacher } from "@/src/features/master/services/guru";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { Teacher } from "@prisma/client";
 
@@ -9,7 +9,7 @@ vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
 vi.mock("@/src/features/master/services/guru", () => ({
-  updateGuru: vi.fn(),
+  updateTeacher: vi.fn(),
 }));
 
 const routeParams = { params: Promise.resolve({ id: "guru-1" }) };
@@ -32,8 +32,8 @@ describe("PUT /api/master/guru/[id]", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(updateGuru).mockResolvedValue({
-      guru: { id: "guru-1" } as Teacher,
+    vi.mocked(updateTeacher).mockResolvedValue({
+      teacher: { id: "guru-1" } as Teacher,
       error: null,
     });
 
@@ -43,7 +43,7 @@ describe("PUT /api/master/guru/[id]", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(updateGuru).toHaveBeenCalledWith("guru-1", {
+    expect(updateTeacher).toHaveBeenCalledWith("guru-1", {
       subjectIds: ["m1", "m2"],
     });
   });
@@ -53,8 +53,8 @@ describe("PUT /api/master/guru/[id]", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(updateGuru).mockResolvedValue({
-      guru: null,
+    vi.mocked(updateTeacher).mockResolvedValue({
+      teacher: null,
       error: "Guru tidak ditemukan",
     });
 

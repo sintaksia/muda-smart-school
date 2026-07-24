@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { updateGuru } from "@/src/features/master/services/guru";
+import { updateTeacher } from "@/src/features/master/services/guru";
 import { updateGuruSchema } from "../GuruSchema";
 
 interface RouteParams {
@@ -24,14 +24,14 @@ export async function PUT(request: Request, { params }: RouteParams) {
         { status: 400 },
       );
     }
-    const { guru, error } = await updateGuru(id, result.data);
-    if (error || !guru) {
+    const { teacher, error } = await updateTeacher(id, result.data);
+    if (error || !teacher) {
       return NextResponse.json(
         { error: error ?? "Gagal memperbarui guru" },
         { status: 400 },
       );
     }
-    return NextResponse.json(guru);
+    return NextResponse.json(teacher);
   } catch (err: unknown) {
     console.error("Update guru error:", err);
     return NextResponse.json(

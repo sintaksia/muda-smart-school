@@ -26,15 +26,15 @@ export const EMPTY_FILTERS: JadwalFilterState = {
 interface JadwalFiltersProps {
   filters: JadwalFilterState;
   onChange: (filters: JadwalFilterState) => void;
-  kelasOptions: { id: string; nama: string }[];
-  guruOptions: { id: string; nama: string }[];
+  classOptions: { id: string; name: string }[];
+  teacherOptions: { id: string; name: string }[];
 }
 
 export function JadwalFilters({
   filters,
   onChange,
-  kelasOptions,
-  guruOptions,
+  classOptions,
+  teacherOptions,
 }: JadwalFiltersProps) {
   const hasActiveFilter =
     filters.dayOfWeek !== "ALL" ||
@@ -53,17 +53,17 @@ export function JadwalFilters({
     {
       key: "classId" as const,
       placeholder: "Semua Kelas",
-      options: kelasOptions.map((option) => ({
+      options: classOptions.map((option) => ({
         value: option.id,
-        label: option.nama,
+        label: option.name,
       })),
     },
     {
       key: "teacherId" as const,
       placeholder: "Semua Guru",
-      options: guruOptions.map((option) => ({
+      options: teacherOptions.map((option) => ({
         value: option.id,
-        label: option.nama,
+        label: option.name,
       })),
     },
   ];

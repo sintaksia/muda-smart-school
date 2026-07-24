@@ -21,16 +21,16 @@ import { JadwalGridView } from "./JadwalGridView";
 
 interface JadwalManagerProps {
   jadwal: JadwalEntry[];
-  kelasOptions: { id: string; nama: string }[];
-  mapelOptions: { id: string; nama: string }[];
-  guruOptions: { id: string; nama: string }[];
+  classOptions: { id: string; name: string }[];
+  subjectOptions: { id: string; name: string }[];
+  teacherOptions: { id: string; name: string }[];
 }
 
 export function JadwalManager({
   jadwal,
-  kelasOptions,
-  mapelOptions,
-  guruOptions,
+  classOptions,
+  subjectOptions,
+  teacherOptions,
 }: JadwalManagerProps) {
   const router = useRouter();
   const [formOpen, setFormOpen] = useState<boolean>(false);
@@ -77,8 +77,8 @@ export function JadwalManager({
         <JadwalFilters
           filters={filters}
           onChange={setFilters}
-          kelasOptions={kelasOptions}
-          guruOptions={guruOptions}
+          classOptions={classOptions}
+          teacherOptions={teacherOptions}
         />
         <div className="flex items-center gap-3">
           <div className="border-hairline flex overflow-hidden rounded-full border text-sm font-medium">
@@ -121,9 +121,9 @@ export function JadwalManager({
       <JadwalForm
         open={formOpen}
         onOpenChange={setFormOpen}
-        kelasOptions={kelasOptions}
-        mapelOptions={mapelOptions}
-        guruOptions={guruOptions}
+        classOptions={classOptions}
+        subjectOptions={subjectOptions}
+        teacherOptions={teacherOptions}
       />
 
       {view === "list" ? (
@@ -136,8 +136,8 @@ export function JadwalManager({
         <JadwalGridView
           entries={filtered}
           conflictIds={conflictIds}
-          kelasOptions={kelasOptions}
-          guruOptions={guruOptions}
+          classOptions={classOptions}
+          teacherOptions={teacherOptions}
         />
       )}
     </div>

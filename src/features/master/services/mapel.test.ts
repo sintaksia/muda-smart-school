@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
-import { createMapel, updateMapel, deleteMapel } from "./mapel";
+import { createSubject, updateSubject, deleteSubject } from "./mapel";
 import type { Subject } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
@@ -20,17 +20,17 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("createMapel", () => {
+describe("createSubject", () => {
   it("creates a subject", async () => {
     vi.mocked(prisma.subject.findUnique).mockResolvedValue(null);
     vi.mocked(prisma.subject.create).mockResolvedValue({
       id: "m1",
     } as Subject);
 
-    const result = await createMapel({ name: "Matematika", code: "MTK" });
+    const result = await createSubject({ name: "Matematika", code: "MTK" });
 
     expect(result.error).toBeNull();
-    expect(result.mapel?.id).toBe("m1");
+    expect(result.subject?.id).toBe("m1");
   });
 
   it("rejects a duplicate kode", async () => {
@@ -38,33 +38,33 @@ describe("createMapel", () => {
       id: "existing",
     } as Subject);
 
-    const result = await createMapel({ name: "Matematika", code: "MTK" });
+    const result = await createSubject({ name: "Matematika", code: "MTK" });
 
-    expect(result.mapel).toBeNull();
+    expect(result.subject).toBeNull();
     expect(result.error).toBe("Kode mapel sudah digunakan");
   });
 });
 
-describe("updateMapel", () => {
+describe("updateSubject", () => {
   it("rejects changing kode to another subject's kode", async () => {
     vi.mocked(prisma.subject.findUnique)
       .mockResolvedValueOnce({ id: "m1" } as Subject)
       .mockResolvedValueOnce({ id: "m2" } as Subject);
 
-    const result = await updateMapel("m1", { name: "MTK", code: "TAKEN" });
+    const result = await updateSubject("m1", { name: "MTK", code: "TAKEN" });
 
     expect(result.error).toBe("Kode mapel sudah digunakan");
   });
 });
 
-describe("deleteMapel", () => {
+describe("deleteSubject", () => {
   it("refuses to delete a subject used in schedules", async () => {
     vi.mocked(prisma.subject.findUnique).mockResolvedValue({
       id: "m1",
       _count: { teacherSubjects: 2, schedules: 3 },
     } as unknown as Subject);
 
-    const result = await deleteMapel("m1");
+    const result = await deleteSubject("m1");
 
     expect(result.ok).toBe(false);
     expect(prisma.subject.delete).not.toHaveBeenCalled();
@@ -76,7 +76,7 @@ describe("deleteMapel", () => {
       _count: { teacherSubjects: 2, schedules: 0 },
     } as unknown as Subject);
 
-    const result = await deleteMapel("m1");
+    const result = await deleteSubject("m1");
 
     expect(result.ok).toBe(true);
     expect(prisma.teacherSubject.deleteMany).toHaveBeenCalledWith({

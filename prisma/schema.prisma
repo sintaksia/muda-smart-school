@@ -125,8 +125,8 @@ model Teacher {
   homeroomClasses             SchoolClass[]
   schedules                   Schedule[]
   teacherAttendance           TeacherAttendance[]
-  substituteTeacherAttendance TeacherAttendance[] @relation("SubstituteGuru")
-  sessionsOpened              Session[]           @relation("SesiActualGuru")
+  substituteTeacherAttendance TeacherAttendance[] @relation("SubstituteTeacher")
+  sessionsOpened              Session[]           @relation("SessionActualTeacher")
   creditScores                CreditScore[]
 
   @@map("teachers")
@@ -190,9 +190,9 @@ model Schedule {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
-  kelas             SchoolClass         @relation(fields: [classId], references: [id])
-  mataPelajaran     Subject             @relation(fields: [subjectId], references: [id])
-  guru              Teacher             @relation(fields: [teacherId], references: [id])
+  schoolClass       SchoolClass         @relation(fields: [classId], references: [id])
+  subject           Subject             @relation(fields: [subjectId], references: [id])
+  teacher           Teacher             @relation(fields: [teacherId], references: [id])
   studentAttendance StudentAttendance[]
   teacherAttendance TeacherAttendance[]
   sessions          Session[]
@@ -214,8 +214,8 @@ model Session {
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
 
-  jadwal            Schedule            @relation(fields: [scheduleId], references: [id])
-  actualGuru        Teacher?            @relation("SesiActualGuru", fields: [actualTeacherId], references: [id])
+  schedule          Schedule            @relation(fields: [scheduleId], references: [id])
+  actualTeacher     Teacher?            @relation("SessionActualTeacher", fields: [actualTeacherId], references: [id])
   studentAttendance StudentAttendance[]
   creditScores      CreditScore[]
   leaveRequests     LeaveRequest[]
@@ -241,9 +241,9 @@ model StudentAttendance {
   createdAt   DateTime         @default(now()) @map("created_at")
   updatedAt   DateTime         @updatedAt @map("updated_at")
 
-  jadwal  Schedule @relation(fields: [scheduleId], references: [id])
-  student Student  @relation(fields: [studentId], references: [id])
-  sesi    Session? @relation(fields: [sessionId], references: [id])
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+  student  Student  @relation(fields: [studentId], references: [id])
+  session  Session? @relation(fields: [sessionId], references: [id])
 
   @@unique([scheduleId, studentId, date])
   @@map("student_attendance")
@@ -262,10 +262,10 @@ model TeacherAttendance {
   createdAt           DateTime         @default(now()) @map("created_at")
   updatedAt           DateTime         @updatedAt @map("updated_at")
 
-  jadwal         Schedule @relation(fields: [scheduleId], references: [id])
-  guru           Teacher  @relation(fields: [teacherId], references: [id])
-  reportedBy     User?    @relation("TeacherAttendanceReporter", fields: [reportedById], references: [id])
-  substituteGuru Teacher? @relation("SubstituteGuru", fields: [substituteTeacherId], references: [id])
+  schedule          Schedule @relation(fields: [scheduleId], references: [id])
+  teacher           Teacher  @relation(fields: [teacherId], references: [id])
+  reportedBy        User?    @relation("TeacherAttendanceReporter", fields: [reportedById], references: [id])
+  substituteTeacher Teacher? @relation("SubstituteTeacher", fields: [substituteTeacherId], references: [id])
 
   @@unique([scheduleId, teacherId, date])
   @@map("teacher_attendance")
@@ -287,8 +287,8 @@ model CreditScore {
   createdAt    DateTime        @default(now()) @map("created_at")
 
   student    Student? @relation(fields: [studentId], references: [id])
-  guru       Teacher? @relation(fields: [teacherId], references: [id])
-  refSesi    Session? @relation(fields: [refSessionId], references: [id])
+  teacher    Teacher? @relation(fields: [teacherId], references: [id])
+  refSession Session? @relation(fields: [refSessionId], references: [id])
   reportedBy User?    @relation("CreditReporter", fields: [reportedById], references: [id])
 
   @@index([studentId])
@@ -330,8 +330,8 @@ model LeaveRequest {
   updatedAt     DateTime    @updatedAt @map("updated_at")
 
   student     Student   @relation(fields: [studentId], references: [id])
-  jadwal      Schedule? @relation(fields: [scheduleId], references: [id])
-  sesi        Session?  @relation(fields: [sessionId], references: [id])
+  schedule    Schedule? @relation(fields: [scheduleId], references: [id])
+  session     Session?  @relation(fields: [sessionId], references: [id])
   submittedBy User?     @relation("IzinSubmitter", fields: [submittedById], references: [id])
   reviewedBy  User?     @relation("IzinReviewer", fields: [reviewedById], references: [id])
 

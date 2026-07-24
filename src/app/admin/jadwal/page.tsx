@@ -5,13 +5,13 @@ import { JadwalManager } from "./_components/JadwalManager";
 export const dynamic = "force-dynamic";
 
 export default async function JadwalPage() {
-  const [jadwal, kelasList, mapelList, guruList] = await Promise.all([
+  const [jadwal, classList, subjectList, teacherList] = await Promise.all([
     prisma.schedule.findMany({
       where: { isActive: true },
       include: {
-        kelas: { select: { id: true, name: true } },
-        mataPelajaran: { select: { id: true, name: true } },
-        guru: { select: { id: true, user: { select: { name: true } } } },
+        schoolClass: { select: { id: true, name: true } },
+        subject: { select: { id: true, name: true } },
+        teacher: { select: { id: true, user: { select: { name: true } } } },
       },
       orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
     }),
@@ -41,15 +41,18 @@ export default async function JadwalPage() {
           dayOfWeek: j.dayOfWeek,
           startTime: j.startTime,
           endTime: j.endTime,
-          classId: j.kelas.id,
-          kelas: j.kelas.name,
-          teacherId: j.guru.id,
-          guru: j.guru.user.name,
-          mataPelajaran: j.mataPelajaran.name,
+          classId: j.schoolClass.id,
+          className: j.schoolClass.name,
+          teacherId: j.teacher.id,
+          teacherName: j.teacher.user.name,
+          subjectName: j.subject.name,
         }))}
-        kelasOptions={kelasList.map((k) => ({ id: k.id, nama: k.name }))}
-        mapelOptions={mapelList.map((m) => ({ id: m.id, nama: m.name }))}
-        guruOptions={guruList.map((g) => ({ id: g.id, nama: g.user.name }))}
+        classOptions={classList.map((k) => ({ id: k.id, name: k.name }))}
+        subjectOptions={subjectList.map((m) => ({ id: m.id, name: m.name }))}
+        teacherOptions={teacherList.map((g) => ({
+          id: g.id,
+          name: g.user.name,
+        }))}
       />
     </div>
   );

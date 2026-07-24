@@ -1,14 +1,14 @@
 import { PageHeader } from "../_components/PageHeader";
-import { getGuruList } from "@/src/features/master/services/guru";
-import { getMapelList } from "@/src/features/master/services/mapel";
+import { getTeacherList } from "@/src/features/master/services/guru";
+import { getSubjectList } from "@/src/features/master/services/mapel";
 import { GuruManager } from "./_components/GuruManager";
 
 export const dynamic = "force-dynamic";
 
 export default async function GuruPage() {
-  const [guruList, mapelList] = await Promise.all([
-    getGuruList(),
-    getMapelList(),
+  const [teacherList, subjectList] = await Promise.all([
+    getTeacherList(),
+    getSubjectList(),
   ]);
 
   return (
@@ -18,16 +18,16 @@ export default async function GuruPage() {
         description="Kelola akun guru dan kualifikasi mata pelajaran"
       />
       <GuruManager
-        guruList={guruList.map((guru) => ({
-          id: guru.id,
-          name: guru.user.name,
-          email: guru.user.email,
-          nip: guru.nip,
-          employmentStatus: guru.employmentStatus,
-          subjects: guru.teacherSubjects.map((ts) => ts.subject.name),
-          homeroomClasses: guru.homeroomClasses.map((k) => k.name),
+        teacherList={teacherList.map((teacher) => ({
+          id: teacher.id,
+          name: teacher.user.name,
+          email: teacher.user.email,
+          nip: teacher.nip,
+          employmentStatus: teacher.employmentStatus,
+          subjects: teacher.teacherSubjects.map((ts) => ts.subject.name),
+          homeroomClasses: teacher.homeroomClasses.map((k) => k.name),
         }))}
-        mapelOptions={mapelList.map((m) => ({ id: m.id, name: m.name }))}
+        subjectOptions={subjectList.map((s) => ({ id: s.id, name: s.name }))}
       />
     </div>
   );

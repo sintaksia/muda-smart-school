@@ -43,9 +43,9 @@ export async function processSessionDeductions(
   const session = await prisma.session.findUnique({
     where: { id: sessionId },
     include: {
-      jadwal: {
+      schedule: {
         include: {
-          kelas: {
+          schoolClass: {
             include: { students: { where: { status: "AKTIF" } } },
           },
         },
@@ -67,7 +67,7 @@ export async function processSessionDeductions(
     session.studentAttendance.map((record) => [record.studentId, record]),
   );
 
-  for (const student of session.jadwal.kelas.students) {
+  for (const student of session.schedule.schoolClass.students) {
     const record = attendanceByStudent.get(student.id);
 
     if (record?.status === "PRESENT") {

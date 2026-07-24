@@ -20,7 +20,7 @@ export async function recordScan(
   // 1. Token check
   const session = await prisma.session.findUnique({
     where: { qrToken: input.token },
-    include: { jadwal: true },
+    include: { schedule: true },
   });
   if (
     !session ||
@@ -43,7 +43,7 @@ export async function recordScan(
   const student = await prisma.student.findUnique({
     where: { userId: input.studentUserId },
   });
-  if (!student || student.classId !== session.jadwal.classId) {
+  if (!student || student.classId !== session.schedule.classId) {
     return { ok: false, error: "Tidak terdaftar di kelas ini" };
   }
 
@@ -64,7 +64,7 @@ export async function recordScan(
   // 5. Time evaluation
   const dateISO = session.date.toISOString().slice(0, 10);
   const graceCutoff = new Date(
-    wibInstant(dateISO, session.jadwal.startTime).getTime() +
+    wibInstant(dateISO, session.schedule.startTime).getTime() +
       settings.sessionGracePeriodMinutes * 60 * 1000,
   );
   const status: AttendanceStatus = now <= graceCutoff ? "PRESENT" : "LATE";
@@ -96,13 +96,13 @@ export async function recordScan(
 
   // Process 7 — GPS-flagged scans notify the session's teacher.
   if (gps.needsReview && session.actualTeacherId) {
-    const guru = await prisma.teacher.findUnique({
+    const teacher = await prisma.teacher.findUnique({
       where: { id: session.actualTeacherId },
       select: { userId: true },
     });
-    if (guru) {
+    if (teacher) {
       await createNotification({
-        userId: guru.userId,
+        userId: teacher.userId,
         title: "Scan perlu ditinjau",
         body: "Ada presensi dengan GPS di luar radius sekolah. Mohon konfirmasi di layar sesi.",
         type: "GPS_REVIEW",

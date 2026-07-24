@@ -18,7 +18,7 @@ import {
 interface GuruFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  mapelOptions: { id: string; name: string }[];
+  subjectOptions: { id: string; name: string }[];
 }
 
 const inputClass =
@@ -37,18 +37,22 @@ const initialState = {
   employmentStatus: "GTY",
 };
 
-export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
+export function GuruForm({
+  open,
+  onOpenChange,
+  subjectOptions,
+}: GuruFormProps) {
   const router = useRouter();
   const [form, setForm] = useState(initialState);
-  const [mapelIds, setMapelIds] = useState<string[]>([]);
+  const [subjectIds, setSubjectIds] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   function set(field: keyof typeof initialState, value: string): void {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function toggleMapel(id: string): void {
-    setMapelIds((prev) =>
+  function toggleSubject(id: string): void {
+    setSubjectIds((prev) =>
       prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id],
     );
   }
@@ -57,7 +61,7 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
     event: React.FormEvent<HTMLFormElement>,
   ): Promise<void> {
     event.preventDefault();
-    if (mapelIds.length === 0) {
+    if (subjectIds.length === 0) {
       toast.error("Pilih minimal satu mata pelajaran");
       return;
     }
@@ -70,7 +74,7 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
           ...form,
           phone: form.phone || undefined,
           nip: form.nip || undefined,
-          subjectIds: mapelIds,
+          subjectIds,
         }),
       });
       const data = await response.json();
@@ -79,7 +83,7 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
       }
       toast.success("Akun guru dibuat");
       setForm(initialState);
-      setMapelIds([]);
+      setSubjectIds([]);
       onOpenChange(false);
       router.refresh();
     } catch (error: unknown) {
@@ -188,24 +192,24 @@ export function GuruForm({ open, onOpenChange, mapelOptions }: GuruFormProps) {
             <legend className="text-ink-secondary px-1 text-xs font-semibold">
               Kualifikasi Mata Pelajaran
             </legend>
-            {mapelOptions.length === 0 ? (
+            {subjectOptions.length === 0 ? (
               <p className="text-warning text-xs font-semibold">
                 Belum ada mapel — buat dulu di menu Mata Pelajaran.
               </p>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                {mapelOptions.map((mapel) => (
+                {subjectOptions.map((subject) => (
                   <label
-                    key={mapel.id}
+                    key={subject.id}
                     className="text-ink flex items-center gap-2 text-sm"
                   >
                     <input
                       type="checkbox"
-                      checked={mapelIds.includes(mapel.id)}
-                      onChange={() => toggleMapel(mapel.id)}
+                      checked={subjectIds.includes(subject.id)}
+                      onChange={() => toggleSubject(subject.id)}
                       className="accent-[var(--color-brand)]"
                     />
-                    {mapel.name}
+                    {subject.name}
                   </label>
                 ))}
               </div>

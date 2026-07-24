@@ -5,14 +5,14 @@ import { toast } from "sonner";
 import { CreditHistory, type CreditData } from "./CreditHistory";
 
 interface CreditManagerProps {
-  students: { id: string; nama: string }[];
-  gurus: { id: string; nama: string }[];
-  categories: { ownerType: string; type: string; nama: string }[];
+  students: { id: string; name: string }[];
+  teachers: { id: string; name: string }[];
+  categories: { ownerType: string; type: string; name: string }[];
 }
 
 export function CreditManager({
   students,
-  gurus,
+  teachers,
   categories,
 }: CreditManagerProps) {
   const [ownerType, setOwnerType] = useState<"STUDENT" | "TEACHER">("STUDENT");
@@ -24,7 +24,7 @@ export function CreditManager({
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [credit, setCredit] = useState<CreditData | null>(null);
 
-  const owners = ownerType === "STUDENT" ? students : gurus;
+  const owners = ownerType === "STUDENT" ? students : teachers;
   const categoryOptions = categories.filter(
     (c) => c.ownerType === ownerType && c.type === type,
   );
@@ -111,7 +111,7 @@ export function CreditManager({
             </option>
             {owners.map((owner) => (
               <option key={owner.id} value={owner.id}>
-                {owner.nama}
+                {owner.name}
               </option>
             ))}
           </select>
@@ -134,8 +134,8 @@ export function CreditManager({
           >
             <option value="">Pilih kategori…</option>
             {categoryOptions.map((option) => (
-              <option key={option.nama} value={option.nama}>
-                {option.nama}
+              <option key={option.name} value={option.name}>
+                {option.name}
               </option>
             ))}
           </select>

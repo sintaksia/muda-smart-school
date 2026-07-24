@@ -13,10 +13,10 @@ function entry(overrides: Partial<JadwalEntry> & { id: string }): JadwalEntry {
     startTime: "07:00",
     endTime: "08:30",
     classId: "k1",
-    kelas: "X-A",
+    className: "X-A",
     teacherId: "g1",
-    guru: "Budi",
-    mataPelajaran: "Matematika",
+    teacherName: "Budi",
+    subjectName: "Matematika",
     ...overrides,
   };
 }
@@ -36,7 +36,7 @@ describe("buildTimeBoundaries", () => {
 });
 
 describe("findConflictIds", () => {
-  it("flags same-guru overlap on the same day", () => {
+  it("flags same-teacher overlap on the same day", () => {
     const conflicts = findConflictIds([
       entry({ id: "a", classId: "k1" }),
       entry({ id: "b", classId: "k2", startTime: "08:00", endTime: "09:00" }),
@@ -44,7 +44,7 @@ describe("findConflictIds", () => {
     expect(conflicts).toEqual(new Set(["a", "b"]));
   });
 
-  it("flags same-kelas overlap with different guru", () => {
+  it("flags same-class overlap with different teacher", () => {
     const conflicts = findConflictIds([
       entry({ id: "a", teacherId: "g1" }),
       entry({ id: "b", teacherId: "g2", startTime: "07:30", endTime: "08:00" }),
@@ -84,7 +84,7 @@ describe("findGaps", () => {
 });
 
 describe("summarizeByEntity", () => {
-  it("rolls up sessions, hours, conflicts, and gaps per kelas per day", () => {
+  it("rolls up sessions, hours, conflicts, and gaps per class per day", () => {
     const summary = summarizeByEntity(
       [
         entry({ id: "a", startTime: "07:00", endTime: "08:30" }),

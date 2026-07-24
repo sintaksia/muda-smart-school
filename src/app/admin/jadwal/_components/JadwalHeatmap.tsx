@@ -9,8 +9,8 @@ import { GAP_HIGHLIGHT_CLASS } from "./jadwalStyles";
 
 interface JadwalHeatmapProps {
   entries: JadwalEntry[];
-  mode: "kelas" | "guru";
-  entityOptions: { id: string; nama: string }[];
+  mode: "class" | "teacher";
+  entityOptions: { id: string; name: string }[];
   onSelectEntity: (id: string) => void;
 }
 
@@ -28,7 +28,7 @@ export function JadwalHeatmap({
   entityOptions,
   onSelectEntity,
 }: JadwalHeatmapProps) {
-  const entityKey = mode === "kelas" ? "classId" : "teacherId";
+  const entityKey = mode === "class" ? "classId" : "teacherId";
   const summary = summarizeByEntity(entries, entityKey);
 
   return (
@@ -37,7 +37,7 @@ export function JadwalHeatmap({
         <thead>
           <tr>
             <th className="text-ink-muted w-40 px-3 py-2 text-left text-xs font-medium">
-              {mode === "kelas" ? "Kelas" : "Guru"}
+              {mode === "class" ? "Kelas" : "Guru"}
             </th>
             {DAY_OF_WEEK_VALUES.map((dayOfWeek) => (
               <th
@@ -60,7 +60,7 @@ export function JadwalHeatmap({
                     onClick={() => onSelectEntity(entity.id)}
                     className="text-ink hover:text-brand text-left text-xs font-semibold transition-colors"
                   >
-                    {entity.nama}
+                    {entity.name}
                   </button>
                 </td>
                 {DAY_OF_WEEK_VALUES.map((dayOfWeek) => {
@@ -90,7 +90,7 @@ export function JadwalHeatmap({
                       </span>{" "}
                       · {day.sessionCount} sesi
                       {day.hasConflict && <span> · Bentrok</span>}
-                      {mode === "kelas" && day.gapCount > 0 && (
+                      {mode === "class" && day.gapCount > 0 && (
                         <span
                           className={`mt-1 block rounded px-1.5 py-0.5 font-semibold ${GAP_HIGHLIGHT_CLASS}`}
                         >
@@ -106,7 +106,7 @@ export function JadwalHeatmap({
         </tbody>
       </table>
       <p className="text-ink-muted border-hairline border-t px-3 py-2 text-xs">
-        Klik nama {mode === "kelas" ? "kelas" : "guru"} untuk melihat detail
+        Klik nama {mode === "class" ? "kelas" : "guru"} untuk melihat detail
         grid mingguan. Merah = jadwal bentrok, kuning = ada jam kosong di antara
         sesi.
       </p>

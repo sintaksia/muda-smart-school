@@ -52,14 +52,14 @@ export async function GET(request: Request) {
       ownerType = "STUDENT";
       ownerId = student.id;
     } else if (currentUser.role === "TEACHER" && !ownerId) {
-      const guru = await prisma.teacher.findUnique({
+      const teacher = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
-      if (!guru) {
+      if (!teacher) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
       ownerType = "TEACHER";
-      ownerId = guru.id;
+      ownerId = teacher.id;
     }
 
     if (!ownerType || !ownerId) {
@@ -72,10 +72,10 @@ export async function GET(request: Request) {
     // Teachers may inspect their own students; only Kepsek/admin may
     // inspect other teachers' scores.
     if (currentUser.role === "TEACHER" && ownerType === "TEACHER") {
-      const guru = await prisma.teacher.findUnique({
+      const teacher = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
-      if (guru?.id !== ownerId) {
+      if (teacher?.id !== ownerId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
     }
@@ -88,10 +88,10 @@ export async function GET(request: Request) {
       where,
       include: {
         reportedBy: { select: { name: true } },
-        refSesi: {
+        refSession: {
           select: {
             date: true,
-            jadwal: { select: { mataPelajaran: { select: { name: true } } } },
+            schedule: { select: { subject: { select: { name: true } } } },
           },
         },
       },

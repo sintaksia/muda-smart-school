@@ -44,8 +44,8 @@ describe("PATCH /api/attendance/records/[id]", () => {
     } as never);
     vi.mocked(prisma.studentAttendance.findUnique).mockResolvedValue({
       id: "abs-1",
-      jadwal: { teacherId: "guru-1" },
-      sesi: null,
+      schedule: { teacherId: "guru-1" },
+      session: null,
     } as unknown as StudentAttendance);
     vi.mocked(overrideAttendance).mockResolvedValue({
       id: "abs-1",
@@ -73,8 +73,8 @@ describe("PATCH /api/attendance/records/[id]", () => {
     } as never);
     vi.mocked(prisma.studentAttendance.findUnique).mockResolvedValue({
       id: "abs-1",
-      jadwal: { teacherId: "guru-1" },
-      sesi: { actualTeacherId: "guru-1" },
+      schedule: { teacherId: "guru-1" },
+      session: { actualTeacherId: "guru-1" },
     } as unknown as StudentAttendance);
 
     const response = await PATCH(

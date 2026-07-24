@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { createGuru } from "@/src/features/master/services/guru";
+import { createTeacher } from "@/src/features/master/services/guru";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { Teacher } from "@prisma/client";
 
@@ -9,8 +9,8 @@ vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
 vi.mock("@/src/features/master/services/guru", () => ({
-  getGuruList: vi.fn(),
-  createGuru: vi.fn(),
+  getTeacherList: vi.fn(),
+  createTeacher: vi.fn(),
 }));
 
 function buildRequest(body: unknown): Request {
@@ -53,15 +53,15 @@ describe("POST /api/master/guru", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(createGuru).mockResolvedValue({
-      guru: { id: "guru-1" } as Teacher,
+    vi.mocked(createTeacher).mockResolvedValue({
+      teacher: { id: "guru-1" } as Teacher,
       error: null,
     });
 
     const response = await POST(buildRequest(validBody));
 
     expect(response.status).toBe(201);
-    expect(createGuru).toHaveBeenCalledWith(validBody, "admin-1");
+    expect(createTeacher).toHaveBeenCalledWith(validBody, "admin-1");
   });
 
   it("returns 400 without any subject qualification", async () => {
@@ -72,6 +72,6 @@ describe("POST /api/master/guru", () => {
 
     const response = await POST(buildRequest({ ...validBody, subjectIds: [] }));
     expect(response.status).toBe(400);
-    expect(createGuru).not.toHaveBeenCalled();
+    expect(createTeacher).not.toHaveBeenCalled();
   });
 });

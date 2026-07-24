@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { DELETE } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { deleteKelas } from "@/src/features/master/services/kelas";
+import { deleteClass } from "@/src/features/master/services/kelas";
 import type { SessionUser } from "@/src/features/auth/types";
 
 vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
 vi.mock("@/src/features/master/services/kelas", () => ({
-  updateKelas: vi.fn(),
-  deleteKelas: vi.fn(),
+  updateClass: vi.fn(),
+  deleteClass: vi.fn(),
 }));
 
 const routeParams = { params: Promise.resolve({ id: "k1" }) };
@@ -30,7 +30,7 @@ describe("DELETE /api/master/kelas/[id]", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(deleteKelas).mockResolvedValue({ ok: true, error: null });
+    vi.mocked(deleteClass).mockResolvedValue({ ok: true, error: null });
 
     const response = await DELETE(buildRequest(), routeParams);
     expect(response.status).toBe(200);
@@ -41,7 +41,7 @@ describe("DELETE /api/master/kelas/[id]", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(deleteKelas).mockResolvedValue({
+    vi.mocked(deleteClass).mockResolvedValue({
       ok: false,
       error: "Kelas masih memiliki siswa atau jadwal — tidak dapat dihapus",
     });

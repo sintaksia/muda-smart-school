@@ -44,7 +44,7 @@ const schedule = {
   startTime: "08:00",
   endTime: "09:30",
   isActive: true,
-  kelas: { students: [{ id: "s1", userId: "u1" }] },
+  schoolClass: { students: [{ id: "s1", userId: "u1" }] },
 } as unknown as Schedule;
 
 beforeEach(() => {
@@ -182,13 +182,13 @@ describe("autoCloseDueSessions", () => {
         id: "past",
         date: DATE,
         status: "OPEN",
-        jadwal: { endTime: "07:00" }, // cutoff 07:10 WIB = 00:10 UTC
+        schedule: { endTime: "07:00" }, // cutoff 07:10 WIB = 00:10 UTC
       },
       {
         id: "ongoing",
         date: DATE,
         status: "OPEN",
-        jadwal: { endTime: "09:30" },
+        schedule: { endTime: "09:30" },
       },
     ] as unknown as Session[]);
     vi.mocked(prisma.session.findUnique).mockResolvedValue({

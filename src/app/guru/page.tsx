@@ -12,18 +12,20 @@ export default async function GuruDashboardPage() {
   if (!user) {
     redirect("/login");
   }
-  const guru = await prisma.teacher.findUnique({ where: { userId: user.id } });
-  if (!guru) {
+  const teacher = await prisma.teacher.findUnique({
+    where: { userId: user.id },
+  });
+  if (!teacher) {
     redirect("/login");
   }
 
   const { dateISO, dayOfWeek } = toWibParts(new Date());
   const jadwal = dayOfWeek
     ? await prisma.schedule.findMany({
-        where: { dayOfWeek, isActive: true, teacherId: guru.id },
+        where: { dayOfWeek, isActive: true, teacherId: teacher.id },
         include: {
-          kelas: { select: { name: true } },
-          mataPelajaran: { select: { name: true } },
+          schoolClass: { select: { name: true } },
+          subject: { select: { name: true } },
           sessions: { where: { date: dateOnlyUtc(dateISO) } },
         },
         orderBy: { startTime: "asc" },
@@ -44,8 +46,8 @@ export default async function GuruDashboardPage() {
         items={jadwal.map((row) => ({
           jadwalId: row.id,
           jam: `${row.startTime}–${row.endTime}`,
-          kelas: row.kelas.name,
-          mapel: row.mataPelajaran.name,
+          kelas: row.schoolClass.name,
+          mapel: row.subject.name,
           sesiId: row.sessions[0]?.id ?? null,
           sesiStatus: row.sessions[0]?.status ?? null,
         }))}

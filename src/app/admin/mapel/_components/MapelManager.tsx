@@ -20,13 +20,13 @@ export interface MapelRow {
 }
 
 interface MapelManagerProps {
-  mapelList: MapelRow[];
+  subjectList: MapelRow[];
 }
 
 const inputClass =
   "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
 
-export function MapelManager({ mapelList }: MapelManagerProps) {
+export function MapelManager({ subjectList }: MapelManagerProps) {
   const router = useRouter();
   const [name, setName] = useState<string>("");
   const [code, setCode] = useState<string>("");
@@ -142,7 +142,7 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
               </tr>
             </thead>
             <tbody>
-              {mapelList.map((row) => (
+              {subjectList.map((row) => (
                 <tr
                   key={row.id}
                   className="border-hairline border-b last:border-b-0"
@@ -174,7 +174,7 @@ export function MapelManager({ mapelList }: MapelManagerProps) {
                   </td>
                 </tr>
               ))}
-              {mapelList.length === 0 && (
+              {subjectList.length === 0 && (
                 <tr>
                   <td
                     colSpan={6}

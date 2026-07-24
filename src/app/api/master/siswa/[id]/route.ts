@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { updateSiswa } from "@/src/features/master/services/siswa";
+import { updateStudent } from "@/src/features/master/services/siswa";
 import { STUDENT_STATUS_VALUES } from "@/src/lib/constants";
 
 interface RouteParams {
@@ -34,14 +34,14 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         { status: 400 },
       );
     }
-    const { siswa, error } = await updateSiswa(id, result.data);
-    if (error || !siswa) {
+    const { student, error } = await updateStudent(id, result.data);
+    if (error || !student) {
       return NextResponse.json(
         { error: error ?? "Gagal memperbarui siswa" },
         { status: 400 },
       );
     }
-    return NextResponse.json(siswa);
+    return NextResponse.json(student);
   } catch (err: unknown) {
     console.error("Update siswa error:", err);
     return NextResponse.json(

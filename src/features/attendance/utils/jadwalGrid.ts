@@ -7,10 +7,10 @@ export interface JadwalEntry {
   startTime: string;
   endTime: string;
   classId: string;
-  kelas: string;
+  className: string;
   teacherId: string;
-  guru: string;
-  mataPelajaran: string;
+  teacherName: string;
+  subjectName: string;
 }
 
 /** An empty interval between two sessions of the same entity on one day. */
@@ -44,7 +44,7 @@ export function buildTimeBoundaries(entries: JadwalEntry[]): string[] {
 }
 
 /**
- * Ids of entries that clash: same guru or same kelas, same day, overlapping
+ * Ids of entries that clash: same teacher or same class, same day, overlapping
  * time ranges. Mirrors the server-side validation in services/schedule.ts.
  */
 export function findConflictIds(entries: JadwalEntry[]): Set<string> {
@@ -66,7 +66,7 @@ export function findConflictIds(entries: JadwalEntry[]): Set<string> {
 
 /**
  * Empty intervals between the first and last session of each day for one
- * entity's entries (pass entries already filtered to a kelas or guru).
+ * entity's entries (pass entries already filtered to a class or teacher).
  */
 export function findGaps(entries: JadwalEntry[]): JadwalGap[] {
   const byDay = new Map<string, JadwalEntry[]>();
@@ -106,7 +106,7 @@ export function findGaps(entries: JadwalEntry[]): JadwalGap[] {
 /**
  * Heatmap rollup: for each entity (keyed by classId or teacherId) and day,
  * session count, total hours, conflict flag, and gap count. Gaps are only
- * meaningful for kelas (a class should have no idle time between sessions).
+ * meaningful for classes (a class should have no idle time between sessions).
  */
 export function summarizeByEntity(
   entries: JadwalEntry[],

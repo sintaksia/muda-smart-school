@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
 import { createUser } from "@/src/features/auth/services/users";
-import { createGuru, updateGuru } from "./guru";
+import { createTeacher, updateTeacher } from "./guru";
 import type { Teacher, User } from "@prisma/client";
 import type { CreateTeacherInput } from "../types";
 
@@ -37,7 +37,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("createGuru", () => {
+describe("createTeacher", () => {
   it("creates account, profile, and subject qualifications", async () => {
     vi.mocked(createUser).mockResolvedValue({
       user: { id: "user-1" } as User,
@@ -47,7 +47,7 @@ describe("createGuru", () => {
       id: "guru-1",
     } as Teacher);
 
-    const result = await createGuru(input, "admin-1");
+    const result = await createTeacher(input, "admin-1");
 
     expect(result.error).toBeNull();
     expect(createUser).toHaveBeenCalledWith(
@@ -67,15 +67,15 @@ describe("createGuru", () => {
       error: "Email sudah terdaftar",
     });
 
-    const result = await createGuru(input);
+    const result = await createTeacher(input);
 
-    expect(result.guru).toBeNull();
+    expect(result.teacher).toBeNull();
     expect(result.error).toBe("Email sudah terdaftar");
     expect(prisma.teacher.create).not.toHaveBeenCalled();
   });
 });
 
-describe("updateGuru", () => {
+describe("updateTeacher", () => {
   it("replaces subject qualifications when provided", async () => {
     vi.mocked(prisma.teacher.findUnique).mockResolvedValue({
       id: "guru-1",
@@ -84,7 +84,7 @@ describe("updateGuru", () => {
       id: "guru-1",
     } as Teacher);
 
-    const result = await updateGuru("guru-1", { subjectIds: ["m3"] });
+    const result = await updateTeacher("guru-1", { subjectIds: ["m3"] });
 
     expect(result.error).toBeNull();
     expect(prisma.teacherSubject.deleteMany).toHaveBeenCalledWith({
@@ -97,7 +97,7 @@ describe("updateGuru", () => {
 
   it("errors for a missing guru", async () => {
     vi.mocked(prisma.teacher.findUnique).mockResolvedValue(null);
-    const result = await updateGuru("missing", { position: "Wakasek" });
+    const result = await updateTeacher("missing", { position: "Wakasek" });
     expect(result.error).toBe("Guru tidak ditemukan");
   });
 });

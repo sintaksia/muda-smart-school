@@ -12,23 +12,23 @@ import { TeacherAbsenceForm } from "./TeacherAbsenceForm";
 
 export interface TeacherAbsenceRow {
   id: string;
-  guru: string;
-  tanggal: string;
+  teacherName: string;
+  date: string;
   status: string;
-  kelas: string;
-  mapel: string;
-  jam: string;
+  className: string;
+  subjectName: string;
+  time: string;
   substitute: string | null;
 }
 
 interface TeacherAbsenceManagerProps {
   records: TeacherAbsenceRow[];
-  guruOptions: { id: string; nama: string }[];
+  teacherOptions: { id: string; name: string }[];
 }
 
 export function TeacherAbsenceManager({
   records,
-  guruOptions,
+  teacherOptions,
 }: TeacherAbsenceManagerProps) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -65,7 +65,7 @@ export function TeacherAbsenceManager({
 
   return (
     <div className="space-y-6">
-      <TeacherAbsenceForm guruOptions={guruOptions} />
+      <TeacherAbsenceForm teacherOptions={teacherOptions} />
 
       <section className="border-hairline rounded-card border bg-white">
         <div className="overflow-x-auto">
@@ -87,16 +87,16 @@ export function TeacherAbsenceManager({
                   className="border-hairline border-b last:border-b-0"
                 >
                   <td className="text-ink px-5 py-3 font-semibold">
-                    {record.guru}
+                    {record.teacherName}
                   </td>
                   <td className="text-ink px-4 py-3 tabular-nums">
-                    {record.tanggal}
+                    {record.date}
                   </td>
                   <td className="text-ink-secondary px-4 py-3 tabular-nums">
-                    {record.jam}
+                    {record.time}
                   </td>
                   <td className="text-ink-secondary px-4 py-3">
-                    {record.kelas} · {record.mapel}
+                    {record.className} · {record.subjectName}
                   </td>
                   <td className="px-4 py-3">
                     <Badge variant={ATTENDANCE_STATUS_BADGES[record.status]}>
@@ -116,9 +116,9 @@ export function TeacherAbsenceManager({
                         <option value="" disabled>
                           Pilih pengganti…
                         </option>
-                        {guruOptions.map((guru) => (
-                          <option key={guru.id} value={guru.id}>
-                            {guru.nama}
+                        {teacherOptions.map((teacher) => (
+                          <option key={teacher.id} value={teacher.id}>
+                            {teacher.name}
                           </option>
                         ))}
                       </select>

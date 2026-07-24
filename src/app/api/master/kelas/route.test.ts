@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { createKelas } from "@/src/features/master/services/kelas";
+import { createClass } from "@/src/features/master/services/kelas";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { SchoolClass } from "@prisma/client";
 
@@ -9,8 +9,8 @@ vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
 vi.mock("@/src/features/master/services/kelas", () => ({
-  getKelasList: vi.fn(),
-  createKelas: vi.fn(),
+  getClassList: vi.fn(),
+  createClass: vi.fn(),
 }));
 
 function buildRequest(body: unknown): Request {
@@ -48,8 +48,8 @@ describe("POST /api/master/kelas", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(createKelas).mockResolvedValue({
-      kelas: { id: "k1" } as SchoolClass,
+    vi.mocked(createClass).mockResolvedValue({
+      schoolClass: { id: "k1" } as SchoolClass,
       error: null,
     });
 
@@ -67,6 +67,6 @@ describe("POST /api/master/kelas", () => {
       buildRequest({ ...validBody, academicYear: "2026" }),
     );
     expect(response.status).toBe(400);
-    expect(createKelas).not.toHaveBeenCalled();
+    expect(createClass).not.toHaveBeenCalled();
   });
 });

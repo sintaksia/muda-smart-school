@@ -37,12 +37,12 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     if (!canAccessAdmin(currentUser.role)) {
-      const guru = await prisma.teacher.findUnique({
+      const teacher = await prisma.teacher.findUnique({
         where: { userId: currentUser.id },
       });
       const record = await prisma.studentAttendance.findUnique({
         where: { id },
-        include: { jadwal: { select: { teacherId: true } }, sesi: true },
+        include: { schedule: { select: { teacherId: true } }, session: true },
       });
       if (!record) {
         return NextResponse.json(
@@ -51,9 +51,9 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         );
       }
       const isSessionTeacher =
-        guru &&
-        (record.jadwal.teacherId === guru.id ||
-          record.sesi?.actualTeacherId === guru.id);
+        teacher &&
+        (record.schedule.teacherId === teacher.id ||
+          record.session?.actualTeacherId === teacher.id);
       if (!isSessionTeacher) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }

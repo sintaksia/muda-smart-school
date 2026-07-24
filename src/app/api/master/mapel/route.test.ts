@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { createMapel } from "@/src/features/master/services/mapel";
+import { createSubject } from "@/src/features/master/services/mapel";
 import type { SessionUser } from "@/src/features/auth/types";
 import type { Subject } from "@prisma/client";
 
@@ -9,8 +9,8 @@ vi.mock("@/src/features/auth/services/auth", () => ({
   getCurrentUser: vi.fn(),
 }));
 vi.mock("@/src/features/master/services/mapel", () => ({
-  getMapelList: vi.fn(),
-  createMapel: vi.fn(),
+  getSubjectList: vi.fn(),
+  createSubject: vi.fn(),
 }));
 
 function buildRequest(body: unknown): Request {
@@ -43,8 +43,8 @@ describe("POST /api/master/mapel", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(createMapel).mockResolvedValue({
-      mapel: { id: "m1" } as Subject,
+    vi.mocked(createSubject).mockResolvedValue({
+      subject: { id: "m1" } as Subject,
       error: null,
     });
 
@@ -53,7 +53,7 @@ describe("POST /api/master/mapel", () => {
     );
 
     expect(response.status).toBe(201);
-    expect(createMapel).toHaveBeenCalledWith(
+    expect(createSubject).toHaveBeenCalledWith(
       expect.objectContaining({ code: "MTK" }),
     );
   });
@@ -63,8 +63,8 @@ describe("POST /api/master/mapel", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(createMapel).mockResolvedValue({
-      mapel: null,
+    vi.mocked(createSubject).mockResolvedValue({
+      subject: null,
       error: "Kode mapel sudah digunakan",
     });
 

@@ -2,7 +2,7 @@ import { prisma } from "@/src/lib/prisma";
 import type { SchoolClass } from "@prisma/client";
 import type { SchoolClassInput } from "../types";
 
-export async function getKelasList() {
+export async function getClassList() {
   return prisma.schoolClass.findMany({
     include: {
       homeroomTeacher: {
@@ -14,9 +14,9 @@ export async function getKelasList() {
   });
 }
 
-export async function createKelas(
+export async function createClass(
   input: SchoolClassInput,
-): Promise<{ kelas: SchoolClass | null; error: string | null }> {
+): Promise<{ schoolClass: SchoolClass | null; error: string | null }> {
   const existing = await prisma.schoolClass.findUnique({
     where: {
       name_academicYear: { name: input.name, academicYear: input.academicYear },
@@ -24,32 +24,32 @@ export async function createKelas(
   });
   if (existing) {
     return {
-      kelas: null,
+      schoolClass: null,
       error: "Kelas dengan nama dan tahun ajaran ini sudah ada",
     };
   }
-  const kelas = await prisma.schoolClass.create({
+  const schoolClass = await prisma.schoolClass.create({
     data: { ...input, homeroomTeacherId: input.homeroomTeacherId || null },
   });
-  return { kelas, error: null };
+  return { schoolClass, error: null };
 }
 
-export async function updateKelas(
+export async function updateClass(
   id: string,
   input: SchoolClassInput,
-): Promise<{ kelas: SchoolClass | null; error: string | null }> {
+): Promise<{ schoolClass: SchoolClass | null; error: string | null }> {
   const existing = await prisma.schoolClass.findUnique({ where: { id } });
   if (!existing) {
-    return { kelas: null, error: "Kelas tidak ditemukan" };
+    return { schoolClass: null, error: "Kelas tidak ditemukan" };
   }
-  const kelas = await prisma.schoolClass.update({
+  const schoolClass = await prisma.schoolClass.update({
     where: { id },
     data: { ...input, homeroomTeacherId: input.homeroomTeacherId || null },
   });
-  return { kelas, error: null };
+  return { schoolClass, error: null };
 }
 
-export async function deleteKelas(
+export async function deleteClass(
   id: string,
 ): Promise<{ ok: boolean; error: string | null }> {
   const usage = await prisma.schoolClass.findUnique({

@@ -121,7 +121,7 @@ describe("PATCH /api/attendance/sessions/[id]", () => {
     vi.mocked(prisma.session.findUnique).mockResolvedValue({
       id: "sesi-1",
       actualTeacherId: "other",
-      jadwal: { teacherId: "other" },
+      schedule: { teacherId: "other" },
     } as unknown as Session);
 
     const response = await PATCH(

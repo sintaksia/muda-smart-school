@@ -2,7 +2,7 @@ import { prisma } from "@/src/lib/prisma";
 import type { Student } from "@prisma/client";
 import type { UpdateStudentInput } from "../types";
 
-export async function getSiswaList() {
+export async function getStudentList() {
   return prisma.student.findMany({
     include: {
       user: { select: { name: true, email: true, status: true } },
@@ -13,28 +13,28 @@ export async function getSiswaList() {
 }
 
 /** Assign a student to a class and/or change their status. */
-export async function updateSiswa(
+export async function updateStudent(
   id: string,
   input: UpdateStudentInput,
-): Promise<{ siswa: Student | null; error: string | null }> {
+): Promise<{ student: Student | null; error: string | null }> {
   const existing = await prisma.student.findUnique({ where: { id } });
   if (!existing) {
-    return { siswa: null, error: "Siswa tidak ditemukan" };
+    return { student: null, error: "Siswa tidak ditemukan" };
   }
   if (input.classId) {
-    const kelas = await prisma.schoolClass.findUnique({
+    const schoolClass = await prisma.schoolClass.findUnique({
       where: { id: input.classId },
     });
-    if (!kelas) {
-      return { siswa: null, error: "Kelas tidak ditemukan" };
+    if (!schoolClass) {
+      return { student: null, error: "Kelas tidak ditemukan" };
     }
   }
-  const siswa = await prisma.student.update({
+  const student = await prisma.student.update({
     where: { id },
     data: {
       classId: input.classId !== undefined ? input.classId || null : undefined,
       status: input.status,
     },
   });
-  return { siswa, error: null };
+  return { student, error: null };
 }
