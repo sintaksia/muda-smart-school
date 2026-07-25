@@ -42,6 +42,10 @@ import {
   SidebarRail,
 } from "@/src/components/ui/sidebar";
 import { UserMenu } from "./UserMenu";
+import {
+  SidebarCollapsibleGroup,
+  type SidebarNavItem,
+} from "./SidebarCollapsibleGroup";
 import type { SessionUser } from "@/src/features/auth/types";
 import { canManageUsers } from "@/src/features/auth/utils/permissions";
 
@@ -60,7 +64,7 @@ const mainMenuItems = [
 ];
 
 // CMS - Konten Website
-const cmsMenuItems = [
+const cmsMenuItems: SidebarNavItem[] = [
   {
     title: "Hero Slider",
     url: "/admin/cms/hero-slides",
@@ -129,7 +133,7 @@ const cmsMenuItems = [
 ];
 
 // Manajemen Sekolah
-const managementMenuItems = [
+const managementMenuItems: SidebarNavItem[] = [
   {
     title: ENTITY_LABELS.STUDENT,
     url: "/admin/siswa",
@@ -158,7 +162,7 @@ const managementMenuItems = [
 ];
 
 // Absensi & Skor Kredit
-const attendanceMenuItems = [
+const attendanceMenuItems: SidebarNavItem[] = [
   {
     title: "Sesi Hari Ini",
     url: "/admin/absensi",
@@ -187,7 +191,7 @@ const attendanceMenuItems = [
 ];
 
 // Pengaturan
-const settingsMenuItems = [
+const settingsMenuItems: SidebarNavItem[] = [
   {
     title: "Notifikasi",
     url: "/admin/notifikasi",
@@ -201,7 +205,7 @@ const settingsMenuItems = [
 ];
 
 // User Management (Super Admin only)
-const userManagementItems = [
+const userManagementItems: SidebarNavItem[] = [
   {
     title: "Kelola User",
     url: "/admin/users",
@@ -255,137 +259,36 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* CMS - Konten Website */}
-        <SidebarGroup>
-          <SidebarGroupLabel>CMS - Website</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {cmsMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={
-                      pathname === item.url ||
-                      pathname.startsWith(item.url + "/")
-                    }
-                    tooltip={item.title}
-                  >
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarCollapsibleGroup
+          label="CMS - Website"
+          icon={Globe}
+          items={cmsMenuItems}
+        />
 
-        {/* Manajemen Sekolah */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Manajemen</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {managementMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={
-                      pathname === item.url ||
-                      pathname.startsWith(item.url + "/")
-                    }
-                    tooltip={item.title}
-                  >
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarCollapsibleGroup
+          label="Manajemen"
+          icon={School}
+          items={managementMenuItems}
+        />
 
-        {/* Absensi & Skor Kredit */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Absensi & Kredit</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {attendanceMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={
-                      pathname === item.url ||
-                      (item.url !== "/admin/absensi" &&
-                        pathname.startsWith(item.url + "/"))
-                    }
-                    tooltip={item.title}
-                  >
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarCollapsibleGroup
+          label="Absensi & Kredit"
+          icon={Activity}
+          items={attendanceMenuItems}
+        />
 
-        {/* Pengaturan */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Pengaturan</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {settingsMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={
-                      pathname === item.url ||
-                      pathname.startsWith(item.url + "/")
-                    }
-                    tooltip={item.title}
-                  >
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarCollapsibleGroup
+          label="Pengaturan"
+          icon={Settings}
+          items={settingsMenuItems}
+        />
 
-        {/* User Management - Super Admin Only */}
         {showUserManagement && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Administrasi</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {userManagementItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={
-                        pathname === item.url ||
-                        pathname.startsWith(item.url + "/")
-                      }
-                      tooltip={item.title}
-                    >
-                      <Link href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          <SidebarCollapsibleGroup
+            label="Administrasi"
+            icon={UserCog}
+            items={userManagementItems}
+          />
         )}
       </SidebarContent>
 
