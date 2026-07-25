@@ -1,6 +1,12 @@
 import { ROLE_LABELS } from "@/src/features/auth/types";
 
 /**
+ * App version, sourced from package.json via next.config `env`.
+ * Import this instead of hardcoding a version string anywhere in the UI.
+ */
+export const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "";
+
+/**
  * Single source of truth for the Indonesian display noun of each core
  * domain entity. Import this instead of hardcoding "Siswa"/"Guru"/"Kelas"/
  * "Mata Pelajaran" — changing a noun here updates every consumer at once.

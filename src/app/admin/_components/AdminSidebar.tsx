@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ENTITY_LABELS } from "@/src/lib/constants";
+import { APP_VERSION, ENTITY_LABELS } from "@/src/lib/constants";
 import {
   LayoutDashboard,
   Users,
@@ -230,7 +230,9 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold">Muda Smart School</span>
-            <span className="text-xs text-muted-foreground">Admin Panel</span>
+            <span className="text-xs text-muted-foreground">
+              Admin Panel{APP_VERSION && ` · v${APP_VERSION}`}
+            </span>
           </div>
         </div>
       </SidebarHeader>
