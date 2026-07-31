@@ -8,4 +8,9 @@ export interface CreateStudentFromRegistrationInput {
   nis: string;
   angkatan: number;
   password: string;
+  /**
+   * Login email override, used by the bulk sync when the registration itself
+   * has no `studentEmail`. Falls back to the registration's own email.
+   */
+  email?: string;
 }

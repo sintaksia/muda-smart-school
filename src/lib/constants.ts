@@ -18,6 +18,12 @@ export const ENTITY_LABELS = {
   SUBJECT: "Mata Pelajaran",
 } as const;
 
+/**
+ * Domain used to mint a login for a student whose registration carries no
+ * email. Change it here and every generated address follows.
+ */
+export const STUDENT_EMAIL_DOMAIN = "siswa.muda.sch.id";
+
 export const genderOptions = [
   { value: "MALE", label: "Laki-laki" },
   { value: "FEMALE", label: "Perempuan" },

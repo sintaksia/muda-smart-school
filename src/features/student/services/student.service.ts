@@ -1,5 +1,5 @@
 import { prisma } from "@/src/lib/prisma";
-import { createUser } from "@/src/features/auth/services/users";
+import { createUser, deleteUser } from "@/src/features/auth/services/users";
 import { getRegistrationById } from "@/src/features/registration/services";
 import { toStudentProfile } from "../utils/registrationProfile";
 import type { Student } from "@prisma/client";
@@ -34,7 +34,8 @@ export async function createStudentFromRegistration(
       };
     }
 
-    if (!registration.studentEmail) {
+    const email = input.email ?? registration.studentEmail;
+    if (!email) {
       return {
         student: null,
         error: "Pendaftaran belum memiliki email siswa",
@@ -43,7 +44,7 @@ export async function createStudentFromRegistration(
 
     const { user, error: userError } = await createUser(
       {
-        email: registration.studentEmail,
+        email,
         password: input.password,
         name: registration.fullName,
         role: "STUDENT",
@@ -56,19 +57,25 @@ export async function createStudentFromRegistration(
       return { student: null, error: userError || "Gagal membuat akun user" };
     }
 
-    const student = await prisma.student.create({
-      data: {
-        userId: user.id,
-        registrationId: registration.id,
-        nis: input.nis,
-        nisn: registration.nisn,
-        specialization: registration.specialization,
-        angkatan: input.angkatan,
-        ...toStudentProfile(registration),
-      },
-    });
-
-    return { student, error: null };
+    try {
+      const student = await prisma.student.create({
+        data: {
+          userId: user.id,
+          registrationId: registration.id,
+          nis: input.nis,
+          nisn: registration.nisn,
+          specialization: registration.specialization,
+          angkatan: input.angkatan,
+          ...toStudentProfile(registration),
+        },
+      });
+      return { student, error: null };
+    } catch (err: unknown) {
+      // Never leave the auth account behind: an orphaned login holds the email
+      // hostage and blocks every retry of this registration.
+      await deleteUser(user.id);
+      throw err;
+    }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "An error occurred";
     return { student: null, error: message };

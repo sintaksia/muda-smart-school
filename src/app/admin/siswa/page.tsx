@@ -1,6 +1,7 @@
 import { PageHeader } from "../_components/PageHeader";
 import { ENTITY_LABELS } from "@/src/lib/constants";
 import { getStudentList } from "@/src/features/master/services/student";
+import { getPendingPromotionCount } from "@/src/features/master/services/studentPromotion";
 import { toStudentRow } from "@/src/features/master/utils/studentRow";
 import { prisma } from "@/src/lib/prisma";
 import { StudentManager } from "./_components/StudentManager";
@@ -8,12 +9,13 @@ import { StudentManager } from "./_components/StudentManager";
 export const dynamic = "force-dynamic";
 
 export default async function SiswaPage() {
-  const [studentList, classList] = await Promise.all([
+  const [studentList, classList, pendingPromotionCount] = await Promise.all([
     getStudentList(),
     prisma.schoolClass.findMany({
       select: { id: true, name: true },
       orderBy: [{ gradeLevel: "asc" }, { name: "asc" }],
     }),
+    getPendingPromotionCount(),
   ]);
 
   return (
@@ -25,6 +27,7 @@ export default async function SiswaPage() {
       <StudentManager
         students={studentList.map(toStudentRow)}
         classOptions={classList}
+        pendingPromotionCount={pendingPromotionCount}
       />
     </div>
   );

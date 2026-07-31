@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
-import { createUser } from "@/src/features/auth/services/users";
+import { createUser, deleteUser } from "@/src/features/auth/services/users";
 import { getRegistrationById } from "@/src/features/registration/services";
 import {
   createStudentFromRegistration,
@@ -19,6 +19,7 @@ vi.mock("@/src/lib/prisma", () => ({
 
 vi.mock("@/src/features/auth/services/users", () => ({
   createUser: vi.fn(),
+  deleteUser: vi.fn(),
 }));
 
 vi.mock("@/src/features/registration/services", () => ({
@@ -124,6 +125,29 @@ describe("createStudentFromRegistration", () => {
         previousSchoolName: "SMPN 1 Bandung",
       }),
     });
+  });
+
+  it("deletes the auth account when the student row fails to save", async () => {
+    vi.mocked(getRegistrationById).mockResolvedValue(baseRegistration);
+    vi.mocked(createUser).mockResolvedValue({
+      user: { id: "user-1" } as User,
+      error: null,
+    });
+    vi.mocked(prisma.student.create).mockRejectedValue(
+      new Error("Unknown argument `gender`"),
+    );
+
+    const result = await createStudentFromRegistration({
+      registrationId: "reg-1",
+      nis: "999",
+      angkatan: 2025,
+      password: "Password123",
+    });
+
+    expect(result.student).toBeNull();
+    expect(result.error).toContain("gender");
+    // Without this the email stays taken and every retry fails.
+    expect(deleteUser).toHaveBeenCalledWith("user-1");
   });
 
   it("returns an error when registration is not found", async () => {

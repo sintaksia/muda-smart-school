@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Download, FileUp, Plus } from "lucide-react";
+import { Download, FileUp, Plus, UserRoundPlus } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { DataTable } from "@/src/app/admin/_components/DataTable";
 import { downloadStudentExport } from "@/src/features/master/utils/studentExcel";
 import { ENTITY_LABELS } from "@/src/lib/constants";
 import { ImportStudentDialog } from "./ImportStudentDialog";
+import { PromoteRegistrationsDialog } from "./PromoteRegistrationsDialog";
 import { StudentFilters, type StudentFilterState } from "./StudentFilters";
 import { StudentForm } from "./StudentForm";
 import { studentColumns } from "./StudentColumns";
@@ -15,6 +16,8 @@ import type { StudentRow } from "@/src/features/master/types";
 interface StudentManagerProps {
   students: StudentRow[];
   classOptions: { id: string; name: string }[];
+  /** Accepted registrations still waiting to be turned into students. */
+  pendingPromotionCount: number;
 }
 
 const emptyFilters: StudentFilterState = {
@@ -26,10 +29,12 @@ const emptyFilters: StudentFilterState = {
 export function StudentManager({
   students,
   classOptions,
+  pendingPromotionCount,
 }: StudentManagerProps) {
   const [filters, setFilters] = useState<StudentFilterState>(emptyFilters);
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [importOpen, setImportOpen] = useState<boolean>(false);
+  const [promoteOpen, setPromoteOpen] = useState<boolean>(false);
   const [editing, setEditing] = useState<StudentRow | null>(null);
 
   const visibleStudents = useMemo(
@@ -92,6 +97,15 @@ export function StudentManager({
             <FileUp className="mr-2 h-4 w-4" />
             Impor
           </Button>
+          <Button
+            variant="outline"
+            onClick={() => setPromoteOpen(true)}
+            disabled={pendingPromotionCount === 0}
+          >
+            <UserRoundPlus className="mr-2 h-4 w-4" />
+            Tarik dari Pendaftaran
+            {pendingPromotionCount > 0 && ` (${pendingPromotionCount})`}
+          </Button>
           <Button onClick={openCreateForm}>
             <Plus className="mr-2 h-4 w-4" />
             Tambah {ENTITY_LABELS.STUDENT}
@@ -120,6 +134,13 @@ export function StudentManager({
       />
 
       <ImportStudentDialog open={importOpen} onOpenChange={setImportOpen} />
+
+      <PromoteRegistrationsDialog
+        key={pendingPromotionCount}
+        open={promoteOpen}
+        onOpenChange={setPromoteOpen}
+        pendingCount={pendingPromotionCount}
+      />
     </div>
   );
 }

@@ -127,3 +127,16 @@ export interface StudentImportResult {
   credentials: StudentCredential[];
   failures: StudentImportFailure[];
 }
+
+export interface StudentPromotionFailure {
+  registrationNumber: string;
+  name: string;
+  error: string;
+}
+
+/** Outcome of syncing ACCEPTED registrations into the student table. */
+export interface StudentPromotionResult {
+  created: number;
+  credentials: StudentCredential[];
+  failures: StudentPromotionFailure[];
+}

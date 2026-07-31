@@ -1,28 +1,43 @@
 "use client";
 
 import { CheckCircle2, XCircle } from "lucide-react";
-import type { StudentImportResult } from "@/src/features/master/types";
+import type { StudentCredential } from "@/src/features/master/types";
 
-interface ImportResultSummaryProps {
-  result: StudentImportResult;
+export interface BulkFailureRow {
+  id: string;
+  label: string;
+  error: string;
 }
 
-/** Post-import report: created accounts with their password, plus failed rows. */
-export function ImportResultSummary({ result }: ImportResultSummaryProps) {
+interface StudentBulkResultSummaryProps {
+  created: number;
+  credentials: StudentCredential[];
+  failures: BulkFailureRow[];
+}
+
+/**
+ * Report for any bulk student creation (Excel import, registration sync):
+ * created accounts with their password, plus the rows that failed and why.
+ */
+export function StudentBulkResultSummary({
+  created,
+  credentials,
+  failures,
+}: StudentBulkResultSummaryProps) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-4 text-sm font-semibold">
         <span className="text-green-700 flex items-center gap-1.5">
           <CheckCircle2 className="h-4 w-4" />
-          {result.created} berhasil
+          {created} berhasil
         </span>
         <span className="text-destructive flex items-center gap-1.5">
           <XCircle className="h-4 w-4" />
-          {result.failures.length} gagal
+          {failures.length} gagal
         </span>
       </div>
 
-      {result.credentials.length > 0 && (
+      {credentials.length > 0 && (
         <section className="border-border rounded-md border">
           <p className="border-border text-foreground border-b px-4 py-2 text-xs font-semibold">
             Akun yang dibuat — bagikan password ini ke siswa
@@ -30,7 +45,7 @@ export function ImportResultSummary({ result }: ImportResultSummaryProps) {
           <div className="max-h-56 overflow-y-auto">
             <table className="w-full text-xs">
               <tbody>
-                {result.credentials.map((credential) => (
+                {credentials.map((credential) => (
                   <tr
                     key={credential.nis}
                     className="border-border border-b last:border-b-0"
@@ -55,24 +70,21 @@ export function ImportResultSummary({ result }: ImportResultSummaryProps) {
         </section>
       )}
 
-      {result.failures.length > 0 && (
+      {failures.length > 0 && (
         <section className="border-border rounded-md border">
           <p className="border-border text-foreground border-b px-4 py-2 text-xs font-semibold">
-            Baris yang gagal
+            Data yang gagal
           </p>
           <div className="max-h-56 overflow-y-auto">
             <table className="w-full text-xs">
               <tbody>
-                {result.failures.map((failure) => (
+                {failures.map((failure) => (
                   <tr
-                    key={`${failure.row}-${failure.nis}`}
+                    key={failure.id}
                     className="border-border border-b last:border-b-0"
                   >
-                    <td className="text-muted-foreground px-4 py-2 tabular-nums">
-                      Baris {failure.row}
-                    </td>
                     <td className="text-foreground px-4 py-2">
-                      {failure.name || "—"}
+                      {failure.label}
                     </td>
                     <td className="text-destructive px-4 py-2">
                       {failure.error}

@@ -13,7 +13,7 @@ import {
 } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { downloadStudentTemplate } from "@/src/features/master/utils/studentExcel";
-import { ImportResultSummary } from "./ImportResultSummary";
+import { StudentBulkResultSummary } from "./StudentBulkResultSummary";
 import type { StudentImportResult } from "@/src/features/master/types";
 
 interface ImportStudentDialogProps {
@@ -115,7 +115,17 @@ export function ImportStudentDialog({
             </p>
           )}
 
-          {result && <ImportResultSummary result={result} />}
+          {result && (
+            <StudentBulkResultSummary
+              created={result.created}
+              credentials={result.credentials}
+              failures={result.failures.map((failure) => ({
+                id: `${failure.row}-${failure.nis}`,
+                label: `Baris ${failure.row} · ${failure.name || "—"}`,
+                error: failure.error,
+              }))}
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>
