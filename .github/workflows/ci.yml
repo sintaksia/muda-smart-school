@@ -31,8 +31,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm lint
+      # Guardrails (docs/design_system.md, CLAUDE.md) run here: banned radius /
+      # shadows / deleted tokens, import boundaries and the Prisma singleton are
+      # eslint errors and fail this step.
+      # --max-warnings is a ratchet: the count may drop, never rise. When you
+      # clear warnings, lower the number in the `lint:ci` script to lock it in.
+      - name: Lint & guardrails
+        run: pnpm lint:ci
 
       - name: Typecheck
         run: pnpm exec tsc --noEmit

@@ -1,3 +1,14 @@
+echo "🔍 Running guardrails (lint) before push..."
+
+# Same command CI runs, so a green push means a green CI lint step.
+if ! pnpm lint:ci 2>&1; then
+  echo ""
+  echo "❌ Guardrails failed! Push aborted."
+  echo "Errors = design-system / architecture violations (docs/design_system.md)."
+  echo "Too many warnings = you exceeded the --max-warnings ratchet in package.json."
+  exit 1
+fi
+
 echo "🔨 Running build check before push..."
 
 if ! pnpm build 2>&1; then
@@ -7,4 +18,4 @@ if ! pnpm build 2>&1; then
   exit 1
 fi
 
-echo "✅ Build succeeded. Pushing..."
+echo "✅ Guardrails and build passed. Pushing..."

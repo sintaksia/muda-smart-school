@@ -27,7 +27,13 @@ Rules live in `eslint.config.mjs`. They run in three places:
    lints every `.ts`/`.tsx` written under `src/`. **Errors block the edit and
    are returned to you — fix them in the same turn.** Warnings are shown only.
 2. **On commit** — `lint-staged` runs `eslint --fix`.
-3. **On PR** — CI runs `pnpm lint`, `tsc --noEmit` and the test suite.
+3. **On push** — `.husky/pre-push` runs `pnpm lint:ci` then `pnpm build`.
+4. **On PR** — CI runs `pnpm lint:ci`, `tsc --noEmit` and the test suite.
+
+`pnpm lint:ci` is `eslint --max-warnings 55` — a **ratchet**. Warnings may go
+down, never up: adding one new warning fails the build even though warnings are
+non-blocking locally. When you clear warnings, lower the number in the
+`lint:ci` script to lock the gain in. Never raise it to make a build pass.
 
 Errors currently sit at **zero**. If one fires, you introduced it — fix the
 code, don't weaken the rule. Type-only imports are exempt from the boundary
