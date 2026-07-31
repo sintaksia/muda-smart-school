@@ -30,7 +30,7 @@ export default async function ContactCards() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-neutral-900 group-hover:text-green-600 transition-colors">
+                  <h3 className="text-base font-semibold text-neutral-900 group-hover:text-green-600 transition-colors">
                     {contact.name}
                   </h3>
                   <p className="text-2xl font-bold text-green-600 mt-1">

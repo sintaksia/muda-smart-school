@@ -71,7 +71,7 @@ export default function FAQSection({
               key={index}
               className="bg-neutral-50 rounded-md p-6 hover:bg-primary-50 transition-colors"
             >
-              <h3 className="text-lg font-semibold text-neutral-900 mb-2 flex items-start gap-3">
+              <h3 className="text-base font-semibold text-neutral-900 mb-2 flex items-start gap-3">
                 <span className="w-7 h-7 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5">
                   {index + 1}
                 </span>

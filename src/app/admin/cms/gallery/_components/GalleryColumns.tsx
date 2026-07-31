@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable ds/off-palette -- categorical encoding: gallery category; see docs/design_system.md §2.4 */
 import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 import { ImageIcon } from "lucide-react";

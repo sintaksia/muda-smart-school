@@ -17,7 +17,7 @@ export default function GaleriHeroSection({
             <Camera className="w-8 h-8 text-white" />
           </div>
         </div>
-        <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">
           Galeri Sekolah
         </h1>
         <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-8">

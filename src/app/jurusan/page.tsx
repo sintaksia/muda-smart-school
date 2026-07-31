@@ -36,7 +36,7 @@ export default async function JurusanPage() {
                 Program Keahlian
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-6 leading-tight">
               Pilih Jurusan Sesuai{" "}
               <span className="text-yellow-400">Minat & Bakat</span>
             </h1>
@@ -93,7 +93,7 @@ export default async function JurusanPage() {
                         style={{ backgroundColor: `rgba(${rgb}, 0.1)` }}
                       >
                         <span
-                          className="text-6xl font-bold"
+                          className="text-4xl font-extrabold"
                           style={{ color: program.color }}
                         >
                           {program.abbreviation}
@@ -134,7 +134,7 @@ export default async function JurusanPage() {
                   {/* Skills */}
                   {program.skills.length > 0 && (
                     <div className="mb-8">
-                      <h3 className="text-lg font-semibold text-neutral-900 mb-3 flex items-center gap-2">
+                      <h3 className="text-base font-semibold text-neutral-900 mb-3 flex items-center gap-2">
                         <svg
                           className="w-5 h-5"
                           style={{ color: program.color }}

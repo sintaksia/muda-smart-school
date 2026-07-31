@@ -71,7 +71,7 @@ export default async function NewsSection() {
                 <span className="inline-block bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full mb-3">
                   {featured.category}
                 </span>
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-yellow-300 transition-colors">
+                <h3 className="text-base font-semibold text-white mb-2 group-hover:text-yellow-300 transition-colors">
                   {featured.title}
                 </h3>
                 {featured.excerpt && (

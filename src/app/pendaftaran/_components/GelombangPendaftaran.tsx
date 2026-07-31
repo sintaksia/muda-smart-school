@@ -34,7 +34,7 @@ export default function GelombangPendaftaran() {
             >
               <div className="flex items-center gap-4">
                 <div>
-                  <h3 className="text-2xl font-bold text-green-900 mt-1">
+                  <h3 className="text-base font-semibold text-green-900 mt-1">
                     {gelombang.name}
                   </h3>
                   <p className="text-lg font-bold text-green-500 group-hover:text-yellow-600 transition-colors">

@@ -23,7 +23,7 @@ export default function CTABanner() {
           </span>
 
           {/* Main Heading */}
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-6">
             Bergabunglah Bersama Kami di
             <br />
             <span className="text-yellow-400">Tahun Ajaran 2026/2027</span>

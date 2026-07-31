@@ -1,3 +1,4 @@
+/* eslint-disable ds/off-palette -- categorical encoding: registration status per card; see docs/design_system.md §2.4 */
 import {
   Card,
   CardContent,

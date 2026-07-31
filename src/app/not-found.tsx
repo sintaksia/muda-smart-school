@@ -9,7 +9,7 @@ export default function NotFound() {
           404 • Under Maintenance
         </p>
 
-        <h1 className="mt-4 text-4xl md:text-5xl font-bold">
+        <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">
           We’ll be back soon 🚧
         </h1>
 

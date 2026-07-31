@@ -65,7 +65,7 @@ export default function HeroBanner({ slides }: HeroBannerProps) {
                     {slide.ctaText && slide.ctaLink ? (
                       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
                         <div>
-                          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 drop-shadow-lg">
                             {slide.title}
                           </h2>
                           {slide.subtitle && (
@@ -96,7 +96,7 @@ export default function HeroBanner({ slides }: HeroBannerProps) {
                       </div>
                     ) : (
                       <>
-                        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 drop-shadow-lg">
                           {slide.title}
                         </h2>
                         {slide.subtitle && (

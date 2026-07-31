@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable ds/off-palette -- third-party brand colors per social platform; see docs/design_system.md §2.4 */
 import { ColumnDef } from "@tanstack/react-table";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";
 import { StatusBadge } from "@/src/app/admin/_components/StatusBadge";

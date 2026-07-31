@@ -12,7 +12,7 @@ export default function HeroSection() {
               Hubungi Kami
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-6 leading-tight">
             Kami Siap <span className="text-yellow-400">Membantu</span> Anda
           </h1>
           <p className="text-lg md:text-xl text-primary-200 leading-relaxed">

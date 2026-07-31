@@ -1,3 +1,4 @@
+/* eslint-disable ds/off-palette -- third-party brand colors (Instagram, Facebook, YouTube) must render in their own hues; see docs/design_system.md §2.4 */
 import type { SocialPlatform } from "@prisma/client";
 
 export const SOCIAL_ICON_PATHS: Record<SocialPlatform, string> = {

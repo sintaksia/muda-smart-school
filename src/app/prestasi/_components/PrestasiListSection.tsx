@@ -1,3 +1,4 @@
+/* eslint-disable ds/off-palette -- categorical encoding: medal tier counters; see docs/design_system.md §2.4 */
 import type { Achievement } from "@prisma/client";
 import PrestasiCard from "./PrestasiCard";
 

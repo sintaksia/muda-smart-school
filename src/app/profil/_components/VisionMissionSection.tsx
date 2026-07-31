@@ -1,3 +1,4 @@
+/* eslint-disable ds/off-palette -- categorical encoding: achievement level badge; see docs/design_system.md §2.4 */
 import { getActiveAchievements } from "@/src/features/cms/services/achievements";
 import { getSettingsMap } from "@/src/features/cms/services/school-settings";
 import type { Achievement } from "@/src/features/cms/services/achievements";

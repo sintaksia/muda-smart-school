@@ -50,7 +50,7 @@ export default async function Footer() {
 
           {/* Location */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <h4 className="text-base font-semibold mb-4 flex items-center gap-2">
               <svg
                 className="w-5 h-5 text-primary-400"
                 fill="none"
@@ -85,7 +85,7 @@ export default async function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <h4 className="text-base font-semibold mb-4 flex items-center gap-2">
               <svg
                 className="w-5 h-5 text-primary-400"
                 fill="none"

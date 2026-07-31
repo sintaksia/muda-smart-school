@@ -1,3 +1,4 @@
+/* eslint-disable ds/off-palette -- categorical encoding: achievement level badge; see docs/design_system.md §2.4 */
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -24,7 +25,7 @@ export default async function AwardsSection() {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-sm flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-sm flex items-center justify-center">
                 <svg
                   className="w-4 h-4 text-yellow-900"
                   fill="currentColor"
@@ -37,7 +38,7 @@ export default async function AwardsSection() {
                 Prestasi
               </span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white">
+            <h2 className="text-xl font-bold text-white">
               Raihan Prestasi Gemilang
             </h2>
           </div>
@@ -68,7 +69,7 @@ export default async function AwardsSection() {
                   <div
                     className={`w-10 h-10 ${
                       isGold
-                        ? "bg-gradient-to-br from-yellow-400 to-amber-500"
+                        ? "bg-gradient-to-br from-yellow-400 to-yellow-500"
                         : "bg-gradient-to-br from-primary-400 to-primary-600"
                     } rounded-full flex items-center justify-center flex-shrink-0`}
                   >

@@ -58,7 +58,7 @@ export default async function RegistrationsPage({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-muted-foreground" />
-              <h3 className="text-lg font-semibold">Daftar Pendaftaran</h3>
+              <h3 className="text-base font-semibold">Daftar Pendaftaran</h3>
               <span className="rounded-full bg-muted px-2 py-1 text-xs">
                 {registrations.length} data
               </span>

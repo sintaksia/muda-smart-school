@@ -1,3 +1,4 @@
+/* eslint-disable ds/off-palette -- categorical encoding: gold/silver/bronze medal tier and achievement level; see docs/design_system.md §2.4 */
 import Image from "next/image";
 import type { Achievement } from "@prisma/client";
 import { Trophy, Award, Medal } from "lucide-react";
@@ -13,7 +14,7 @@ export default function PrestasiCard({ achievement }: PrestasiCardProps) {
       case "FIRST_PLACE":
         return {
           icon: Trophy,
-          bgColor: "bg-gradient-to-br from-yellow-400 to-amber-500",
+          bgColor: "bg-gradient-to-br from-yellow-400 to-yellow-500",
           iconColor: "text-yellow-900",
           borderColor: "border-yellow-300",
           cardBg: "bg-yellow-50",

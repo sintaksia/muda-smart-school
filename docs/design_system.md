@@ -8,8 +8,8 @@ It replaces the previous "Banking / Fintech (Jago-inspired)" system, which
 didn't belong on a school site. This version keeps the navy/green/gold school
 brand and keeps the discipline: one radius per tier, hairline-first elevation.
 
-**Status:** color, radius, elevation and component baseline are implemented
-(see §7). **Typography (§3) is specified but NOT yet applied.**
+**Status:** implemented — color, typography, radius, elevation and the
+component baseline (see §7).
 
 ---
 
@@ -102,11 +102,16 @@ Default Tailwind hues (`blue-*`, `purple-*`, `indigo-*`, `emerald-*`, …) must
 
 1. **Third-party brand colors.** `src/lib/social-icons.ts` — Instagram,
    Facebook, YouTube etc. must render in their own colors.
-2. **Categorical encoding.** `*Columns.tsx` files (`AchievementColumns`,
-   `GalleryColumns`, `ContactsColumns`, `SocialLinksColumns`,
-   `ExtracurricularColumns`) and `StatsCards` use distinct hues to make
-   categories/levels distinguishable at a glance. Collapsing them into
-   navy/green/gold destroys the distinction.
+2. **Categorical encoding.** Distinct hues that make categories, levels or
+   tiers distinguishable at a glance. Collapsing them into navy/green/gold
+   destroys the distinction — and worse, an "else" branch rendered in the
+   page's own brand color stops reading as a separate state. Covers:
+   - `*Columns.tsx` (`AchievementColumns`, `GalleryColumns`, `ContactsColumns`,
+     `SocialLinksColumns`, `ExtracurricularColumns`) and `StatsCards`
+   - **medal tier** — gold/silver/bronze in `PrestasiCard`,
+     `PrestasiListSection`. Bronze is legitimately `orange-*`.
+   - **achievement level** — `NATIONAL` / `PROVINCE` / other in `PrestasiCard`,
+     `AwardsSection`, `VisionMissionSection`.
 3. **`red-*` for destructive affordances** in admin (`DeleteDialog`,
    `UserActions`, `CmsRowActions`) — semantically equivalent to
    `--destructive`; prefer `--destructive` in new code, but existing usage is
@@ -114,21 +119,32 @@ Default Tailwind hues (`blue-*`, `purple-*`, `indigo-*`, `emerald-*`, …) must
 
 Anything outside those three is a one-off and should be remapped.
 
+Files covered by an exception carry a file-level
+`/* eslint-disable ds/off-palette -- <reason> */` so the remaining
+`ds/off-palette` warnings are real signal, not noise. If you add an
+exception, write the reason — a bare disable is not acceptable.
+
 ---
 
-## 3. Typography — SPECIFIED, NOT YET IMPLEMENTED
-
-> ⚠️ **This section has not been applied to the codebase.** Ad hoc
-> `text-3xl/4xl/5xl` combinations are still scattered per page. Treat the table
-> below as the target for a future pass, not as a description of current code.
+## 3. Typography
 
 Inter is already correctly wired (`next/font/google` in `layout.tsx`) — no font
 change needed. Only the **scale** needs standardizing.
 
+Applied to every heading element. `text-5xl`/`text-6xl` are gone; hero
+headings use `text-3xl md:text-4xl font-extrabold tracking-tight` (H1 on
+mobile, Display at `md`). Body and lead paragraphs still use `text-lg`/`text-2xl`
+in ~48 places — the table's Body row governs body copy, and shrinking lead
+paragraphs to `text-sm` is a separate decision, not part of this pass.
+
+> The H1 row previously read 28px, which no Tailwind class produces
+> (`text-3xl` is 30px). That error had leaked into `guru/page.tsx` and
+> `LiveSessionView.tsx` as hand-rolled `text-[28px]`; both now use `text-3xl`.
+
 | Role        | Class                                            | Size / Weight |
 | ----------- | ------------------------------------------------ | ------------- |
 | Display     | `text-4xl font-extrabold tracking-tight`         | 36px / 800    |
-| H1          | `text-3xl font-bold tracking-tight`              | 28px / 700    |
+| H1          | `text-3xl font-bold tracking-tight`              | 30px / 700    |
 | H2          | `text-xl font-bold`                              | 20px / 700    |
 | H3          | `text-base font-semibold`                        | 16px / 600    |
 | Body        | `text-sm`                                        | 14px / 400    |
@@ -263,6 +279,10 @@ superset of the shadcn badge). See the enum single-source-of-truth rule in
 - [x] Ad hoc `shadow-lg/xl/2xl/2lg/yellow/primary` removed (§5)
 - [x] Color/radius/elevation single-sourced into this file
 - [x] `pnpm lint` and `pnpm build` pass
-- [ ] **§3 typography scale applied** — specified, not implemented
-- [ ] Off-palette one-offs outside the §2.4 exceptions reviewed
-- [ ] Visual smoke test: home page, one dashboard page, one form/modal
+- [x] §3 typography scale applied to all headings; display capped at `text-4xl`
+- [x] Off-palette one-offs reviewed — 11 remapped (amber→yellow, emerald→green);
+      medal-tier and achievement-level encoding confirmed as §2.4 exceptions and
+      marked with reasoned eslint-disables
+- [~] Smoke test: all 10 public routes compile and return 200, and the served
+  HTML contains only `rounded-sm/md/lg/full` with no banned classes.
+  **Pixel-level visual review still outstanding** — needs a human or a browser.

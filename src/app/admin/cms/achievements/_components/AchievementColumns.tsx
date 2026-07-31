@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable ds/off-palette -- categorical encoding: achievement level and medal tier; see docs/design_system.md §2.4 */
 import { ColumnDef } from "@tanstack/react-table";
 import { Medal, Trophy, Star } from "lucide-react";
 import { SortableHeader } from "@/src/app/admin/_components/SortableHeader";

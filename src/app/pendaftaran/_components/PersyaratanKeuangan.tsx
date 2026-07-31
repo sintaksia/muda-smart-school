@@ -105,12 +105,12 @@ export default function PersyaratanKeuanganSection() {
           </p>
         </div>
 
-        <div className="w-full overflow-x-auto bg-white rounded-md p-6 hover:shadow-sm transition-all duration-300 group border border-neutral-100 hover:border-emerald-500">
+        <div className="w-full overflow-x-auto bg-white rounded-md p-6 hover:shadow-sm transition-all duration-300 group border border-neutral-100 hover:border-green-500">
           {/* WRAPPER ROUNDED (KUNCI) */}
           <div className="min-w-[1100px] rounded-md overflow-hidden border border-white bg-white">
             <table className="w-full border-separate border-spacing-0 text-sm">
               {/* HEADER */}
-              <thead className="bg-emerald-500 text-white ">
+              <thead className="bg-green-500 text-white ">
                 <tr>
                   <th
                     rowSpan={2}
@@ -131,7 +131,7 @@ export default function PersyaratanKeuanganSection() {
                     Program Keahlian
                   </th>
                 </tr>
-                <tr className="bg-emerald-500">
+                <tr className="bg-green-500">
                   {programKeahlian.map((item, i) => (
                     <th
                       key={i}
@@ -149,8 +149,8 @@ export default function PersyaratanKeuanganSection() {
                   <tr
                     key={row.no}
                     className={`${
-                      index % 2 === 0 ? "bg-white" : "bg-emerald-50"
-                    } hover:bg-emerald-100 transition`}
+                      index % 2 === 0 ? "bg-white" : "bg-green-50"
+                    } hover:bg-green-100 transition`}
                   >
                     <td className="px-4 py-3 text-center border border-white">
                       {row.no}
@@ -171,7 +171,7 @@ export default function PersyaratanKeuanganSection() {
               </tbody>
 
               {/* FOOTER */}
-              <tfoot className="bg-emerald-600 text-white font-semibold">
+              <tfoot className="bg-green-600 text-white font-semibold">
                 <tr>
                   <td
                     colSpan={2}

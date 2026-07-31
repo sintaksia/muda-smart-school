@@ -33,7 +33,7 @@ export default function PersyaratanAdministrasiSection() {
         </div>
 
         {/* List Persyaratan */}
-        <div className=" bg-white rounded-md p-8 hover:shadow-sm transition-all duration-300 group border border-neutral-100 hover:border-emerald-500 mb-8">
+        <div className=" bg-white rounded-md p-8 hover:shadow-sm transition-all duration-300 group border border-neutral-100 hover:border-green-500 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3">
             <div className="lg:col space-y-3 mx-auto">
               {persyaratanList.map((misi, index) => (

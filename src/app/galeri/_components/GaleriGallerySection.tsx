@@ -101,7 +101,7 @@ export default function GaleriGallerySection({
             <div className="w-20 h-20 bg-gray-100 rounded-sm flex items-center justify-center mb-4">
               <ImageOff className="w-10 h-10 text-gray-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-700 mb-1">
+            <h3 className="text-base font-semibold text-gray-700 mb-1">
               Belum Ada Foto
             </h3>
             <p className="text-gray-500 text-sm max-w-sm">

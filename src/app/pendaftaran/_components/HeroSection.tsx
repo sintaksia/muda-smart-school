@@ -44,7 +44,7 @@ export default function HeroSection() {
               PENDAFTARAN DIBUKA
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-6 leading-tight">
             Informasi <span className="text-yellow-400">Pendaftaran</span>
           </h1>
           <p className="text-lg md:text-xl text-primary-200 leading-relaxed">

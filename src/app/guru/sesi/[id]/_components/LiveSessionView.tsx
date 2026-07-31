@@ -93,7 +93,7 @@ export function LiveSessionView({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-foreground text-[28px] font-bold tracking-tight">
+          <h1 className="text-foreground text-3xl font-bold tracking-tight">
             {sesi.jadwal.mataPelajaran.name}
           </h1>
           <p className="text-neutral-600 mt-1 text-sm">
