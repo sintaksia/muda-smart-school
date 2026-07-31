@@ -225,7 +225,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600 text-white font-bold">
+          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary-600 text-white font-bold">
             M
           </div>
           <div className="flex flex-col">

@@ -179,7 +179,7 @@ export function ContactsForm({ defaultValues, contactId }: ContactFormProps) {
               control={form.control}
               name="isActive"
               render={({ field }) => (
-                <FormItem className="md:col-span-2 flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormItem className="md:col-span-2 flex flex-row items-center justify-between rounded-md border p-4">
                   <div className="space-y-0.5">
                     <FormLabel>Status Aktif</FormLabel>
                     <FormDescription>

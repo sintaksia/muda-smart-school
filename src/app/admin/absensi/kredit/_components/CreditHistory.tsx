@@ -27,7 +27,7 @@ interface CreditHistoryProps {
 export function CreditHistory({ credit }: CreditHistoryProps) {
   return (
     <div className="space-y-6">
-      <section className="rounded-card bg-gradient-to-br from-[var(--color-brand)] to-[var(--color-brand-700)] p-5 text-white">
+      <section className="rounded-md bg-gradient-to-br from-primary-900 to-primary-950 p-5 text-white">
         <p className="text-xs font-semibold uppercase tracking-widest opacity-80">
           Skor Kredit Berjalan
         </p>
@@ -36,9 +36,11 @@ export function CreditHistory({ credit }: CreditHistoryProps) {
         </p>
       </section>
 
-      <section className="border-hairline rounded-card border bg-white">
-        <header className="border-hairline border-b px-5 py-4">
-          <h3 className="text-ink text-base font-semibold">Riwayat Entri</h3>
+      <section className="border-border rounded-md border bg-white">
+        <header className="border-border border-b px-5 py-4">
+          <h3 className="text-foreground text-base font-semibold">
+            Riwayat Entri
+          </h3>
         </header>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -46,18 +48,20 @@ export function CreditHistory({ credit }: CreditHistoryProps) {
               {credit.entries.map((entry) => (
                 <tr
                   key={entry.id}
-                  className="border-hairline border-b last:border-b-0"
+                  className="border-border border-b last:border-b-0"
                 >
                   <td className="px-5 py-3">
                     <Badge variant={CREDIT_ENTRY_TYPE_BADGES[entry.type]}>
                       {CREDIT_ENTRY_TYPE_LABELS[entry.type]}
                     </Badge>
                   </td>
-                  <td className="text-ink px-4 py-3">{entry.category}</td>
-                  <td className="text-ink-secondary max-w-56 truncate px-4 py-3">
+                  <td className="text-foreground px-4 py-3">
+                    {entry.category}
+                  </td>
+                  <td className="text-neutral-600 max-w-56 truncate px-4 py-3">
                     {entry.note ?? "—"}
                   </td>
-                  <td className="text-ink-muted px-4 py-3 text-xs">
+                  <td className="text-muted-foreground px-4 py-3 text-xs">
                     {new Date(entry.createdAt).toLocaleDateString("id-ID")} ·{" "}
                     {entry.source === "AUTO"
                       ? "Otomatis"
@@ -65,7 +69,7 @@ export function CreditHistory({ credit }: CreditHistoryProps) {
                   </td>
                   <td
                     className={`px-5 py-3 text-right font-semibold tabular-nums ${
-                      entry.points < 0 ? "text-danger" : "text-teal"
+                      entry.points < 0 ? "text-destructive" : "text-green-600"
                     }`}
                   >
                     {entry.points > 0 ? `+${entry.points}` : entry.points}
@@ -74,7 +78,7 @@ export function CreditHistory({ credit }: CreditHistoryProps) {
               ))}
               {credit.entries.length === 0 && (
                 <tr>
-                  <td className="text-ink-muted px-5 py-8 text-center">
+                  <td className="text-muted-foreground px-5 py-8 text-center">
                     Belum ada entri.
                   </td>
                 </tr>

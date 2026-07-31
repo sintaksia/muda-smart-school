@@ -19,7 +19,7 @@ export default function NewsCard({ news }: NewsCardProps) {
   return (
     <Link
       href={`/berita/${news.slug}`}
-      className="group block overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+      className="group block overflow-hidden rounded-md bg-white border border-gray-100 hover:shadow-sm transition-shadow"
     >
       <div className="relative h-48 w-full overflow-hidden">
         <Image

@@ -48,11 +48,11 @@ export function StudentTable({ studentList, classOptions }: StudentTableProps) {
   }
 
   return (
-    <section className="border-hairline rounded-card border bg-white">
+    <section className="border-border rounded-md border bg-white">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-hairline text-ink-muted border-b text-left text-xs font-semibold uppercase tracking-wide">
+            <tr className="border-border text-muted-foreground border-b text-left text-xs font-semibold uppercase tracking-wide">
               <th className="px-5 py-3">Siswa</th>
               <th className="px-4 py-3">Program</th>
               <th className="px-4 py-3">Angkatan</th>
@@ -64,18 +64,20 @@ export function StudentTable({ studentList, classOptions }: StudentTableProps) {
             {studentList.map((student) => (
               <tr
                 key={student.id}
-                className="border-hairline border-b last:border-b-0"
+                className="border-border border-b last:border-b-0"
               >
                 <td className="px-5 py-3">
-                  <p className="text-ink font-semibold">{student.name}</p>
-                  <p className="text-ink-muted text-xs tabular-nums">
+                  <p className="text-foreground font-semibold">
+                    {student.name}
+                  </p>
+                  <p className="text-muted-foreground text-xs tabular-nums">
                     NIS {student.nis}
                   </p>
                 </td>
-                <td className="text-ink-secondary px-4 py-3">
+                <td className="text-neutral-600 px-4 py-3">
                   {SPECIALIZATION_SHORT_LABELS[student.specialization]}
                 </td>
-                <td className="text-ink-secondary px-4 py-3 tabular-nums">
+                <td className="text-neutral-600 px-4 py-3 tabular-nums">
                   {student.angkatan}
                 </td>
                 <td className="px-4 py-3">
@@ -88,7 +90,7 @@ export function StudentTable({ studentList, classOptions }: StudentTableProps) {
                         "Kelas siswa diperbarui",
                       )
                     }
-                    className="border-hairline-strong text-ink-secondary rounded-input h-9 border bg-white px-2 text-xs"
+                    className="border-neutral-300 text-neutral-600 rounded-sm h-9 border bg-white px-2 text-xs"
                   >
                     <option value="">— Belum ditempatkan —</option>
                     {classOptions.map((schoolClass) => (
@@ -112,7 +114,7 @@ export function StudentTable({ studentList, classOptions }: StudentTableProps) {
                           "Status siswa diperbarui",
                         )
                       }
-                      className="border-hairline-strong text-ink-secondary rounded-input h-9 border bg-white px-2 text-xs"
+                      className="border-neutral-300 text-neutral-600 rounded-sm h-9 border bg-white px-2 text-xs"
                     >
                       {studentStatusOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -128,7 +130,7 @@ export function StudentTable({ studentList, classOptions }: StudentTableProps) {
               <tr>
                 <td
                   colSpan={5}
-                  className="text-ink-muted px-5 py-12 text-center"
+                  className="text-muted-foreground px-5 py-12 text-center"
                 >
                   Belum ada siswa. Akun siswa dibuat dari pendaftaran yang
                   diterima (menu Pendaftaran).

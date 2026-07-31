@@ -74,7 +74,7 @@ export function GalleryMultiPicker({
           {value.map((url, index) => (
             <div
               key={index}
-              className="relative aspect-square rounded-lg overflow-hidden border group"
+              className="relative aspect-square rounded-sm overflow-hidden border group"
             >
               <Image
                 src={url}
@@ -140,7 +140,7 @@ export function GalleryMultiPicker({
                         type="button"
                         onClick={() => handleToggle(item.image)}
                         className={cn(
-                          "group relative aspect-square rounded-lg overflow-hidden border-2 transition-all hover:border-primary-500",
+                          "group relative aspect-square rounded-sm overflow-hidden border-2 transition-all hover:border-primary-500",
                           isSelected
                             ? "border-primary-500 ring-2 ring-primary-200"
                             : "border-transparent",

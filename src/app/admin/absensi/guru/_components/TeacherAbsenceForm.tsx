@@ -50,14 +50,14 @@ export function TeacherAbsenceForm({
   }
 
   const inputClass =
-    "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
+    "border-neutral-300 text-foreground rounded-sm h-11 border bg-white px-3 text-sm";
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-hairline rounded-card border bg-white p-5"
+      className="border-border rounded-md border bg-white p-5"
     >
-      <h3 className="text-ink mb-4 text-base font-semibold">
+      <h3 className="text-foreground mb-4 text-base font-semibold">
         Catat Ketidakhadiran Guru
       </h3>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -98,7 +98,7 @@ export function TeacherAbsenceForm({
         <button
           type="submit"
           disabled={submitting}
-          className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+          className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
         >
           {submitting ? "Menyimpan..." : "Simpan"}
         </button>

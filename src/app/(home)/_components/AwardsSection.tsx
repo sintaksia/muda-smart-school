@@ -24,7 +24,7 @@ export default async function AwardsSection() {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-sm flex items-center justify-center">
                 <svg
                   className="w-4 h-4 text-yellow-900"
                   fill="currentColor"
@@ -59,7 +59,7 @@ export default async function AwardsSection() {
               return (
                 <div
                   key={achievement.id}
-                  className={`flex items-center gap-4 bg-white/5 backdrop-blur rounded-xl p-4 border ${
+                  className={`flex items-center gap-4 bg-white/5 backdrop-blur rounded-md p-4 border ${
                     isGold
                       ? "border-yellow-500/20 hover:border-yellow-500/40"
                       : "border-primary-500/20 hover:border-primary-500/40"
@@ -129,7 +129,7 @@ export default async function AwardsSection() {
                   return (
                     <div
                       key={item.id}
-                      className={`group relative rounded-lg overflow-hidden ${
+                      className={`group relative rounded-sm overflow-hidden ${
                         total === 1
                           ? "aspect-[16/9]"
                           : isLastOdd
@@ -155,7 +155,7 @@ export default async function AwardsSection() {
         <div className="mt-8 text-center">
           <Link
             href="/prestasi"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-yellow-900 font-semibold rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-yellow-900 font-semibold rounded-sm transition-colors"
           >
             Lihat Semua Prestasi
             <ArrowRight className="w-4 h-4" />

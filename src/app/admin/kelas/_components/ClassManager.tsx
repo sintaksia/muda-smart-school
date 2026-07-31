@@ -26,7 +26,7 @@ interface ClassManagerProps {
 }
 
 const inputClass =
-  "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
+  "border-neutral-300 text-foreground rounded-sm h-11 border bg-white px-3 text-sm";
 
 export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
   const router = useRouter();
@@ -107,9 +107,11 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
     <div className="space-y-6">
       <form
         onSubmit={handleCreate}
-        className="border-hairline rounded-card border bg-white p-5"
+        className="border-border rounded-md border bg-white p-5"
       >
-        <h3 className="text-ink mb-4 text-base font-semibold">Tambah Kelas</h3>
+        <h3 className="text-foreground mb-4 text-base font-semibold">
+          Tambah Kelas
+        </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           <input
             value={name}
@@ -162,18 +164,18 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
           <button
             type="submit"
             disabled={submitting}
-            className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+            className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
           >
             {submitting ? "Menyimpan..." : "Simpan"}
           </button>
         </div>
       </form>
 
-      <section className="border-hairline rounded-card border bg-white">
+      <section className="border-border rounded-md border bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-hairline text-ink-muted border-b text-left text-xs font-semibold uppercase tracking-wide">
+              <tr className="border-border text-muted-foreground border-b text-left text-xs font-semibold uppercase tracking-wide">
                 <th className="px-5 py-3">Kelas</th>
                 <th className="px-4 py-3">Program</th>
                 <th className="px-4 py-3">Tahun Ajaran</th>
@@ -186,22 +188,22 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
               {classList.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-hairline border-b last:border-b-0"
+                  className="border-border border-b last:border-b-0"
                 >
-                  <td className="text-ink px-5 py-3 font-semibold">
+                  <td className="text-foreground px-5 py-3 font-semibold">
                     {row.name}
                   </td>
-                  <td className="text-ink-secondary px-4 py-3">
+                  <td className="text-neutral-600 px-4 py-3">
                     {SPECIALIZATION_SHORT_LABELS[row.specialization]}
                   </td>
-                  <td className="text-ink-secondary px-4 py-3 tabular-nums">
+                  <td className="text-neutral-600 px-4 py-3 tabular-nums">
                     {row.academicYear}
                   </td>
                   <td className="px-4 py-3">
                     <select
                       value={row.homeroomTeacherId ?? ""}
                       onChange={(e) => changeWali(row, e.target.value)}
-                      className="border-hairline-strong text-ink-secondary rounded-input h-9 border bg-white px-2 text-xs"
+                      className="border-neutral-300 text-neutral-600 rounded-sm h-9 border bg-white px-2 text-xs"
                     >
                       <option value="">— Belum ada —</option>
                       {teacherOptions.map((teacher) => (
@@ -211,14 +213,14 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
                       ))}
                     </select>
                   </td>
-                  <td className="text-ink px-4 py-3 text-right font-semibold tabular-nums">
+                  <td className="text-foreground px-4 py-3 text-right font-semibold tabular-nums">
                     {row.jumlahSiswa}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button
                       type="button"
                       onClick={() => handleDelete(row.id)}
-                      className="text-ink-muted hover:text-danger transition-colors"
+                      className="text-muted-foreground hover:text-destructive transition-colors"
                       aria-label="Hapus kelas"
                     >
                       <Trash2 className="h-5 w-5" strokeWidth={1.75} />
@@ -230,7 +232,7 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
                 <tr>
                   <td
                     colSpan={6}
-                    className="text-ink-muted px-5 py-12 text-center"
+                    className="text-muted-foreground px-5 py-12 text-center"
                   >
                     Belum ada kelas.
                   </td>

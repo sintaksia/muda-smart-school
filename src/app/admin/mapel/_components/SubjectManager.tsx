@@ -24,7 +24,7 @@ interface SubjectManagerProps {
 }
 
 const inputClass =
-  "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
+  "border-neutral-300 text-foreground rounded-sm h-11 border bg-white px-3 text-sm";
 
 export function SubjectManager({ subjectList }: SubjectManagerProps) {
   const router = useRouter();
@@ -83,9 +83,9 @@ export function SubjectManager({ subjectList }: SubjectManagerProps) {
     <div className="space-y-6">
       <form
         onSubmit={handleCreate}
-        className="border-hairline rounded-card border bg-white p-5"
+        className="border-border rounded-md border bg-white p-5"
       >
-        <h3 className="text-ink mb-4 text-base font-semibold">
+        <h3 className="text-foreground mb-4 text-base font-semibold">
           Tambah Mata Pelajaran
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -121,18 +121,18 @@ export function SubjectManager({ subjectList }: SubjectManagerProps) {
           <button
             type="submit"
             disabled={submitting}
-            className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+            className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
           >
             {submitting ? "Menyimpan..." : "Simpan"}
           </button>
         </div>
       </form>
 
-      <section className="border-hairline rounded-card border bg-white">
+      <section className="border-border rounded-md border bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-hairline text-ink-muted border-b text-left text-xs font-semibold uppercase tracking-wide">
+              <tr className="border-border text-muted-foreground border-b text-left text-xs font-semibold uppercase tracking-wide">
                 <th className="px-5 py-3">Kode</th>
                 <th className="px-4 py-3">Nama</th>
                 <th className="px-4 py-3">Program</th>
@@ -145,28 +145,28 @@ export function SubjectManager({ subjectList }: SubjectManagerProps) {
               {subjectList.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-hairline border-b last:border-b-0"
+                  className="border-border border-b last:border-b-0"
                 >
-                  <td className="text-ink px-5 py-3 font-mono font-semibold">
+                  <td className="text-foreground px-5 py-3 font-mono font-semibold">
                     {row.code}
                   </td>
-                  <td className="text-ink px-4 py-3">{row.name}</td>
-                  <td className="text-ink-secondary px-4 py-3">
+                  <td className="text-foreground px-4 py-3">{row.name}</td>
+                  <td className="text-neutral-600 px-4 py-3">
                     {row.specialization
                       ? SPECIALIZATION_SHORT_LABELS[row.specialization]
                       : "Umum"}
                   </td>
-                  <td className="text-ink-secondary px-4 py-3 text-right tabular-nums">
+                  <td className="text-neutral-600 px-4 py-3 text-right tabular-nums">
                     {row.jumlahGuru}
                   </td>
-                  <td className="text-ink-secondary px-4 py-3 text-right tabular-nums">
+                  <td className="text-neutral-600 px-4 py-3 text-right tabular-nums">
                     {row.jumlahJadwal}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button
                       type="button"
                       onClick={() => handleDelete(row.id)}
-                      className="text-ink-muted hover:text-danger transition-colors"
+                      className="text-muted-foreground hover:text-destructive transition-colors"
                       aria-label="Hapus mapel"
                     >
                       <Trash2 className="h-5 w-5" strokeWidth={1.75} />
@@ -178,7 +178,7 @@ export function SubjectManager({ subjectList }: SubjectManagerProps) {
                 <tr>
                   <td
                     colSpan={6}
-                    className="text-ink-muted px-5 py-12 text-center"
+                    className="text-muted-foreground px-5 py-12 text-center"
                   >
                     Belum ada mata pelajaran.
                   </td>

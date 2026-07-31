@@ -61,11 +61,11 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
   }
 
   return (
-    <section className="border-hairline rounded-card border bg-white">
+    <section className="border-border rounded-md border bg-white">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-hairline text-ink-muted border-b text-left text-xs font-semibold uppercase tracking-wide">
+            <tr className="border-border text-muted-foreground border-b text-left text-xs font-semibold uppercase tracking-wide">
               <th className="px-5 py-3">Siswa</th>
               <th className="px-4 py-3">Kelas</th>
               <th className="px-4 py-3">Jenis</th>
@@ -79,19 +79,19 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
             {submissions.map((izin) => (
               <tr
                 key={izin.id}
-                className="border-hairline border-b last:border-b-0"
+                className="border-border border-b last:border-b-0"
               >
-                <td className="text-ink px-5 py-3 font-semibold">
+                <td className="text-foreground px-5 py-3 font-semibold">
                   {izin.nama}
                 </td>
-                <td className="text-ink-secondary px-4 py-3">{izin.kelas}</td>
-                <td className="text-ink-secondary px-4 py-3">
+                <td className="text-neutral-600 px-4 py-3">{izin.kelas}</td>
+                <td className="text-neutral-600 px-4 py-3">
                   {LEAVE_TYPE_LABELS[izin.jenis]}
                 </td>
-                <td className="text-ink px-4 py-3 tabular-nums">
+                <td className="text-foreground px-4 py-3 tabular-nums">
                   {izin.tanggal}
                 </td>
-                <td className="text-ink-secondary max-w-56 truncate px-4 py-3">
+                <td className="text-neutral-600 max-w-56 truncate px-4 py-3">
                   {izin.alasan}
                 </td>
                 <td className="px-4 py-3">
@@ -106,7 +106,7 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
                         type="button"
                         disabled={busyId === izin.id}
                         onClick={() => review(izin.id, "APPROVED")}
-                        className="bg-teal hover:bg-teal-600 rounded-input inline-flex h-9 items-center gap-1 px-3 text-xs font-semibold text-white transition-colors disabled:opacity-50"
+                        className="bg-green-600 hover:bg-green-500 rounded-sm inline-flex h-9 items-center gap-1 px-3 text-xs font-semibold text-white transition-colors disabled:opacity-50"
                       >
                         <Check className="h-4 w-4" strokeWidth={1.75} />
                         Setujui
@@ -115,14 +115,14 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
                         type="button"
                         disabled={busyId === izin.id}
                         onClick={() => review(izin.id, "REJECTED")}
-                        className="border-hairline-strong text-ink-secondary hover:border-danger hover:text-danger rounded-input inline-flex h-9 items-center gap-1 border px-3 text-xs font-semibold transition-colors disabled:opacity-50"
+                        className="border-neutral-300 text-neutral-600 hover:border-destructive hover:text-destructive rounded-sm inline-flex h-9 items-center gap-1 border px-3 text-xs font-semibold transition-colors disabled:opacity-50"
                       >
                         <X className="h-4 w-4" strokeWidth={1.75} />
                         Tolak
                       </button>
                     </div>
                   ) : (
-                    <p className="text-ink-muted text-right text-xs">
+                    <p className="text-muted-foreground text-right text-xs">
                       {izin.reviewedBy ?? "—"}
                     </p>
                   )}
@@ -133,7 +133,7 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
               <tr>
                 <td
                   colSpan={7}
-                  className="text-ink-muted px-5 py-12 text-center"
+                  className="text-muted-foreground px-5 py-12 text-center"
                 >
                   Belum ada pengajuan izin/sakit.
                 </td>

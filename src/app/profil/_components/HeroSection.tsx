@@ -41,14 +41,14 @@ export default async function HeroSection() {
 
           {/* School Badge */}
           <div className="flex-shrink-0">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+            <div className="bg-white/10 backdrop-blur-sm rounded-md p-6 border border-white/20">
               <div className="flex items-center gap-4">
                 <Image
                   src={logo}
                   alt={`Logo ${schoolName}`}
                   width={80}
                   height={80}
-                  className="rounded-xl"
+                  className="rounded-md"
                 />
                 <div>
                   <p className="text-yellow-400 font-semibold text-sm">

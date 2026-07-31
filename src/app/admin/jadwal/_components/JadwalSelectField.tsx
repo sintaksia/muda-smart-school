@@ -39,7 +39,7 @@ export function JadwalSelectField({
           <FormLabel>{label}</FormLabel>
           <Select onValueChange={field.onChange} value={field.value}>
             <FormControl>
-              <SelectTrigger className="rounded-input w-full">
+              <SelectTrigger className="rounded-sm w-full">
                 <SelectValue placeholder={`Pilih ${label}`} />
               </SelectTrigger>
             </FormControl>

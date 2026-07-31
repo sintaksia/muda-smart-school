@@ -22,7 +22,7 @@ interface TeacherFormProps {
 }
 
 const inputClass =
-  "border-hairline-strong text-ink rounded-input h-11 w-full border bg-white px-3 text-sm";
+  "border-neutral-300 text-foreground rounded-sm h-11 w-full border bg-white px-3 text-sm";
 
 const initialState = {
   name: "",
@@ -95,9 +95,9 @@ export function TeacherForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-modal max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="rounded-lg max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-ink">Tambah Guru</DialogTitle>
+          <DialogTitle className="text-foreground">Tambah Guru</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
@@ -188,12 +188,12 @@ export function TeacherForm({
             ))}
           </select>
 
-          <fieldset className="border-hairline rounded-input border p-3">
-            <legend className="text-ink-secondary px-1 text-xs font-semibold">
+          <fieldset className="border-border rounded-sm border p-3">
+            <legend className="text-neutral-600 px-1 text-xs font-semibold">
               Kualifikasi Mata Pelajaran
             </legend>
             {subjectOptions.length === 0 ? (
-              <p className="text-warning text-xs font-semibold">
+              <p className="text-yellow-600 text-xs font-semibold">
                 Belum ada mapel — buat dulu di menu Mata Pelajaran.
               </p>
             ) : (
@@ -201,13 +201,13 @@ export function TeacherForm({
                 {subjectOptions.map((subject) => (
                   <label
                     key={subject.id}
-                    className="text-ink flex items-center gap-2 text-sm"
+                    className="text-foreground flex items-center gap-2 text-sm"
                   >
                     <input
                       type="checkbox"
                       checked={subjectIds.includes(subject.id)}
                       onChange={() => toggleSubject(subject.id)}
-                      className="accent-[var(--color-brand)]"
+                      className="accent-primary-900"
                     />
                     {subject.name}
                   </label>
@@ -219,7 +219,7 @@ export function TeacherForm({
           <button
             type="submit"
             disabled={submitting}
-            className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 w-full text-sm font-semibold text-white transition-colors disabled:opacity-50"
+            className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 w-full text-sm font-semibold text-white transition-colors disabled:opacity-50"
           >
             {submitting ? "Menyimpan..." : "Buat Akun Guru"}
           </button>

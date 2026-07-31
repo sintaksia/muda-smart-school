@@ -13,7 +13,7 @@ export default function GaleriHeroSection({
     <section className="bg-gradient-to-br from-gray-900 to-gray-800 py-16 md:py-20">
       <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
         <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-2xl flex items-center justify-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-sm flex items-center justify-center">
             <Camera className="w-8 h-8 text-white" />
           </div>
         </div>

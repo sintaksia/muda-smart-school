@@ -18,10 +18,10 @@ export function ProgramCard({ program }: ProgramCardProps) {
   return (
     <Link
       href={`/jurusan#${program.abbreviation.toLowerCase()}`}
-      className="group block bg-white rounded-2xl p-6 border-2 border-neutral-100 hover:border-primary-500 hover:shadow-xl transition-all duration-300"
+      className="group block bg-white rounded-md p-6 border-2 border-neutral-100 hover:border-primary-500 hover:shadow-sm transition-all duration-300"
     >
       <div
-        className="max-w-20 h-16 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 px-3"
+        className="max-w-20 h-16 rounded-sm flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 px-3"
         style={{ backgroundColor: `rgba(${rgb}, 0.15)` }}
       >
         <span className="text-2xl font-bold" style={{ color: program.color }}>

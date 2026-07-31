@@ -78,7 +78,7 @@ export function JadwalFilters({
             onChange({ ...filters, [select.key]: value })
           }
         >
-          <SelectTrigger className="rounded-input h-10 w-44 bg-white">
+          <SelectTrigger className="rounded-sm h-10 w-44 bg-white">
             <SelectValue placeholder={select.placeholder} />
           </SelectTrigger>
           <SelectContent>
@@ -96,7 +96,7 @@ export function JadwalFilters({
           type="button"
           variant="ghost"
           onClick={() => onChange(EMPTY_FILTERS)}
-          className="text-ink-muted hover:text-ink h-10 px-3 text-sm"
+          className="text-muted-foreground hover:text-foreground h-10 px-3 text-sm"
         >
           <X className="h-4 w-4" strokeWidth={1.75} />
           Reset

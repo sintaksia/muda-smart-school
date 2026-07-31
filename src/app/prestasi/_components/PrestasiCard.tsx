@@ -62,7 +62,7 @@ export default function PrestasiCard({ achievement }: PrestasiCardProps) {
 
   return (
     <div
-      className={`${medalInfo.cardBg} border ${medalInfo.borderColor} rounded-xl overflow-hidden hover:shadow-lg transition-shadow`}
+      className={`${medalInfo.cardBg} border ${medalInfo.borderColor} rounded-md overflow-hidden hover:shadow-sm transition-shadow`}
     >
       {achievement.image && (
         <div className="relative aspect-video">

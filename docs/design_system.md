@@ -1,270 +1,268 @@
-# Design System — Banking / Fintech (Jago-inspired)
+# Muda Smart School — Design System
 
-Give this whole file to Claude Code as the source of truth. Don't deviate from
-the tokens below — consistency across every screen is the point.
+**This is the single source of truth for the design system.** Color, typography,
+radius and elevation rules live here and nowhere else — `CLAUDE.md` and
+`README.md` link here rather than restating the tables.
 
-## 0. Design intent (read before building)
+It replaces the previous "Banking / Fintech (Jago-inspired)" system, which
+didn't belong on a school site. This version keeps the navy/green/gold school
+brand and keeps the discipline: one radius per tier, hairline-first elevation.
 
-- Calm, trustworthy, high-clarity fintech UI. Confident white space, not dense.
-- Deep indigo (#32368C) is the _identity_ color — used for primary actions,
-  nav, headers, key numbers. Teal (#088987) is the _secondary/live_ color —
-  used for positive states, secondary actions, highlights, links inside dark
-  surfaces.
-- Avoid the generic "AI app" tells: no purple→pink gradients, no glassmorphism,
-  no glowing blurred blobs behind cards, no giant soft `shadow-2xl` on every
-  element, no all-corners-fully-rounded (`rounded-full`) buttons everywhere.
-- Instead: flat or very subtle gradients (same-hue, low-contrast only),
-  1px hairline borders as the primary separator (shadows are secondary and
-  restrained), consistent 16–20px card radius (not pill-shaped), and real
-  content hierarchy through type weight/size, not color noise.
+**Status:** color, radius, elevation and component baseline are implemented
+(see §7). **Typography (§3) is specified but NOT yet applied.**
 
 ---
 
-## 1. Color tokens
+## 1. Scope
 
-### Brand
+**The system is:**
 
-| Token                 | Hex       | Use                                                            |
-| --------------------- | --------- | -------------------------------------------------------------- |
-| `--color-primary`     | `#32368C` | Primary buttons, active nav, headings on light bg, brand marks |
-| `--color-primary-600` | `#3D42A6` | Hover state of primary                                         |
-| `--color-primary-700` | `#282C70` | Pressed/active state, dark headers                             |
-| `--color-primary-100` | `#E5E6F5` | Tinted backgrounds, selected chips                             |
-| `--color-primary-50`  | `#F3F3FB` | Faint section backgrounds                                      |
-| `--color-teal`        | `#088987` | Secondary actions, positive/live indicators, links             |
-| `--color-teal-600`    | `#0AA3A0` | Hover state of teal                                            |
-| `--color-teal-700`    | `#066866` | Pressed teal                                                   |
-| `--color-teal-100`    | `#DFF3F2` | Success/positive tinted backgrounds, badges                    |
+- `--primary-*` scale (navy, `#32368C`)
+- `--green-*` scale (success/growth, `#4CAF93`)
+- `--yellow-*` scale (accent/warning, `#F2C94C`)
+- Semantic tokens `--primary`, `--secondary`, `--muted`, `--destructive`,
+  `--foreground`, `--border`, etc.
+- Three radius tiers and three elevation levels (§4, §5)
 
-### Neutrals (do not use pure gray-500 defaults — these are warmed slightly toward the indigo hue so the palette feels unified)
+**Removed in the reconciliation** (the fintech overlay in `globals.css`):
+`--color-brand*`, `--color-teal*`, `--color-surface`, `--color-hairline*`,
+`--color-ink*`, `--color-success/warning/danger/info`, `--radius-input/card/modal`,
+`--shadow-card/modal/hover`.
 
-| Token                    | Hex       | Use                                     |
-| ------------------------ | --------- | --------------------------------------- |
-| `--color-white`          | `#FFFFFF` | Card surfaces, primary background       |
-| `--color-surface`        | `#F7F7FB` | App background (very faint indigo tint) |
-| `--color-border`         | `#E4E4EE` | Hairline card/input borders             |
-| `--color-border-strong`  | `#CBCBDE` | Dividers that need more presence        |
-| `--color-text-primary`   | `#1B1C33` | Headings, primary text                  |
-| `--color-text-secondary` | `#5B5D75` | Body/secondary text                     |
-| `--color-text-muted`     | `#8B8DA3` | Placeholder, captions, timestamps       |
-
-### Semantic (derived, not arbitrary — keep the family unified)
-
-| Token             | Hex       | Use                                                   |
-| ----------------- | --------- | ----------------------------------------------------- |
-| `--color-success` | `#088987` | Reuse brand teal — success = teal, not a random green |
-| `--color-warning` | `#C97A2B` | Warnings (warm amber, muted — not neon yellow)        |
-| `--color-danger`  | `#C4433D` | Errors, destructive actions                           |
-| `--color-info`    | `#32368C` | Info = brand primary                                  |
-
-Never introduce a hue outside this list without a stated reason. No default
-Tailwind `blue-500` / `purple-500` / `indigo-500` — those clash with the brand
-indigo and are the #1 "this looks AI-generated" tell.
+> **Correction to the original plan.** That block was described as unused
+> ("0 real UI need"). It was not: `border-hairline`, `text-ink*`, `bg-brand*`
+> and `text-danger` had **294 call sites**, concentrated in the `guru` and
+> `siswa` portals and parts of `admin`, plus three raw `var(--color-brand)`
+> references in arbitrary values. Deleting the tokens required remapping every
+> one of them (§2). Don't repeat the "it's unused, just delete it" reasoning
+> without grepping first.
 
 ---
 
-## 2. Typography — Inter
+## 2. Color
 
-```css
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-font-family:
-  "Inter",
-  -apple-system,
-  BlinkMacSystemFont,
-  sans-serif;
+### 2.1 Brand base
+
+| Color   | Hex       | Usage                        |
+| ------- | --------- | ---------------------------- |
+| Primary | `#32368C` | Navy blue — main brand color |
+| Green   | `#4CAF93` | Teal/mint — success states   |
+| Yellow  | `#F2C94C` | Golden — warnings, accents   |
+
+Each has a full `50`–`950` scale as Tailwind utilities:
+
+```jsx
+className = "bg-primary-500 text-primary-50";
+className = "bg-green-500 text-green-50";
+className = "bg-yellow-400 text-yellow-950";
 ```
 
-Use `font-feature-settings: 'tnum' 1;` (tabular numbers) on any element
-showing balances, amounts, or numeric tables — this alone makes financial UI
-feel considered instead of default.
+General shade guidance: `50–300` backgrounds, `400–600` interactive elements,
+`700–950` text and emphasis.
 
-| Role                                 | Size | Weight | Line-height | Letter-spacing    |
-| ------------------------------------ | ---- | ------ | ----------- | ----------------- |
-| Display (balance, hero number)       | 36px | 800    | 1.1         | -0.02em           |
-| H1 (page title)                      | 28px | 700    | 1.2         | -0.01em           |
-| H2 (section title)                   | 20px | 700    | 1.3         | -0.01em           |
-| H3 (card title)                      | 16px | 600    | 1.4         | 0                 |
-| Body                                 | 14px | 400    | 1.55        | 0                 |
-| Body strong                          | 14px | 600    | 1.55        | 0                 |
-| Caption / meta                       | 12px | 500    | 1.4         | 0.01em            |
-| Micro label (eyebrow, uppercase tag) | 11px | 600    | 1.2         | 0.06em, uppercase |
+### 2.2 Semantic roles
+
+| Role             | Token                                   | Hex                 |
+| ---------------- | --------------------------------------- | ------------------- |
+| Primary / brand  | `primary-900`                           | `#32368C`           |
+| Primary hover    | `primary-800`                           | `#3A3D81`           |
+| Primary active   | `primary-950`                           | `#1F2154`           |
+| Success          | `green-600`                             | `#0E9474`           |
+| Warning / accent | `yellow-600` (on light) or `yellow-400` | `#CA8A04`/`#F2C94C` |
+| Danger           | `--destructive`                         | `#EF4444`           |
+| Body text        | `--foreground`                          | `neutral-900`       |
+| Secondary text   | `neutral-600`                           | `#52525B`           |
+| Muted text       | `--muted-foreground`                    | `neutral-500`       |
+| Hairline border  | `--border`                              | `neutral-200`       |
+
+Hover/active were an open question in the original spec ("audit which shade
+reads as hover"). **Resolved:** `primary-600` reads too light against
+`primary-900`; the ladder is `900 → 800 (hover) → 950 (active)`.
+
+### 2.3 Mapping applied when the fintech tokens were removed
+
+Reference for anyone reading old commits or branches:
+
+| Removed                             | Replacement                                          |
+| ----------------------------------- | ---------------------------------------------------- |
+| `brand` / `brand-600` / `brand-700` | `primary-900` / `primary-800` / `primary-950`        |
+| `brand-50` / `brand-100`            | `primary-50` / `primary-100`                         |
+| `teal` / `teal-600` / `teal-700`    | `green-600` / `green-500` / `green-700`              |
+| `surface`                           | `muted`                                              |
+| `hairline` / `hairline-strong`      | `border` / `neutral-300`                             |
+| `ink` / `ink-secondary`/`ink-muted` | `foreground`/`neutral-600`/`muted-foreground`        |
+| `success`/`warning`/`danger`/`info` | `green-600`/`yellow-600`/`destructive`/`primary-900` |
+
+### 2.4 Off-palette hues — rule and exceptions
+
+Default Tailwind hues (`blue-*`, `purple-*`, `indigo-*`, `emerald-*`, …) must
+**not** be used for brand, layout, or state. Use the scales above.
+
+**Three legitimate exceptions — do not sweep these into the brand palette:**
+
+1. **Third-party brand colors.** `src/lib/social-icons.ts` — Instagram,
+   Facebook, YouTube etc. must render in their own colors.
+2. **Categorical encoding.** `*Columns.tsx` files (`AchievementColumns`,
+   `GalleryColumns`, `ContactsColumns`, `SocialLinksColumns`,
+   `ExtracurricularColumns`) and `StatsCards` use distinct hues to make
+   categories/levels distinguishable at a glance. Collapsing them into
+   navy/green/gold destroys the distinction.
+3. **`red-*` for destructive affordances** in admin (`DeleteDialog`,
+   `UserActions`, `CmsRowActions`) — semantically equivalent to
+   `--destructive`; prefer `--destructive` in new code, but existing usage is
+   not a bug.
+
+Anything outside those three is a one-off and should be remapped.
+
+---
+
+## 3. Typography — SPECIFIED, NOT YET IMPLEMENTED
+
+> ⚠️ **This section has not been applied to the codebase.** Ad hoc
+> `text-3xl/4xl/5xl` combinations are still scattered per page. Treat the table
+> below as the target for a future pass, not as a description of current code.
+
+Inter is already correctly wired (`next/font/google` in `layout.tsx`) — no font
+change needed. Only the **scale** needs standardizing.
+
+| Role        | Class                                            | Size / Weight |
+| ----------- | ------------------------------------------------ | ------------- |
+| Display     | `text-4xl font-extrabold tracking-tight`         | 36px / 800    |
+| H1          | `text-3xl font-bold tracking-tight`              | 28px / 700    |
+| H2          | `text-xl font-bold`                              | 20px / 700    |
+| H3          | `text-base font-semibold`                        | 16px / 600    |
+| Body        | `text-sm`                                        | 14px / 400    |
+| Caption     | `text-xs font-medium text-muted-foreground`      | 12px / 500    |
+| Micro label | `text-[11px] font-bold uppercase tracking-wider` | 11px / 700    |
+
+---
+
+## 4. Radius — three tiers
+
+Defined in `globals.css`; the standard Tailwind utilities do the work, no
+custom radius names:
+
+```css
+:root {
+  --radius: 16px;
+}
+
+@theme inline {
+  --radius-sm: 10px; /* inputs, chips, small buttons, badges, icon tiles */
+  --radius-md: 16px; /* standard cards — the default */
+  --radius-lg: 20px; /* hero cards, modals, dialogs, large media */
+  --radius-xl: 20px; /* alias to lg — never exceed 20px */
+  /* Guardrails so a stray utility can't exceed the ceiling */
+  --radius-2xl: 20px;
+  --radius-3xl: 20px;
+  --radius-4xl: 20px;
+}
+```
+
+### 4.1 Migration map
+
+| Old class                                   | New class                                               | Applies to                   |
+| ------------------------------------------- | ------------------------------------------------------- | ---------------------------- |
+| `rounded-input`                             | `rounded-sm`                                            | inputs, small buttons, chips |
+| `rounded-card`                              | `rounded-md`                                            | standard cards               |
+| `rounded-modal`                             | `rounded-lg`                                            | modals, dialogs, sheets      |
+| `rounded-md` **on inputs/small controls**   | `rounded-sm`                                            | see 4.2                      |
+| `rounded-md` **on cards/containers**        | keep `rounded-md`                                       | —                            |
+| `rounded-lg`/`rounded-xl` on inputs/buttons | `rounded-sm`                                            | —                            |
+| `rounded-lg`/`rounded-xl` on cards          | `rounded-md`                                            | —                            |
+| `rounded-2xl`                               | `rounded-md` (cards) / `rounded-lg` (hero, large media) | judge by context             |
+| `rounded-full` on buttons or cards          | `rounded-sm`                                            | see 4.3                      |
+| `rounded-full` on avatars, dots, badges     | keep `rounded-full`                                     | correct usage, do not touch  |
+
+### 4.2 The `rounded-md` trap
+
+`--radius-md` went from 8px to 16px in this redefinition, so **every
+pre-existing `rounded-md` silently doubled.** When you see `rounded-md`, decide
+what the element is:
+
+- input, textarea, select trigger, menu row, tab, tooltip, icon tile,
+  thumbnail, small button → **`rounded-sm`**
+- card, table container, panel, media preview → **keep `rounded-md`**
+
+### 4.3 `rounded-full` — decided cases
+
+Never find-and-replace this. The judgments already made:
+
+**Converted to `rounded-sm`** (they are buttons, not pills):
+
+- segmented toggle groups — `JadwalGridView`, `JadwalManager`
+- category filter buttons — `GaleriGallerySection`
+- section nav pills — `QuickNav`
+- suggestion chips — `AIChatWidget`
+
+**Kept `rounded-full`** — correct as circles/pills:
+
+- avatars, status dots, color swatches, all `Badge`/`StatusBadge` pills
+- decorative blurred background blobs
+- circular icon buttons where the round shape is the convention: the
+  `AIChatWidget` FAB, `Footer` social buttons, `FacilityCard` carousel arrows,
+  `GalleryMultiPicker` thumbnail delete badge, the `ProgramForm` tag chip and
+  its inline `×`
+
+The last group is a deliberate exception, not an oversight. If you want them
+squared off, that's a design decision — make it once, here.
+
+---
+
+## 5. Elevation — hairline border first, shadow second
+
+```css
+--shadow-xs: 0 1px 2px rgba(27, 28, 51, 0.05);
+--shadow-sm: 0 2px 8px rgba(27, 28, 51, 0.07);
+--shadow-md: 0 8px 24px rgba(27, 28, 51, 0.1);
+```
 
 Rules:
 
-- Never use font-weight 300 or below — reads as fragile on financial data.
-- Headings use `--color-text-primary`, never brand color directly on body
-  copy (reserve brand color for interactive/emphasis elements only).
+- **Resting cards:** `border border-border` only, no shadow.
+- **Interactive/hoverable cards:** add `hover:shadow-sm` only.
+- **Modals, dropdowns, popovers, sheets:** `shadow-md`.
+- **Buttons:** no shadow (`outline` variant keeps `shadow-xs`).
+- `shadow-lg`, `shadow-xl`, `shadow-2xl`, `shadow-2lg`, `shadow-yellow-*`,
+  `shadow-primary-*` are **banned**. None remain in the codebase.
+- A card that had a shadow but **no** border gets `border border-border` when
+  the shadow is removed — don't leave it edgeless.
+- `drop-shadow-*` is a filter, not elevation. It is out of scope here and is
+  fine on text/images.
 
 ---
 
-## 3. Spacing & radius scale
+## 6. Component baseline
 
-Use an 4px base scale, applied consistently — don't invent one-off values.
+| Component                                | Rule                                                   |
+| ---------------------------------------- | ------------------------------------------------------ |
+| `ui/button.tsx`                          | `rounded-sm` on base and on `sm`/`lg` sizes; no shadow |
+| `ui/card.tsx`                            | `rounded-md` + `border`; **no** default `shadow-sm`    |
+| `ui/input`, `textarea`, `select` trigger | `rounded-sm`                                           |
+| `ui/tabs` list + trigger                 | `rounded-sm`                                           |
+| `ui/tooltip`                             | `rounded-sm`                                           |
+| `ui/dialog`, `alert-dialog`, `sheet`     | `rounded-lg` + `shadow-md`                             |
+| `ui/dropdown-menu`, `select` content     | `rounded-md` + `shadow-md`                             |
+| `ui/sidebar` menu rows                   | `rounded-sm`                                           |
+| `ui/badge`, `admin/Badge`, `StatusBadge` | `rounded-full` — unchanged by design                   |
 
-```
---space-1: 4px   --space-2: 8px   --space-3: 12px  --space-4: 16px
---space-5: 20px  --space-6: 24px  --space-7: 32px  --space-8: 40px
---space-9: 48px  --space-10: 64px
-```
-
-Radius — this is the signature consistency rule for the whole system:
-
-```
---radius-sm: 10px   /* inputs, chips, small buttons */
---radius-md: 16px   /* standard cards */
---radius-lg: 20px   /* hero/feature cards, modals */
---radius-full: 999px /* avatars, status dots, pill badges ONLY — never buttons/cards */
-```
-
-Never mix radius values within the same visual tier. If one transaction-list
-card uses 16px, every transaction-list card uses 16px.
+Use `src/app/admin/_components/Badge.tsx` for enum/status pills (it is a
+superset of the shadcn badge). See the enum single-source-of-truth rule in
+`CLAUDE.md`.
 
 ---
 
-## 4. Elevation (restrained — hairline first, shadow second)
+## 7. Status
 
-Prefer a 1px border over a shadow. Only add shadow when a card floats above
-another surface (modals, dropdowns) or on hover.
-
-```css
---border-card: 1px solid var(--color-border);
-
---shadow-xs: 0 1px 2px rgba(27, 28, 51, 0.04);
---shadow-sm: 0 2px 8px rgba(27, 28, 51, 0.06);
---shadow-md: 0 8px 24px rgba(27, 28, 51, 0.1); /* modals, popovers only */
---shadow-hover: 0 4px 14px rgba(50, 54, 140, 0.12); /* interactive card hover */
-```
-
-Do not use `shadow-2xl`, blurred colored glows, or double-shadow stacking.
-
----
-
-## 5. Card component (the core building block)
-
-```css
-.card {
-  background: var(--color-white);
-  border: var(--border-card);
-  border-radius: var(--radius-md);
-  padding: var(--space-5) var(--space-5);
-  transition:
-    box-shadow 150ms ease,
-    border-color 150ms ease;
-}
-
-.card:hover {
-  /* only if the card is interactive/clickable */
-  box-shadow: var(--shadow-hover);
-  border-color: var(--color-border-strong);
-}
-
-.card--primary {
-  /* e.g. account balance hero card */
-  background: linear-gradient(
-    135deg,
-    var(--color-primary) 0%,
-    var(--color-primary-700) 100%
-  );
-  color: var(--color-white);
-  border: none;
-}
-
-.card--outline-teal {
-  /* promo / highlight card, used sparingly */
-  background: var(--color-teal-100);
-  border: 1px solid rgba(8, 137, 135, 0.25);
-  color: var(--color-text-primary);
-}
-```
-
-Card content rules:
-
-- One clear header row: icon or eyebrow label + title, optional right-aligned
-  action/chevron.
-- Amounts always right-aligned in list rows, tabular-nums, weight 600.
-- Max 1 shadow tier per card. Never stack a gradient AND a shadow AND a border
-  on the same card — pick one elevation method.
-- Icons: use a single consistent icon set (e.g. Lucide) at 20px, stroke-width
-  1.75 — not mixed emoji + icon-font + svg.
-
----
-
-## 6. Buttons
-
-| Variant          | Background                                      | Text                     | Border                | Radius        |
-| ---------------- | ----------------------------------------------- | ------------------------ | --------------------- | ------------- |
-| Primary          | `--color-primary` (hover `-600`, active `-700`) | white                    | none                  | `--radius-sm` |
-| Secondary (teal) | `--color-teal` (hover `-600`)                   | white                    | none                  | `--radius-sm` |
-| Outline          | transparent                                     | `--color-primary`        | 1px `--color-primary` | `--radius-sm` |
-| Ghost            | transparent                                     | `--color-text-secondary` | none                  | `--radius-sm` |
-| Destructive      | `--color-danger`                                | white                    | none                  | `--radius-sm` |
-
-Height: 44px default (touch-friendly), 36px compact. Padding-x: 20px.
-Font: 14px/600. No `rounded-full` pill buttons — this is the single most
-common "AI slop" tell in fintech mockups; keep the 10px radius consistent
-with inputs.
-
----
-
-## 7. Motion
-
-- 120–180ms ease-out for hover/press states only.
-- Page-level transitions: one subtle fade+8px slide on route change, nothing
-  more.
-- No bouncing, no scale-pulse loaders, no shimmering rainbow skeletons —
-  use a flat `--color-primary-50` pulse for skeleton loaders.
-
----
-
-## 8. What to explicitly avoid
-
-- Purple-to-pink or purple-to-blue decorative gradients anywhere except the
-  single `.card--primary` hero treatment above.
-- Glassmorphism / frosted blur panels.
-- Emoji as icons in production UI.
-- Centered-everything layouts — align to a real grid, left-align body text.
-- Mixing multiple accent hues "for variety" — every non-neutral color used
-  must map back to a token in Section 1.
-
----
-
-## 9. Tailwind config (drop-in)
-
-```js
-// tailwind.config.js
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          DEFAULT: "#32368C",
-          50: "#F3F3FB",
-          100: "#E5E6F5",
-          600: "#3D42A6",
-          700: "#282C70",
-        },
-        teal: {
-          DEFAULT: "#088987",
-          100: "#DFF3F2",
-          600: "#0AA3A0",
-          700: "#066866",
-        },
-        surface: "#F7F7FB",
-        border: { DEFAULT: "#E4E4EE", strong: "#CBCBDE" },
-        text: { primary: "#1B1C33", secondary: "#5B5D75", muted: "#8B8DA3" },
-        success: "#088987",
-        warning: "#C97A2B",
-        danger: "#C4433D",
-      },
-      fontFamily: { sans: ["Inter", "sans-serif"] },
-      borderRadius: { sm: "10px", md: "16px", lg: "20px" },
-      boxShadow: {
-        xs: "0 1px 2px rgba(27,28,51,0.04)",
-        sm: "0 2px 8px rgba(27,28,51,0.06)",
-        md: "0 8px 24px rgba(27,28,51,0.10)",
-        hover: "0 4px 14px rgba(50,54,140,0.12)",
-      },
-    },
-  },
-};
-```
+- [x] Fintech-only tokens deleted from `globals.css` (§1)
+- [x] 294 token call sites remapped to the brand scales (§2.3)
+- [x] `--radius-sm/md/lg` redefined + 20px ceiling guardrail (§4)
+- [x] `--shadow-xs/sm/md` redefined (§5)
+- [x] `button.tsx` and `card.tsx` updated (§6)
+- [x] `rounded-full` on buttons/cards converted; pills/avatars left alone (§4.3)
+- [x] Ad hoc `shadow-lg/xl/2xl/2lg/yellow/primary` removed (§5)
+- [x] Color/radius/elevation single-sourced into this file
+- [x] `pnpm lint` and `pnpm build` pass
+- [ ] **§3 typography scale applied** — specified, not implemented
+- [ ] Off-palette one-offs outside the §2.4 exceptions reviewed
+- [ ] Visual smoke test: home page, one dashboard page, one form/modal

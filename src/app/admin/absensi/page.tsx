@@ -36,11 +36,11 @@ export default async function AbsensiMonitorPage() {
         description={`Pemantauan sesi kelas ${dayOfWeek ? DAY_OF_WEEK_LABELS[dayOfWeek] : "Minggu"}, ${dateISO}`}
       />
 
-      <section className="border-hairline rounded-card border bg-white">
+      <section className="border-border rounded-md border bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-hairline text-ink-muted border-b text-left text-xs font-semibold uppercase tracking-wide">
+              <tr className="border-border text-muted-foreground border-b text-left text-xs font-semibold uppercase tracking-wide">
                 <th className="px-5 py-3">Jam</th>
                 <th className="px-4 py-3">Kelas</th>
                 <th className="px-4 py-3">Mapel</th>
@@ -58,18 +58,18 @@ export default async function AbsensiMonitorPage() {
                 return (
                   <tr
                     key={row.id}
-                    className="border-hairline border-b last:border-b-0"
+                    className="border-border border-b last:border-b-0"
                   >
-                    <td className="text-ink px-5 py-3 font-semibold tabular-nums">
+                    <td className="text-foreground px-5 py-3 font-semibold tabular-nums">
                       {row.startTime}–{row.endTime}
                     </td>
-                    <td className="text-ink px-4 py-3">
+                    <td className="text-foreground px-4 py-3">
                       {row.schoolClass.name}
                     </td>
-                    <td className="text-ink-secondary px-4 py-3">
+                    <td className="text-neutral-600 px-4 py-3">
                       {row.subject.name}
                     </td>
-                    <td className="text-ink-secondary px-4 py-3">
+                    <td className="text-neutral-600 px-4 py-3">
                       {row.teacher.user.name}
                     </td>
                     <td className="px-4 py-3">
@@ -81,7 +81,7 @@ export default async function AbsensiMonitorPage() {
                         <Badge variant="outline">Belum dibuka</Badge>
                       )}
                     </td>
-                    <td className="text-ink px-4 py-3 text-right font-semibold tabular-nums">
+                    <td className="text-foreground px-4 py-3 text-right font-semibold tabular-nums">
                       {session ? (hadir ?? 0) : "—"}
                     </td>
                   </tr>
@@ -91,7 +91,7 @@ export default async function AbsensiMonitorPage() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="text-ink-muted px-5 py-12 text-center"
+                    className="text-muted-foreground px-5 py-12 text-center"
                   >
                     Tidak ada jadwal untuk hari ini.
                   </td>

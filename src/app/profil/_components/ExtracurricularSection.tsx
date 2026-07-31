@@ -43,10 +43,10 @@ export default async function ExtracurricularSection() {
           {extracurriculars.map((ekskul) => (
             <div
               key={ekskul.id}
-              className="bg-white rounded-xl p-5 border border-yellow-200 hover:border-yellow-400 hover:shadow-lg transition-all duration-300 group"
+              className="bg-white rounded-md p-5 border border-yellow-200 hover:border-yellow-400 hover:shadow-sm transition-all duration-300 group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-sm flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                   {ekskul.icon ? (
                     <svg
                       className="w-6 h-6 text-yellow-900"

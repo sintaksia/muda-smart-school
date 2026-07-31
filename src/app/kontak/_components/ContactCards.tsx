@@ -17,10 +17,10 @@ export default async function ContactCards() {
               href={toWhatsAppLink(contact.value)}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 group border border-neutral-100 hover:border-green-500"
+              className="bg-white rounded-md p-6 hover:shadow-sm transition-all duration-300 group border border-neutral-100 hover:border-green-500"
             >
               <div className="flex items-start gap-4">
-                <div className="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <div className="w-14 h-14 bg-green-500 rounded-sm flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
                   <svg
                     className="w-7 h-7 text-white"
                     fill="currentColor"

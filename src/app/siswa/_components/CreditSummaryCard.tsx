@@ -5,7 +5,7 @@ interface CreditSummaryCardProps {
 
 export function CreditSummaryCard({ total, name }: CreditSummaryCardProps) {
   return (
-    <section className="rounded-card bg-gradient-to-br from-[var(--color-brand)] to-[var(--color-brand-700)] p-6 text-white">
+    <section className="rounded-md bg-gradient-to-br from-primary-900 to-primary-950 p-6 text-white">
       <p className="text-[11px] font-semibold uppercase tracking-[0.06em] opacity-80">
         Skor Kredit · {name}
       </p>

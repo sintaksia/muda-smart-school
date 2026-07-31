@@ -25,13 +25,13 @@ export function JadwalListView({
         return (
           <section
             key={dayOfWeek}
-            className="border-hairline rounded-card border bg-white"
+            className="border-border rounded-md border bg-white"
           >
-            <header className="border-hairline flex items-center justify-between border-b px-5 py-4">
-              <h3 className="text-ink text-base font-semibold">
+            <header className="border-border flex items-center justify-between border-b px-5 py-4">
+              <h3 className="text-foreground text-base font-semibold">
                 {DAY_OF_WEEK_LABELS[dayOfWeek]}
               </h3>
-              <span className="text-ink-muted text-xs font-medium">
+              <span className="text-muted-foreground text-xs font-medium">
                 {rows.length} sesi
               </span>
             </header>
@@ -43,18 +43,18 @@ export function JadwalListView({
                     return (
                       <tr
                         key={row.id}
-                        className={`border-hairline border-b last:border-b-0 ${
-                          isConflict ? "bg-danger/5" : ""
+                        className={`border-border border-b last:border-b-0 ${
+                          isConflict ? "bg-destructive/5" : ""
                         }`}
                       >
-                        <td className="text-ink w-32 px-5 py-3 font-semibold tabular-nums">
+                        <td className="text-foreground w-32 px-5 py-3 font-semibold tabular-nums">
                           {row.startTime}–{row.endTime}
                         </td>
-                        <td className="text-ink px-4 py-3">
+                        <td className="text-foreground px-4 py-3">
                           <span className="flex items-center gap-2">
                             {row.subjectName}
                             {isConflict && (
-                              <span className="text-danger flex items-center gap-1 text-xs font-semibold">
+                              <span className="text-destructive flex items-center gap-1 text-xs font-semibold">
                                 <TriangleAlert
                                   className="h-4 w-4"
                                   strokeWidth={1.75}
@@ -64,17 +64,17 @@ export function JadwalListView({
                             )}
                           </span>
                         </td>
-                        <td className="text-ink-secondary px-4 py-3">
+                        <td className="text-neutral-600 px-4 py-3">
                           {row.className}
                         </td>
-                        <td className="text-ink-secondary px-4 py-3">
+                        <td className="text-neutral-600 px-4 py-3">
                           {row.teacherName}
                         </td>
                         <td className="w-16 px-4 py-3 text-right">
                           <button
                             type="button"
                             onClick={() => onDelete(row.id)}
-                            className="text-ink-muted hover:text-danger transition-colors"
+                            className="text-muted-foreground hover:text-destructive transition-colors"
                             aria-label="Nonaktifkan jadwal"
                           >
                             <Trash2 className="h-5 w-5" strokeWidth={1.75} />
@@ -91,7 +91,7 @@ export function JadwalListView({
       })}
 
       {jadwal.length === 0 && (
-        <div className="border-hairline rounded-card text-ink-muted border bg-white px-5 py-12 text-center text-sm">
+        <div className="border-border rounded-md text-muted-foreground border bg-white px-5 py-12 text-center text-sm">
           Tidak ada jadwal yang cocok dengan filter.
         </div>
       )}

@@ -72,7 +72,7 @@ export function Navbar() {
               alt="Muda Smart School"
               width={80}
               height={80}
-              className="rounded-md w-10 h-10"
+              className="rounded-sm w-10 h-10"
             />
             <span className="font-semibold text-lg text-primary">
               SMK MUHAMMADIYAH 2 CIBIRU
@@ -188,7 +188,7 @@ export function Navbar() {
           <div className="hidden lg:block">
             <Button
               asChild
-              className="bg-primary hover:bg-primary hover:scale-110 transition-transform text-white rounded-lg"
+              className="bg-primary hover:bg-primary hover:scale-110 transition-transform text-white rounded-sm"
             >
               <Link href="/registrasi">Daftar Sekarang</Link>
             </Button>
@@ -196,7 +196,7 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-md text-muted-foreground hover:text-primary"
+            className="md:hidden p-2 rounded-sm text-muted-foreground hover:text-primary"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <Menu className="h-6 w-6" />

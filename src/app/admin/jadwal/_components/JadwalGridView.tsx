@@ -37,9 +37,9 @@ export function JadwalGridView({
       : entries.filter((entry) => entry[entityKey] === entityId);
 
   return (
-    <div className="border-hairline rounded-card border bg-white">
-      <div className="border-hairline flex flex-wrap items-center gap-3 border-b px-5 py-4">
-        <div className="border-hairline flex overflow-hidden rounded-full border text-sm font-medium">
+    <div className="border-border rounded-md border bg-white">
+      <div className="border-border flex flex-wrap items-center gap-3 border-b px-5 py-4">
+        <div className="border-border flex overflow-hidden rounded-sm border text-sm font-medium">
           {(["class", "teacher"] as const).map((value) => (
             <button
               key={value}
@@ -50,8 +50,8 @@ export function JadwalGridView({
               }}
               className={`px-4 py-1.5 transition-colors ${
                 mode === value
-                  ? "bg-brand text-white"
-                  : "text-ink-secondary hover:text-ink"
+                  ? "bg-primary-900 text-white"
+                  : "text-neutral-600 hover:text-foreground"
               }`}
             >
               Per{" "}
@@ -60,7 +60,7 @@ export function JadwalGridView({
           ))}
         </div>
         <Select value={entityId} onValueChange={setEntityId}>
-          <SelectTrigger className="rounded-input h-10 w-56 bg-white">
+          <SelectTrigger className="rounded-sm h-10 w-56 bg-white">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

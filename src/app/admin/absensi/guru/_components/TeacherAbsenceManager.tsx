@@ -67,11 +67,11 @@ export function TeacherAbsenceManager({
     <div className="space-y-6">
       <TeacherAbsenceForm teacherOptions={teacherOptions} />
 
-      <section className="border-hairline rounded-card border bg-white">
+      <section className="border-border rounded-md border bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-hairline text-ink-muted border-b text-left text-xs font-semibold uppercase tracking-wide">
+              <tr className="border-border text-muted-foreground border-b text-left text-xs font-semibold uppercase tracking-wide">
                 <th className="px-5 py-3">Guru</th>
                 <th className="px-4 py-3">Tanggal</th>
                 <th className="px-4 py-3">Jam</th>
@@ -84,18 +84,18 @@ export function TeacherAbsenceManager({
               {records.map((record) => (
                 <tr
                   key={record.id}
-                  className="border-hairline border-b last:border-b-0"
+                  className="border-border border-b last:border-b-0"
                 >
-                  <td className="text-ink px-5 py-3 font-semibold">
+                  <td className="text-foreground px-5 py-3 font-semibold">
                     {record.teacherName}
                   </td>
-                  <td className="text-ink px-4 py-3 tabular-nums">
+                  <td className="text-foreground px-4 py-3 tabular-nums">
                     {record.date}
                   </td>
-                  <td className="text-ink-secondary px-4 py-3 tabular-nums">
+                  <td className="text-neutral-600 px-4 py-3 tabular-nums">
                     {record.time}
                   </td>
-                  <td className="text-ink-secondary px-4 py-3">
+                  <td className="text-neutral-600 px-4 py-3">
                     {record.className} · {record.subjectName}
                   </td>
                   <td className="px-4 py-3">
@@ -111,7 +111,7 @@ export function TeacherAbsenceManager({
                         onChange={(event) =>
                           assignSubstitute(record.id, event.target.value)
                         }
-                        className="border-hairline-strong text-ink-secondary rounded-input h-9 border bg-white px-2 text-xs"
+                        className="border-neutral-300 text-neutral-600 rounded-sm h-9 border bg-white px-2 text-xs"
                       >
                         <option value="" disabled>
                           Pilih pengganti…
@@ -130,7 +130,7 @@ export function TeacherAbsenceManager({
                 <tr>
                   <td
                     colSpan={6}
-                    className="text-ink-muted px-5 py-12 text-center"
+                    className="text-muted-foreground px-5 py-12 text-center"
                   >
                     Belum ada catatan absensi guru.
                   </td>

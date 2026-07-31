@@ -20,7 +20,7 @@ export function QuickNav({ programs }: QuickNavProps) {
         <Link
           key={program.id}
           href={`#${program.abbreviation.toLowerCase()}`}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 font-medium text-sm transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-sm border-2 font-medium text-sm transition-colors"
           style={{ borderColor: program.color, color: program.color }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = program.color;

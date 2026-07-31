@@ -35,10 +35,10 @@ export default async function GuruDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-ink text-[28px] font-bold tracking-tight">
+        <h1 className="text-foreground text-[28px] font-bold tracking-tight">
           Sesi Mengajar Hari Ini
         </h1>
-        <p className="text-ink-secondary mt-1 text-sm">
+        <p className="text-neutral-600 mt-1 text-sm">
           {dayOfWeek ? DAY_OF_WEEK_LABELS[dayOfWeek] : "Minggu"}, {dateISO}
         </p>
       </div>

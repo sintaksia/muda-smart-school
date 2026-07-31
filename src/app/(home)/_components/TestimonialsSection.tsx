@@ -88,7 +88,7 @@ export default function TestimonialsSection({
           {items.map((testimonial, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 relative flex flex-col"
+              className="bg-white rounded-md p-8 border border-border hover:shadow-sm transition-shadow duration-300 relative flex flex-col"
             >
               <div className="absolute -top-4 left-8">
                 <div

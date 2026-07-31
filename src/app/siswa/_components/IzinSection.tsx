@@ -57,11 +57,11 @@ export function IzinSection({ submissions }: IzinSectionProps) {
   }
 
   const inputClass =
-    "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
+    "border-neutral-300 text-foreground rounded-sm h-11 border bg-white px-3 text-sm";
 
   return (
-    <section className="border-hairline rounded-card border bg-white p-5">
-      <h3 className="text-ink mb-4 text-base font-semibold">
+    <section className="border-border rounded-md border bg-white p-5">
+      <h3 className="text-foreground mb-4 text-base font-semibold">
         Ajukan Izin / Sakit
       </h3>
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -88,30 +88,30 @@ export function IzinSection({ submissions }: IzinSectionProps) {
           required
           minLength={3}
           rows={2}
-          className="border-hairline-strong text-ink rounded-input w-full border bg-white px-3 py-2 text-sm"
+          className="border-neutral-300 text-foreground rounded-sm w-full border bg-white px-3 py-2 text-sm"
         />
         <button
           type="submit"
           disabled={submitting || reason.trim().length < 3}
-          className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 w-full text-sm font-semibold text-white transition-colors disabled:opacity-50"
+          className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 w-full text-sm font-semibold text-white transition-colors disabled:opacity-50"
         >
           {submitting ? "Mengirim..." : "Kirim Pengajuan"}
         </button>
       </form>
 
       {submissions.length > 0 && (
-        <ul className="border-hairline mt-5 border-t pt-4">
+        <ul className="border-border mt-5 border-t pt-4">
           {submissions.map((izin) => (
             <li
               key={izin.id}
               className="flex items-center justify-between py-2"
             >
               <div>
-                <p className="text-ink text-sm font-semibold">
+                <p className="text-foreground text-sm font-semibold">
                   {LEAVE_TYPE_LABELS[izin.jenis]} ·{" "}
                   <span className="tabular-nums">{izin.tanggal}</span>
                 </p>
-                <p className="text-ink-muted max-w-72 truncate text-xs">
+                <p className="text-muted-foreground max-w-72 truncate text-xs">
                   {izin.alasan}
                 </p>
               </div>

@@ -28,7 +28,7 @@ export function JadwalWeekGrid({
   const boundaries = buildTimeBoundaries(entries);
   if (boundaries.length < 2) {
     return (
-      <div className="text-ink-muted px-5 py-12 text-center text-sm">
+      <div className="text-muted-foreground px-5 py-12 text-center text-sm">
         Belum ada jadwal untuk pilihan ini.
       </div>
     );
@@ -50,13 +50,13 @@ export function JadwalWeekGrid({
       <table className="w-full min-w-175 border-collapse text-sm">
         <thead>
           <tr>
-            <th className="text-ink-muted w-28 px-3 py-2 text-left text-xs font-medium">
+            <th className="text-muted-foreground w-28 px-3 py-2 text-left text-xs font-medium">
               Jam
             </th>
             {DAY_OF_WEEK_VALUES.map((dayOfWeek) => (
               <th
                 key={dayOfWeek}
-                className="text-ink border-hairline border-l px-3 py-2 text-left text-xs font-semibold"
+                className="text-foreground border-border border-l px-3 py-2 text-left text-xs font-semibold"
               >
                 {DAY_OF_WEEK_LABELS[dayOfWeek]}
               </th>
@@ -68,8 +68,8 @@ export function JadwalWeekGrid({
             const slotEnd = boundaries[index + 1];
             const startMin = parseTimeToMinutes(slotStart);
             return (
-              <tr key={slotStart} className="border-hairline border-t">
-                <td className="text-ink-secondary px-3 py-2 text-xs font-medium tabular-nums">
+              <tr key={slotStart} className="border-border border-t">
+                <td className="text-neutral-600 px-3 py-2 text-xs font-medium tabular-nums">
                   {slotStart}–{slotEnd}
                 </td>
                 {DAY_OF_WEEK_VALUES.map((dayOfWeek) => {
@@ -89,12 +89,12 @@ export function JadwalWeekGrid({
                     return (
                       <td
                         key={dayOfWeek}
-                        className={`border-hairline border-l px-3 py-2 text-xs ${
+                        className={`border-border border-l px-3 py-2 text-xs ${
                           insideSpan
                             ? mode === "class"
                               ? GAP_HIGHLIGHT_CLASS
                               : FREE_SLOT_CLASS
-                            : "text-ink-muted"
+                            : "text-muted-foreground"
                         }`}
                       >
                         {insideSpan
@@ -114,25 +114,25 @@ export function JadwalWeekGrid({
                       key={dayOfWeek}
                       className={`border-l px-3 py-2 align-top ${
                         hasConflict || covering.length > 1
-                          ? "border-danger/40 bg-danger/10"
-                          : "border-hairline bg-brand-50"
+                          ? "border-destructive/40 bg-destructive/10"
+                          : "border-border bg-primary-50"
                       }`}
                     >
                       {covering.map((entry) => (
                         <div key={entry.id} className="text-xs leading-snug">
                           {entry.startTime === slotStart ? (
                             <>
-                              <p className="text-ink font-semibold">
+                              <p className="text-foreground font-semibold">
                                 {entry.subjectName}
                               </p>
-                              <p className="text-ink-secondary">
+                              <p className="text-neutral-600">
                                 {mode === "class"
                                   ? entry.teacherName
                                   : entry.className}
                               </p>
                             </>
                           ) : (
-                            <p className="text-ink-muted">⋮</p>
+                            <p className="text-muted-foreground">⋮</p>
                           )}
                         </div>
                       ))}

@@ -35,7 +35,7 @@ export default async function Footer() {
                 alt="Logo SMK Muhammadiyah 2 Cibiru"
                 width={64}
                 height={64}
-                className="rounded-lg"
+                className="rounded-sm"
               />
               <div>
                 <h3 className="text-xl font-bold">SMK Muhammadiyah 2 Cibiru</h3>

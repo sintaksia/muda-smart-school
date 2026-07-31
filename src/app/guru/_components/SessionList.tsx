@@ -54,7 +54,7 @@ export function SessionList({ items }: SessionListProps) {
 
   if (items.length === 0) {
     return (
-      <div className="border-hairline rounded-card text-ink-muted border bg-white px-5 py-12 text-center text-sm">
+      <div className="border-border rounded-md text-muted-foreground border bg-white px-5 py-12 text-center text-sm">
         Tidak ada jadwal mengajar hari ini.
       </div>
     );
@@ -65,15 +65,17 @@ export function SessionList({ items }: SessionListProps) {
       {items.map((item) => (
         <div
           key={item.jadwalId}
-          className="border-hairline rounded-card hover:shadow-hover hover:border-hairline-strong flex items-center justify-between border bg-white p-5 transition-[box-shadow,border-color] duration-150"
+          className="border-border rounded-md hover:shadow-sm hover:border-neutral-300 flex items-center justify-between border bg-white p-5 transition-[box-shadow,border-color] duration-150"
         >
           <div className="flex items-center gap-4">
-            <div className="text-ink w-24 text-sm font-semibold tabular-nums">
+            <div className="text-foreground w-24 text-sm font-semibold tabular-nums">
               {item.jam}
             </div>
             <div>
-              <p className="text-ink text-base font-semibold">{item.mapel}</p>
-              <p className="text-ink-secondary text-sm">{item.kelas}</p>
+              <p className="text-foreground text-base font-semibold">
+                {item.mapel}
+              </p>
+              <p className="text-neutral-600 text-sm">{item.kelas}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -86,7 +88,7 @@ export function SessionList({ items }: SessionListProps) {
               <button
                 type="button"
                 onClick={() => router.push(`/guru/sesi/${item.sesiId}`)}
-                className="text-brand hover:text-brand-600 inline-flex items-center gap-1 text-sm font-semibold"
+                className="text-primary-900 hover:text-primary-800 inline-flex items-center gap-1 text-sm font-semibold"
               >
                 Lihat Sesi
                 <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
@@ -96,7 +98,7 @@ export function SessionList({ items }: SessionListProps) {
                 type="button"
                 disabled={busyId === item.jadwalId}
                 onClick={() => openSession(item.jadwalId)}
-                className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input inline-flex h-11 items-center gap-2 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+                className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm inline-flex h-11 items-center gap-2 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
               >
                 <QrCode className="h-5 w-5" strokeWidth={1.75} />
                 {busyId === item.jadwalId ? "Membuka..." : "Buka Sesi"}

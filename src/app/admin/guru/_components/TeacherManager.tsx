@@ -32,7 +32,7 @@ export function TeacherManager({
       <div className="flex justify-end">
         <Button
           onClick={() => setFormOpen(true)}
-          className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 px-5 text-sm font-semibold text-white"
+          className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white"
         >
           <Plus className="h-5 w-5" strokeWidth={1.75} />
           Tambah Guru
@@ -45,11 +45,11 @@ export function TeacherManager({
         subjectOptions={subjectOptions}
       />
 
-      <section className="border-hairline rounded-card border bg-white">
+      <section className="border-border rounded-md border bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-hairline text-ink-muted border-b text-left text-xs font-semibold uppercase tracking-wide">
+              <tr className="border-border text-muted-foreground border-b text-left text-xs font-semibold uppercase tracking-wide">
                 <th className="px-5 py-3">Nama</th>
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Status</th>
@@ -61,20 +61,22 @@ export function TeacherManager({
               {teacherList.map((teacher) => (
                 <tr
                   key={teacher.id}
-                  className="border-hairline border-b last:border-b-0"
+                  className="border-border border-b last:border-b-0"
                 >
                   <td className="px-5 py-3">
-                    <p className="text-ink font-semibold">{teacher.name}</p>
+                    <p className="text-foreground font-semibold">
+                      {teacher.name}
+                    </p>
                     {teacher.nip && (
-                      <p className="text-ink-muted text-xs tabular-nums">
+                      <p className="text-muted-foreground text-xs tabular-nums">
                         NIP {teacher.nip}
                       </p>
                     )}
                   </td>
-                  <td className="text-ink-secondary px-4 py-3">
+                  <td className="text-neutral-600 px-4 py-3">
                     {teacher.email}
                   </td>
-                  <td className="text-ink-secondary px-4 py-3">
+                  <td className="text-neutral-600 px-4 py-3">
                     {EMPLOYMENT_STATUS_LABELS[teacher.employmentStatus]}
                   </td>
                   <td className="px-4 py-3">
@@ -83,19 +85,19 @@ export function TeacherManager({
                         teacher.subjects.map((name) => (
                           <span
                             key={name}
-                            className="bg-brand-50 text-brand rounded-full px-2.5 py-0.5 text-xs font-medium"
+                            className="bg-primary-50 text-primary-900 rounded-full px-2.5 py-0.5 text-xs font-medium"
                           >
                             {name}
                           </span>
                         ))
                       ) : (
-                        <span className="text-warning text-xs font-semibold">
+                        <span className="text-yellow-600 text-xs font-semibold">
                           Belum ada kualifikasi
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="text-ink-secondary px-4 py-3">
+                  <td className="text-neutral-600 px-4 py-3">
                     {teacher.homeroomClasses.join(", ") || "—"}
                   </td>
                 </tr>
@@ -104,7 +106,7 @@ export function TeacherManager({
                 <tr>
                   <td
                     colSpan={5}
-                    className="text-ink-muted px-5 py-12 text-center"
+                    className="text-muted-foreground px-5 py-12 text-center"
                   >
                     Belum ada guru. Tambahkan akun guru pertama.
                   </td>

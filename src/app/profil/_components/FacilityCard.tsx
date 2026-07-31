@@ -41,7 +41,7 @@ export function FacilityCard({ facility }: FacilityCardProps) {
       <div
         onClick={() => hasDetail && setOpen(true)}
         className={cn(
-          "bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl border border-green-200 hover:border-green-400 hover:shadow-md transition-all duration-300 group overflow-hidden",
+          "bg-gradient-to-br from-green-50 to-green-100/50 rounded-md border border-green-200 hover:border-green-400 hover:shadow-sm transition-all duration-300 group overflow-hidden",
           hasDetail && "cursor-pointer",
         )}
       >
@@ -77,7 +77,7 @@ export function FacilityCard({ facility }: FacilityCardProps) {
 
         {/* Card content */}
         <div className="p-5">
-          <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+          <div className="w-10 h-10 bg-green-500 rounded-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
             <Icon className="w-5 h-5 text-white" />
           </div>
           <h3 className="font-semibold text-neutral-800">{facility.name}</h3>

@@ -95,9 +95,9 @@ export function JadwalForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-modal sm:max-w-md">
+      <DialogContent className="rounded-lg sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-ink">Tambah Jadwal</DialogTitle>
+          <DialogTitle className="text-foreground">Tambah Jadwal</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -123,11 +123,7 @@ export function JadwalForm({
                         {name === "startTime" ? "Jam Mulai" : "Jam Selesai"}
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          type="time"
-                          className="rounded-input"
-                          {...field}
-                        />
+                        <Input type="time" className="rounded-sm" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -139,7 +135,7 @@ export function JadwalForm({
             <Button
               type="submit"
               disabled={form.formState.isSubmitting}
-              className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 w-full text-sm font-semibold text-white"
+              className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 w-full text-sm font-semibold text-white"
             >
               {form.formState.isSubmitting ? "Menyimpan..." : "Simpan Jadwal"}
             </Button>

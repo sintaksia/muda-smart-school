@@ -62,7 +62,7 @@ export function GalleryPicker({
   return (
     <div className="w-full">
       {value ? (
-        <div className="relative h-48 rounded-lg overflow-hidden border">
+        <div className="relative h-48 rounded-md overflow-hidden border">
           <Image src={value} alt="Preview" fill className="object-cover" />
           {!disabled && (
             <div className="absolute top-2 right-2 flex gap-2">
@@ -99,7 +99,7 @@ export function GalleryPicker({
       ) : (
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <div className="h-48 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary-400 hover:bg-gray-50 cursor-pointer flex flex-col items-center justify-center gap-2 text-muted-foreground">
+            <div className="h-48 rounded-md border-2 border-dashed border-gray-300 hover:border-primary-400 hover:bg-gray-50 cursor-pointer flex flex-col items-center justify-center gap-2 text-muted-foreground">
               <Images className="h-10 w-10" />
               <p className="text-sm">Klik untuk pilih dari galeri</p>
             </div>
@@ -154,7 +154,7 @@ function GalleryPickerDialog({
                 key={item.id}
                 type="button"
                 onClick={() => onSelect(item.image)}
-                className={`group relative aspect-square rounded-lg overflow-hidden border-2 transition-all hover:border-primary-500 ${
+                className={`group relative aspect-square rounded-sm overflow-hidden border-2 transition-all hover:border-primary-500 ${
                   selectedUrl === item.image
                     ? "border-primary-500 ring-2 ring-primary-200"
                     : "border-transparent"

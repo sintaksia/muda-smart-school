@@ -76,7 +76,7 @@ export default function HeroBanner({ slides }: HeroBannerProps) {
                         </div>
                         <a
                           href={slide.ctaLink}
-                          className="inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
+                          className="inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold text-lg px-8 py-4 rounded-sm transition-all duration-300 hover:scale-105"
                         >
                           {slide.ctaText}
                           <svg

@@ -13,7 +13,8 @@ export default async function ProgramKeahlianSection() {
             Program <span className="text-primary-600">Keahlian</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Pilihan kompetensi keahlian yang dapat dipilih sesuai minat dan bakat siswa
+            Pilihan kompetensi keahlian yang dapat dipilih sesuai minat dan
+            bakat siswa
           </p>
         </div>
 
@@ -24,17 +25,31 @@ export default async function ProgramKeahlianSection() {
           ))}
 
           {/* CTA Card */}
-          <div className="group bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl p-6 flex flex-col justify-center items-center text-center text-white hover:shadow-xl transition-all duration-300">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-5">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          <div className="group bg-gradient-to-br from-primary-500 to-primary-700 rounded-md p-6 flex flex-col justify-center items-center text-center text-white hover:shadow-sm transition-all duration-300">
+            <div className="w-16 h-16 bg-white/20 rounded-sm flex items-center justify-center mb-5">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
               </svg>
             </div>
             <h3 className="text-xl font-bold mb-3">Tertarik Bergabung?</h3>
             <p className="text-white/80 mb-5">
-              Daftarkan diri Anda sekarang dan raih masa depan cerah bersama kami!
+              Daftarkan diri Anda sekarang dan raih masa depan cerah bersama
+              kami!
             </p>
-            <a href="/registrasi" className="bg-white text-primary-600 font-semibold px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors">
+            <a
+              href="/registrasi"
+              className="bg-white text-primary-600 font-semibold px-6 py-3 rounded-sm hover:bg-gray-100 transition-colors"
+            >
               Daftar Sekarang
             </a>
           </div>

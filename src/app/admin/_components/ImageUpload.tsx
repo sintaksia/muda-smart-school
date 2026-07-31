@@ -15,7 +15,13 @@ interface ImageUploadProps {
   disabled?: boolean;
 }
 
-export function ImageUpload({ value, onChange, bucket='public-assets', folder = "uploads", disabled }: ImageUploadProps) {
+export function ImageUpload({
+  value,
+  onChange,
+  bucket = "public-assets",
+  folder = "uploads",
+  disabled,
+}: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -30,10 +36,14 @@ export function ImageUpload({ value, onChange, bucket='public-assets', folder = 
       const ext = file.name.split(".").pop();
       const path = `${folder}/${Date.now()}.${ext}`;
 
-      const { data, error } = await supabase.storage.from(bucket).upload(path, file);
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(path, file);
       if (error) throw error;
 
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
+      const { data: urlData } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(data.path);
       onChange(urlData.publicUrl);
       toast.success("Gambar berhasil diunggah");
     } catch {
@@ -55,7 +65,7 @@ export function ImageUpload({ value, onChange, bucket='public-assets', folder = 
       />
 
       {value ? (
-        <div className="relative h-48 rounded-lg overflow-hidden border">
+        <div className="relative h-48 rounded-md overflow-hidden border">
           <Image src={value} alt="Preview" fill className="object-cover" />
           {isUploading && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -64,10 +74,22 @@ export function ImageUpload({ value, onChange, bucket='public-assets', folder = 
           )}
           {!isUploading && !disabled && (
             <div className="absolute top-2 right-2 flex gap-2">
-              <Button type="button" variant="secondary" size="icon" className="h-8 w-8" onClick={() => inputRef.current?.click()}>
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => inputRef.current?.click()}
+              >
                 <Upload className="h-4 w-4" />
               </Button>
-              <Button type="button" variant="destructive" size="icon" className="h-8 w-8" onClick={() => onChange("")}>
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => onChange("")}
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -76,7 +98,7 @@ export function ImageUpload({ value, onChange, bucket='public-assets', folder = 
       ) : (
         <div
           onClick={() => !disabled && !isUploading && inputRef.current?.click()}
-          className="h-48 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary-400 hover:bg-gray-50 cursor-pointer flex flex-col items-center justify-center gap-2 text-muted-foreground"
+          className="h-48 rounded-md border-2 border-dashed border-gray-300 hover:border-primary-400 hover:bg-gray-50 cursor-pointer flex flex-col items-center justify-center gap-2 text-muted-foreground"
         >
           {isUploading ? (
             <Loader2 className="h-10 w-10 animate-spin text-primary-500" />

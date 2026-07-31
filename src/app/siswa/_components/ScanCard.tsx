@@ -133,24 +133,26 @@ export function ScanCard() {
   }
 
   return (
-    <section className="border-hairline rounded-card border bg-white p-5">
+    <section className="border-border rounded-md border bg-white p-5">
       <div className="mb-4 flex items-center gap-2">
-        <ScanLine className="text-brand h-5 w-5" strokeWidth={1.75} />
-        <h3 className="text-ink text-base font-semibold">Scan Presensi</h3>
+        <ScanLine className="text-primary-900 h-5 w-5" strokeWidth={1.75} />
+        <h3 className="text-foreground text-base font-semibold">
+          Scan Presensi
+        </h3>
       </div>
 
       {scanning ? (
         <div className="space-y-3">
           <video
             ref={videoRef}
-            className="rounded-input aspect-square w-full bg-black object-cover"
+            className="rounded-sm aspect-square w-full bg-black object-cover"
             playsInline
             muted
           />
           <button
             type="button"
             onClick={stopCamera}
-            className="border-hairline-strong text-ink-secondary rounded-input h-11 w-full border text-sm font-semibold"
+            className="border-neutral-300 text-neutral-600 rounded-sm h-11 w-full border text-sm font-semibold"
           >
             Batal
           </button>
@@ -160,7 +162,7 @@ export function ScanCard() {
           type="button"
           onClick={startCamera}
           disabled={submitting}
-          className="bg-teal hover:bg-teal-600 active:bg-teal-700 rounded-input inline-flex h-11 w-full items-center justify-center gap-2 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+          className="bg-green-600 hover:bg-green-500 active:bg-green-700 rounded-sm inline-flex h-11 w-full items-center justify-center gap-2 text-sm font-semibold text-white transition-colors disabled:opacity-50"
         >
           <Camera className="h-5 w-5" strokeWidth={1.75} />
           Buka Kamera & Scan QR
@@ -179,12 +181,12 @@ export function ScanCard() {
           value={manualToken}
           onChange={(event) => setManualToken(event.target.value)}
           placeholder="Atau ketik kode dari layar guru"
-          className="border-hairline-strong text-ink rounded-input h-11 flex-1 border bg-white px-3 font-mono text-sm"
+          className="border-neutral-300 text-foreground rounded-sm h-11 flex-1 border bg-white px-3 font-mono text-sm"
         />
         <button
           type="submit"
           disabled={submitting || manualToken.trim().length === 0}
-          className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+          className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
         >
           {submitting ? "..." : "Kirim"}
         </button>

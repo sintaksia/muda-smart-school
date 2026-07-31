@@ -33,25 +33,25 @@ export default function PrestasiListSection({
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Stats Summary */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-center">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 text-center">
             <div className="text-3xl font-bold text-yellow-600">
               {juara1Count}
             </div>
             <div className="text-sm text-yellow-700">Juara 1 / Emas</div>
           </div>
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
+          <div className="bg-gray-50 border border-gray-200 rounded-md p-4 text-center">
             <div className="text-3xl font-bold text-gray-600">
               {juara2Count}
             </div>
             <div className="text-sm text-gray-700">Juara 2 / Perak</div>
           </div>
-          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center">
+          <div className="bg-orange-50 border border-orange-200 rounded-md p-4 text-center">
             <div className="text-3xl font-bold text-orange-600">
               {juara3Count}
             </div>
             <div className="text-sm text-orange-700">Juara 3 / Perunggu</div>
           </div>
-          <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 text-center">
+          <div className="bg-primary-50 border border-primary-200 rounded-md p-4 text-center">
             <div className="text-3xl font-bold text-primary-600">
               {achievements.length}
             </div>

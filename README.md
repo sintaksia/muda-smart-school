@@ -168,15 +168,12 @@ src/
 
 ## Design System
 
-This project uses a 3-color design system:
+A 3-color system — navy `#32368C`, green `#4CAF93`, gold `#F2C94C` — each on a
+50–950 Tailwind scale, with three radius tiers and hairline-first elevation.
 
-| Color   | Hex       | Usage                        |
-| ------- | --------- | ---------------------------- |
-| Primary | `#32368C` | Navy blue - main brand color |
-| Green   | `#4CAF93` | Teal/mint - success states   |
-| Yellow  | `#F2C94C` | Golden - warnings, accents   |
-
-Each color has scales from 50-950 available via Tailwind CSS classes:
+📖 **[docs/design_system.md](docs/design_system.md) is the single source of
+truth** for color, typography, radius and elevation. Tokens live in
+`src/app/globals.css`.
 
 ```jsx
 className = "bg-primary-500 text-primary-50";

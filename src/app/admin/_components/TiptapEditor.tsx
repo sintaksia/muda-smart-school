@@ -102,7 +102,7 @@ export function TiptapEditor({
   return (
     <div
       className={cn(
-        "rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+        "rounded-sm border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
         disabled && "cursor-not-allowed opacity-50",
       )}
     >

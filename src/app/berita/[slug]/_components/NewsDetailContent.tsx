@@ -56,7 +56,7 @@ export default function NewsDetailContent({ news }: NewsDetailContentProps) {
 
         {/* Featured Image */}
         {news.image && (
-          <div className="relative w-full h-[300px] md:h-[450px] rounded-2xl overflow-hidden mb-8">
+          <div className="relative w-full h-[300px] md:h-[450px] rounded-lg overflow-hidden mb-8">
             <Image
               src={news.image}
               alt={news.title}

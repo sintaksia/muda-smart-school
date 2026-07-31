@@ -40,7 +40,7 @@ export default async function GallerySection() {
           {/* Masonry Grid - Default */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="col-span-2 row-span-2">
-              <div className="relative h-full min-h-[400px] rounded-2xl overflow-hidden group">
+              <div className="relative h-full min-h-[400px] rounded-lg overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <p className="text-gray-500">Belum ada gambar di galeri</p>
@@ -48,17 +48,17 @@ export default async function GallerySection() {
               </div>
             </div>
             <div className="col-span-1">
-              <div className="relative aspect-square rounded-2xl overflow-hidden group">
+              <div className="relative aspect-square rounded-md overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
               </div>
             </div>
             <div className="col-span-1">
-              <div className="relative aspect-square rounded-2xl overflow-hidden group">
+              <div className="relative aspect-square rounded-md overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
               </div>
             </div>
             <div className="col-span-2">
-              <div className="relative aspect-video rounded-2xl overflow-hidden group">
+              <div className="relative aspect-video rounded-md overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
               </div>
             </div>
@@ -132,7 +132,7 @@ export default async function GallerySection() {
             return (
               <div key={gallery.id} className={`${colSpan} ${rowSpan}`}>
                 <div
-                  className={`relative ${aspectClass} ${minHeight} rounded-2xl overflow-hidden group`}
+                  className={`relative ${aspectClass} ${minHeight} rounded-md overflow-hidden group`}
                 >
                   <Image
                     src={gallery.image}

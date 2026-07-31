@@ -14,7 +14,7 @@ export default function CTABanner() {
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link
             href="/registrasi"
-            className="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold text-lg px-8 py-4 rounded-sm transition-all duration-300 hover:scale-105"
           >
             Daftar Sekarang
             <svg
@@ -33,7 +33,7 @@ export default function CTABanner() {
           </Link>
           <Link
             href="/jurusan"
-            className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-lg px-8 py-4 rounded-xl border-2 border-white/30 transition-all duration-300"
+            className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-lg px-8 py-4 rounded-sm border-2 border-white/30 transition-all duration-300"
           >
             Lihat Program Keahlian
           </Link>

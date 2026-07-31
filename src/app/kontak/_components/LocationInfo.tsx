@@ -45,7 +45,7 @@ export default async function LocationInfo() {
           {/* Map */}
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
-              <span className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
+              <span className="w-10 h-10 bg-primary-500 rounded-sm flex items-center justify-center">
                 <svg
                   className="w-5 h-5 text-white"
                   fill="none"
@@ -69,7 +69,7 @@ export default async function LocationInfo() {
               Lokasi Sekolah
             </h2>
 
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
+            <div className="bg-white rounded-md overflow-hidden border border-border">
               <div className="relative h-72">
                 {locationImage && locationImage.length > 0 && (
                   <Image
@@ -97,7 +97,7 @@ export default async function LocationInfo() {
                   href={mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold px-5 py-3 rounded-xl transition-colors"
+                  className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold px-5 py-3 rounded-sm transition-colors"
                 >
                   <svg
                     className="w-5 h-5"
@@ -121,9 +121,9 @@ export default async function LocationInfo() {
           {/* Info Cards */}
           <div className="space-y-6">
             {/* Operating Hours */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <div className="bg-white rounded-md p-6 border border-border">
               <h3 className="text-xl font-bold text-neutral-900 mb-4 flex items-center gap-3">
-                <span className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
+                <span className="w-10 h-10 bg-yellow-400 rounded-sm flex items-center justify-center">
                   <svg
                     className="w-5 h-5 text-yellow-900"
                     fill="none"
@@ -163,9 +163,9 @@ export default async function LocationInfo() {
             </div>
 
             {/* Other Contact */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <div className="bg-white rounded-md p-6 border border-border">
               <h3 className="text-xl font-bold text-neutral-900 mb-4 flex items-center gap-3">
-                <span className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                <span className="w-10 h-10 bg-green-500 rounded-sm flex items-center justify-center">
                   <svg
                     className="w-5 h-5 text-white"
                     fill="none"
@@ -184,7 +184,7 @@ export default async function LocationInfo() {
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-neutral-100 rounded-sm flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-neutral-600"
                       fill="none"
@@ -207,7 +207,7 @@ export default async function LocationInfo() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-neutral-100 rounded-sm flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-neutral-600"
                       fill="none"
@@ -234,7 +234,7 @@ export default async function LocationInfo() {
 
             {/* Social Media */}
             {socialLinks.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-lg">
+              <div className="bg-white rounded-md p-6 border border-border">
                 <h3 className="text-xl font-bold text-neutral-900 mb-4">
                   Ikuti Kami
                 </h3>
@@ -245,10 +245,10 @@ export default async function LocationInfo() {
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50 transition-colors group"
+                      className="flex items-center gap-3 p-3 rounded-md hover:bg-neutral-50 transition-colors group"
                     >
                       <div
-                        className={`w-10 h-10 bg-gradient-to-br ${SOCIAL_GRADIENTS[social.platform]} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}
+                        className={`w-10 h-10 bg-gradient-to-br ${SOCIAL_GRADIENTS[social.platform]} rounded-sm flex items-center justify-center group-hover:scale-110 transition-transform`}
                       >
                         <svg
                           className="w-5 h-5 text-white"

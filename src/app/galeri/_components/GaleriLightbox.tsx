@@ -105,7 +105,7 @@ export default function GaleriLightbox({
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center max-w-5xl w-full mx-4 animate-in zoom-in-95 fade-in duration-200">
         {/* Image */}
-        <div className="relative w-full aspect-[4/3] max-h-[70vh] rounded-2xl overflow-hidden">
+        <div className="relative w-full aspect-[4/3] max-h-[70vh] rounded-lg overflow-hidden">
           <Image
             src={gallery.image}
             alt={gallery.title}

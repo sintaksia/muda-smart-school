@@ -81,7 +81,7 @@ export function JadwalManager({
           teacherOptions={teacherOptions}
         />
         <div className="flex items-center gap-3">
-          <div className="border-hairline flex overflow-hidden rounded-full border text-sm font-medium">
+          <div className="border-border flex overflow-hidden rounded-sm border text-sm font-medium">
             {viewButtons.map((button) => (
               <button
                 key={button.value}
@@ -89,8 +89,8 @@ export function JadwalManager({
                 onClick={() => setView(button.value)}
                 className={`flex items-center gap-1.5 px-4 py-1.5 transition-colors ${
                   view === button.value
-                    ? "bg-brand text-white"
-                    : "text-ink-secondary hover:text-ink"
+                    ? "bg-primary-900 text-white"
+                    : "text-neutral-600 hover:text-foreground"
                 }`}
               >
                 <button.icon className="h-4 w-4" strokeWidth={1.75} />
@@ -103,14 +103,14 @@ export function JadwalManager({
             variant="outline"
             onClick={() => exportJadwalToExcel(filtered)}
             disabled={filtered.length === 0}
-            className="rounded-input border-hairline-strong h-11 px-4 text-sm font-semibold"
+            className="rounded-sm border-neutral-300 h-11 px-4 text-sm font-semibold"
           >
             <FileSpreadsheet className="h-5 w-5" strokeWidth={1.75} />
             Export Excel
           </Button>
           <Button
             onClick={() => setFormOpen(true)}
-            className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input h-11 px-5 text-sm font-semibold text-white"
+            className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white"
           >
             <Plus className="h-5 w-5" strokeWidth={1.75} />
             Tambah Jadwal

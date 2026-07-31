@@ -72,10 +72,12 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
   }
 
   return (
-    <section className="border-hairline rounded-card border bg-white">
-      <header className="border-hairline flex items-center justify-between border-b px-5 py-4">
-        <h3 className="text-ink text-base font-semibold">Daftar Siswa</h3>
-        <span className="text-ink-muted text-xs font-medium tabular-nums">
+    <section className="border-border rounded-md border bg-white">
+      <header className="border-border flex items-center justify-between border-b px-5 py-4">
+        <h3 className="text-foreground text-base font-semibold">
+          Daftar Siswa
+        </h3>
+        <span className="text-muted-foreground text-xs font-medium tabular-nums">
           {sesi.studentAttendance.length}/{sesi.jadwal.kelas.students.length}{" "}
           tercatat
         </span>
@@ -86,15 +88,15 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
           return (
             <li
               key={student.id}
-              className={`border-hairline flex items-center justify-between border-b px-5 py-3 last:border-b-0 ${
-                record?.needsReview ? "bg-warning/10" : ""
+              className={`border-border flex items-center justify-between border-b px-5 py-3 last:border-b-0 ${
+                record?.needsReview ? "bg-yellow-600/10" : ""
               }`}
             >
               <div>
-                <p className="text-ink text-sm font-semibold">
+                <p className="text-foreground text-sm font-semibold">
                   {student.user.name}
                 </p>
-                <p className="text-ink-muted text-xs tabular-nums">
+                <p className="text-muted-foreground text-xs tabular-nums">
                   {student.nis}
                   {record?.scanTime &&
                     ` · scan ${new Date(record.scanTime).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}`}
@@ -105,7 +107,7 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
                   <button
                     type="button"
                     onClick={() => confirmGps(record.id)}
-                    className="text-warning inline-flex items-center gap-1 text-xs font-semibold hover:opacity-80"
+                    className="text-yellow-600 inline-flex items-center gap-1 text-xs font-semibold hover:opacity-80"
                     title="GPS di luar radius — klik untuk konfirmasi"
                   >
                     <MapPinOff className="h-4 w-4" strokeWidth={1.75} />
@@ -124,7 +126,7 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
                         void markManual(student.id, event.target.value);
                       }
                     }}
-                    className="border-hairline-strong text-ink-secondary rounded-input h-8 border bg-white px-2 text-xs"
+                    className="border-neutral-300 text-neutral-600 rounded-sm h-8 border bg-white px-2 text-xs"
                   >
                     <option value="" disabled>
                       Tandai…
@@ -134,7 +136,7 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
                     <option value="SICK">Sakit</option>
                   </select>
                 ) : (
-                  <span className="text-ink-muted text-xs">—</span>
+                  <span className="text-muted-foreground text-xs">—</span>
                 )}
               </div>
             </li>

@@ -50,7 +50,7 @@ export function AttendanceSettingsForm({
 
   function renderInput(setting: SettingRow): React.ReactNode {
     const inputClass =
-      "border-hairline-strong text-ink rounded-input h-11 w-full border bg-white px-3 text-sm tabular-nums";
+      "border-neutral-300 text-foreground rounded-sm h-11 w-full border bg-white px-3 text-sm tabular-nums";
     if (setting.type === "BOOLEAN") {
       return (
         <select
@@ -95,12 +95,12 @@ export function AttendanceSettingsForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-hairline rounded-card border bg-white p-5"
+      className="border-border rounded-md border bg-white p-5"
     >
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {settings.map((setting) => (
           <label key={setting.key} className="block">
-            <span className="text-ink-secondary mb-1.5 block text-xs font-semibold">
+            <span className="text-neutral-600 mb-1.5 block text-xs font-semibold">
               {setting.label}
             </span>
             {renderInput(setting)}
@@ -110,7 +110,7 @@ export function AttendanceSettingsForm({
       <button
         type="submit"
         disabled={saving}
-        className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input mt-6 h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+        className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm mt-6 h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
       >
         {saving ? "Menyimpan..." : "Simpan Pengaturan"}
       </button>

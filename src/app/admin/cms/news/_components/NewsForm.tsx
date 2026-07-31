@@ -219,7 +219,7 @@ export function NewsForm({ defaultValues, newsId }: NewsFormProps) {
               control={form.control}
               name="isFeatured"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormItem className="flex flex-row items-center justify-between rounded-md border p-4">
                   <div className="space-y-0.5">
                     <FormLabel>Berita Unggulan</FormLabel>
                     <FormDescription>
@@ -241,7 +241,7 @@ export function NewsForm({ defaultValues, newsId }: NewsFormProps) {
               control={form.control}
               name="isPublished"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormItem className="flex flex-row items-center justify-between rounded-md border p-4">
                   <div className="space-y-0.5">
                     <FormLabel>Publikasikan</FormLabel>
                     <FormDescription>

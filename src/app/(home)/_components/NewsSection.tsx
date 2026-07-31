@@ -57,7 +57,7 @@ export default async function NewsSection() {
           <div className="lg:col-span-2">
             <Link
               href={`/berita/${featured.slug}`}
-              className="group relative block h-[400px] rounded-2xl overflow-hidden"
+              className="group relative block h-[400px] rounded-lg overflow-hidden"
             >
               <Image
                 src={featured.image || "/gambar-1.jpg"}
@@ -116,9 +116,9 @@ export default async function NewsSection() {
                 <Link
                   key={item.id}
                   href={`/berita/${item.slug}`}
-                  className="group flex gap-4 p-4 bg-gray-50 rounded-xl hover:bg-primary-50 transition-colors"
+                  className="group flex gap-4 p-4 bg-gray-50 rounded-md hover:bg-primary-50 transition-colors"
                 >
-                  <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                  <div className="relative w-24 h-24 flex-shrink-0 rounded-sm overflow-hidden">
                     <Image
                       src={item.image || "/gambar-1.jpg"}
                       alt={item.title}

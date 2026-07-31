@@ -52,7 +52,7 @@ export default async function RegistrationsPage({
       <StatsCards stats={stats} />
 
       {/* Main Content */}
-      <div className="rounded-lg border bg-card p-6">
+      <div className="rounded-md border bg-card p-6">
         {/* Table Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
@@ -104,7 +104,7 @@ export default async function RegistrationsPage({
         <RegistrationTable data={registrations} />
 
         {/* Info Footer */}
-        <div className="mt-6 rounded-lg bg-muted/50 p-4 text-sm">
+        <div className="mt-6 rounded-md bg-muted/50 p-4 text-sm">
           <div className="flex items-start gap-3">
             <div className="rounded-full bg-primary/10 p-1">
               <Users className="h-4 w-4 text-primary" />

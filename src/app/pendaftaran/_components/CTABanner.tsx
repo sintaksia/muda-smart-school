@@ -26,7 +26,7 @@ export default function CTABanner() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
               href="#formPendaftaran"
-              className="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-yellow-400/25"
+              className="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold text-lg px-8 py-4 rounded-sm transition-all duration-300 hover:scale-105"
             >
               Daftar Sekarang
               <ArrowDown className="size-6 text-yellow-900" />

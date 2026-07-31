@@ -8,32 +8,28 @@ Enterprise Next.js school website with TypeScript, Tailwind CSS, Shadcn/ui, Pris
 
 ## Design System - STRICTLY FOLLOW
 
-All designs must follow the 3-color design system defined in `src/app/globals.css`.
+**`docs/design_system.md` is the single source of truth** for color,
+typography, radius and elevation. Read it before writing any UI. Do not restate
+its tables here, in the README, or in component comments — link to it.
 
-### Base Colors
+Tokens are implemented in `src/app/globals.css`.
 
-| Color   | Hex Code  | Usage                        |
-| ------- | --------- | ---------------------------- |
-| Primary | `#32368C` | Navy blue - main brand color |
-| Green   | `#4CAF93` | Teal/mint - success states   |
-| Yellow  | `#F2C94C` | Golden - warnings, accents   |
+The non-negotiables, so they're never guessed:
 
-### Color Scales Available (50-950)
-
-- **Primary**: `primary-50` to `primary-950` (navy blue)
-- **Green**: `green-50` to `green-950` (teal/mint)
-- **Yellow**: `yellow-50` to `yellow-950` (golden)
-
-### Color Usage Guidelines
-
-1. Use **primary** colors for main UI elements, buttons, and brand identity
-2. Use **green** colors for success states, confirmations, and positive actions
-3. Use **yellow** colors for warnings, highlights, and attention-grabbing elements
-4. Use lighter shades (50-300) for backgrounds
-5. Use mid-range shades (400-600) for interactive elements
-6. Use darker shades (700-950) for text and emphasis
-
-### Tailwind Usage
+- **Three brand hues only** — `primary-*` (navy `#32368C`), `green-*`
+  (`#4CAF93`), `yellow-*` (`#F2C94C`), each on a 50–950 scale, plus the
+  semantic tokens (`--foreground`, `--border`, `--muted`, `--destructive`, …).
+  Default Tailwind hues (`blue-*`, `purple-*`, `indigo-*`, …) are not part of
+  the system — see §2.4 of the doc for the three narrow exceptions before you
+  "fix" any of them.
+- **Three radius tiers only** — `rounded-sm` (10px: inputs, chips, small
+  buttons, icon tiles), `rounded-md` (16px: cards — the default),
+  `rounded-lg` (20px: modals, hero media). Never exceed 20px.
+  `rounded-full` is for avatars, status dots and badges/pills only — §4.3 of
+  the doc lists the decided cases, so don't re-litigate them per component.
+- **Elevation is hairline-first** — resting cards get `border border-border`
+  and no shadow; hoverable cards add `hover:shadow-sm`; overlays get
+  `shadow-md`. `shadow-lg`/`xl`/`2xl` and colored shadows are banned.
 
 ```jsx
 className = "bg-primary-500 text-primary-50";

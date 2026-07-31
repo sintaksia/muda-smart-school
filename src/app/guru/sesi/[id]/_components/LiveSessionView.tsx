@@ -84,7 +84,7 @@ export function LiveSessionView({
   }
 
   if (!sesi) {
-    return <div className="rounded-card bg-brand-50 h-64 animate-pulse" />;
+    return <div className="rounded-md bg-primary-50 h-64 animate-pulse" />;
   }
 
   const isOpen = sesi.status === "OPEN";
@@ -93,10 +93,10 @@ export function LiveSessionView({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-ink text-[28px] font-bold tracking-tight">
+          <h1 className="text-foreground text-[28px] font-bold tracking-tight">
             {sesi.jadwal.mataPelajaran.name}
           </h1>
-          <p className="text-ink-secondary mt-1 text-sm">
+          <p className="text-neutral-600 mt-1 text-sm">
             {sesi.jadwal.kelas.name} · {sesi.jadwal.startTime}–
             {sesi.jadwal.endTime}
           </p>
@@ -106,7 +106,7 @@ export function LiveSessionView({
             type="button"
             disabled={closing}
             onClick={closeSession}
-            className="bg-danger rounded-input h-11 px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="bg-destructive rounded-sm h-11 px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             {closing ? "Menutup..." : "Tutup Sesi"}
           </button>
@@ -114,20 +114,20 @@ export function LiveSessionView({
       </div>
 
       {isOpen && sesi.qrToken && (
-        <section className="border-hairline rounded-card flex flex-col items-center gap-4 border bg-white p-6 sm:flex-row sm:justify-center sm:gap-10">
+        <section className="border-border rounded-md flex flex-col items-center gap-4 border bg-white p-6 sm:flex-row sm:justify-center sm:gap-10">
           <QRCodeSVG value={sesi.qrToken} size={220} marginSize={2} />
           <div className="text-center sm:text-left">
-            <p className="text-ink-muted text-[11px] font-semibold uppercase tracking-[0.06em]">
+            <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-[0.06em]">
               Kode manual
             </p>
-            <p className="text-ink mt-1 break-all font-mono text-sm font-semibold">
+            <p className="text-foreground mt-1 break-all font-mono text-sm font-semibold">
               {sesi.qrToken}
             </p>
             {qrMode === "DYNAMIC" && (
               <button
                 type="button"
                 onClick={refreshQr}
-                className="text-teal hover:text-teal-600 mt-3 inline-flex items-center gap-1 text-sm font-semibold"
+                className="text-green-600 hover:text-green-500 mt-3 inline-flex items-center gap-1 text-sm font-semibold"
               >
                 <RefreshCw className="h-4 w-4" strokeWidth={1.75} />
                 Refresh QR

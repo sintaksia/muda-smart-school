@@ -72,7 +72,7 @@ export function ContactLocationSection({
             </address>
 
             {/* Map Placeholder */}
-            <div className="relative h-64 rounded-2xl overflow-hidden border-4 border-white/10">
+            <div className="relative h-64 rounded-md overflow-hidden border-4 border-white/10">
               {mapImageSrc && (
                 <Image
                   src={mapImageSrc}
@@ -86,7 +86,7 @@ export function ContactLocationSection({
                   href={mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white text-primary-900 font-semibold px-6 py-3 rounded-xl hover:bg-primary-50 transition-colors flex items-center gap-2"
+                  className="bg-white text-primary-900 font-semibold px-6 py-3 rounded-sm hover:bg-primary-50 transition-colors flex items-center gap-2"
                 >
                   <svg
                     className="w-5 h-5"
@@ -140,9 +140,9 @@ export function ContactLocationSection({
                   href={toWhatsAppLink(contact.value)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors group"
+                  className="flex items-center gap-4 bg-white/10 hover:bg-white/20 rounded-md p-4 transition-colors group"
                 >
-                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-green-500 rounded-sm flex items-center justify-center group-hover:scale-110 transition-transform">
                     <svg
                       className="w-6 h-6 text-white"
                       fill="currentColor"
@@ -163,10 +163,10 @@ export function ContactLocationSection({
                   href={instagramLink.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors group"
+                  className="flex items-center gap-4 bg-white/10 hover:bg-white/20 rounded-md p-4 transition-colors group"
                 >
                   <div
-                    className={`w-12 h-12 bg-gradient-to-br ${SOCIAL_GRADIENTS[instagramLink.platform]} rounded-xl flex items-center justify-center`}
+                    className={`w-12 h-12 bg-gradient-to-br ${SOCIAL_GRADIENTS[instagramLink.platform]} rounded-sm flex items-center justify-center`}
                   >
                     <svg
                       className="w-6 h-6 text-white"

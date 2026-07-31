@@ -76,15 +76,15 @@ export function CreditManager({
   }
 
   const inputClass =
-    "border-hairline-strong text-ink rounded-input h-11 border bg-white px-3 text-sm";
+    "border-neutral-300 text-foreground rounded-sm h-11 border bg-white px-3 text-sm";
 
   return (
     <div className="space-y-6">
       <form
         onSubmit={handleSubmit}
-        className="border-hairline rounded-card border bg-white p-5"
+        className="border-border rounded-md border bg-white p-5"
       >
-        <h3 className="text-ink mb-4 text-base font-semibold">
+        <h3 className="text-foreground mb-4 text-base font-semibold">
           Entri Manual (Prestasi / Pelanggaran)
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -158,7 +158,7 @@ export function CreditManager({
         <button
           type="submit"
           disabled={submitting || !ownerId || !category}
-          className="bg-brand hover:bg-brand-600 active:bg-brand-700 rounded-input mt-4 h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+          className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm mt-4 h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
         >
           {submitting ? "Menyimpan..." : "Simpan Entri"}
         </button>

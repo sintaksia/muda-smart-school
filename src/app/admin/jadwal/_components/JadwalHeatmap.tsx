@@ -20,10 +20,10 @@ interface JadwalHeatmapProps {
 
 function cellShade(hours: number): string {
   if (hours === 0) return "bg-white";
-  if (hours < 2) return "bg-brand-50";
-  if (hours < 4) return "bg-brand-100";
-  if (hours < 6) return "bg-brand-100 text-brand-700";
-  return "bg-brand-600/20 text-brand-700";
+  if (hours < 2) return "bg-primary-50";
+  if (hours < 4) return "bg-primary-100";
+  if (hours < 6) return "bg-primary-100 text-primary-950";
+  return "bg-primary-800/20 text-primary-950";
 }
 
 export function JadwalHeatmap({
@@ -40,13 +40,13 @@ export function JadwalHeatmap({
       <table className="w-full min-w-175 border-collapse text-sm">
         <thead>
           <tr>
-            <th className="text-ink-muted w-40 px-3 py-2 text-left text-xs font-medium">
+            <th className="text-muted-foreground w-40 px-3 py-2 text-left text-xs font-medium">
               {mode === "class" ? ENTITY_LABELS.CLASS : ENTITY_LABELS.TEACHER}
             </th>
             {DAY_OF_WEEK_VALUES.map((dayOfWeek) => (
               <th
                 key={dayOfWeek}
-                className="text-ink border-hairline border-l px-3 py-2 text-left text-xs font-semibold"
+                className="text-foreground border-border border-l px-3 py-2 text-left text-xs font-semibold"
               >
                 {DAY_OF_WEEK_LABELS[dayOfWeek]}
               </th>
@@ -57,12 +57,12 @@ export function JadwalHeatmap({
           {entityOptions.map((entity) => {
             const days = summary.get(entity.id);
             return (
-              <tr key={entity.id} className="border-hairline border-t">
+              <tr key={entity.id} className="border-border border-t">
                 <td className="px-3 py-2">
                   <button
                     type="button"
                     onClick={() => onSelectEntity(entity.id)}
-                    className="text-ink hover:text-brand text-left text-xs font-semibold transition-colors"
+                    className="text-foreground hover:text-primary-900 text-left text-xs font-semibold transition-colors"
                   >
                     {entity.name}
                   </button>
@@ -73,7 +73,7 @@ export function JadwalHeatmap({
                     return (
                       <td
                         key={dayOfWeek}
-                        className="border-hairline text-ink-muted border-l px-3 py-2 text-xs"
+                        className="border-border text-muted-foreground border-l px-3 py-2 text-xs"
                       />
                     );
                   }
@@ -82,8 +82,8 @@ export function JadwalHeatmap({
                       key={dayOfWeek}
                       className={`border-l px-3 py-2 text-xs tabular-nums ${
                         day.hasConflict
-                          ? "border-danger/40 bg-danger/10 text-danger font-semibold"
-                          : `border-hairline ${cellShade(day.totalHours)}`
+                          ? "border-destructive/40 bg-destructive/10 text-destructive font-semibold"
+                          : `border-border ${cellShade(day.totalHours)}`
                       }`}
                     >
                       <span className="font-semibold">
@@ -109,7 +109,7 @@ export function JadwalHeatmap({
           })}
         </tbody>
       </table>
-      <p className="text-ink-muted border-hairline border-t px-3 py-2 text-xs">
+      <p className="text-muted-foreground border-border border-t px-3 py-2 text-xs">
         Klik nama{" "}
         {mode === "class"
           ? ENTITY_LABELS.CLASS.toLowerCase()

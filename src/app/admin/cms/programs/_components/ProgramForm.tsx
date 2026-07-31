@@ -166,7 +166,7 @@ export function ProgramForm({ defaultValues, programId }: ProgramFormProps) {
                     <FormLabel>Deskripsi</FormLabel>
                     <FormControl>
                       <textarea
-                        className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex min-h-[120px] w-full rounded-sm border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         placeholder="Deskripsi program keahlian..."
                         {...field}
                       />
@@ -181,7 +181,7 @@ export function ProgramForm({ defaultValues, programId }: ProgramFormProps) {
               control={form.control}
               name="isActive"
               render={({ field }) => (
-                <FormItem className="md:col-span-2 flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormItem className="md:col-span-2 flex flex-row items-center justify-between rounded-md border p-4">
                   <div className="space-y-0.5">
                     <FormLabel>Status Aktif</FormLabel>
                     <FormDescription>

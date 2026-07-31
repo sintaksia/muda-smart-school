@@ -52,7 +52,7 @@ export function IconPicker({ value, onChange, disabled }: IconPickerProps) {
   return (
     <div className="flex items-center gap-2">
       {/* Preview box */}
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border bg-muted">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border bg-muted">
         {SelectedIcon ? (
           <SelectedIcon className="h-5 w-5 text-foreground" />
         ) : (
@@ -101,7 +101,7 @@ export function IconPicker({ value, onChange, disabled }: IconPickerProps) {
               <button
                 type="button"
                 onClick={handleClear}
-                className="flex flex-col items-center gap-1 rounded-lg border-2 border-dashed border-destructive/30 p-2 hover:bg-destructive/5 transition-colors"
+                className="flex flex-col items-center gap-1 rounded-sm border-2 border-dashed border-destructive/30 p-2 hover:bg-destructive/5 transition-colors"
               >
                 <X className="h-5 w-5 text-destructive/50" />
                 <span className="text-[10px] text-destructive/50 leading-none">
@@ -120,7 +120,7 @@ export function IconPicker({ value, onChange, disabled }: IconPickerProps) {
                   onClick={() => handleSelect(entry.name)}
                   title={entry.label}
                   className={cn(
-                    "flex flex-col items-center gap-1 rounded-lg border-2 p-2 transition-all hover:border-primary-400 hover:bg-primary-50",
+                    "flex flex-col items-center gap-1 rounded-sm border-2 p-2 transition-all hover:border-primary-400 hover:bg-primary-50",
                     isSelected
                       ? "border-primary-500 bg-primary-50"
                       : "border-transparent",

@@ -78,7 +78,7 @@ export default async function JurusanPage() {
               >
                 {/* Image */}
                 <div className="lg:w-1/2">
-                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
+                  <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-md">
                     {program.image ? (
                       <Image
                         src={program.image}
@@ -101,7 +101,7 @@ export default async function JurusanPage() {
                       </div>
                     )}
                     <div
-                      className="absolute top-4 left-4 text-white font-bold text-lg px-4 py-2 rounded-lg"
+                      className="absolute top-4 left-4 text-white font-bold text-lg px-4 py-2 rounded-sm"
                       style={{ backgroundColor: program.color }}
                     >
                       {program.abbreviation}
@@ -180,7 +180,7 @@ export default async function JurusanPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {program.careers.length > 0 && (
                       <div
-                        className="rounded-xl p-5"
+                        className="rounded-md p-5"
                         style={{ backgroundColor: `rgba(${rgb}, 0.08)` }}
                       >
                         <h4
@@ -215,7 +215,7 @@ export default async function JurusanPage() {
                       </div>
                     )}
                     {program.facilities.length > 0 && (
-                      <div className="bg-neutral-100 rounded-xl p-5">
+                      <div className="bg-neutral-100 rounded-md p-5">
                         <h4 className="font-semibold text-neutral-800 mb-3 flex items-center gap-2">
                           <svg
                             className="w-5 h-5 text-neutral-600"
@@ -265,7 +265,7 @@ export default async function JurusanPage() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
               href="/registrasi"
-              className="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold text-lg px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold text-lg px-8 py-4 rounded-sm transition-all duration-300 hover:scale-105"
             >
               Daftar Sekarang
               <svg
@@ -284,7 +284,7 @@ export default async function JurusanPage() {
             </Link>
             <Link
               href="/kontak"
-              className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-lg px-8 py-4 rounded-xl border-2 border-white/30 transition-all duration-300"
+              className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-lg px-8 py-4 rounded-sm border-2 border-white/30 transition-all duration-300"
             >
               Hubungi Kami
             </Link>

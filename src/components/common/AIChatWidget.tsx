@@ -145,7 +145,7 @@ export default function AIChatWidget() {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
       {/* Chat window */}
       {isOpen && (
-        <div className="w-[340px] sm:w-[380px] bg-white rounded-2xl shadow-2xl border border-primary-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+        <div className="w-[340px] sm:w-[380px] bg-white rounded-lg shadow-md border border-primary-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
           <div className="bg-gradient-to-r from-primary-700 to-primary-600 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -163,7 +163,7 @@ export default function AIChatWidget() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-white/70 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+              className="text-white/70 hover:text-white transition-colors p-1 rounded-sm hover:bg-white/10"
               aria-label="Tutup chat"
             >
               <X className="w-5 h-5" />
@@ -183,10 +183,10 @@ export default function AIChatWidget() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
+                  className={`max-w-[80%] px-3 py-2 rounded-lg text-sm leading-relaxed ${
                     msg.role === "user"
                       ? "bg-primary-600 text-white rounded-tr-sm"
-                      : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm shadow-sm"
+                      : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm"
                   }`}
                 >
                   {msg.role === "user" ? (
@@ -230,7 +230,7 @@ export default function AIChatWidget() {
                 <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
                   <Bot className="w-4 h-4 text-primary-600" />
                 </div>
-                <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+                <div className="bg-white border border-gray-200 rounded-lg rounded-tl-sm px-4 py-3">
                   <Loader2 className="w-4 h-4 text-primary-500 animate-spin" />
                 </div>
               </div>
@@ -245,7 +245,7 @@ export default function AIChatWidget() {
                 <button
                   key={q}
                   onClick={() => sendQuickMessage(q)}
-                  className="text-xs bg-primary-50 hover:bg-primary-100 text-primary-700 border border-primary-200 rounded-full px-3 py-1 transition-colors"
+                  className="text-xs bg-primary-50 hover:bg-primary-100 text-primary-700 border border-primary-200 rounded-sm px-3 py-1 transition-colors"
                 >
                   {q}
                 </button>
@@ -263,12 +263,12 @@ export default function AIChatWidget() {
               placeholder="Ketik pertanyaan kamu..."
               maxLength={500}
               disabled={isLoading}
-              className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 disabled:opacity-50 bg-gray-50"
+              className="flex-1 text-sm border border-gray-200 rounded-sm px-3 py-2 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 disabled:opacity-50 bg-gray-50"
             />
             <button
               onClick={sendMessage}
               disabled={!input.trim() || isLoading}
-              className="w-9 h-9 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white rounded-xl flex items-center justify-center transition-colors shrink-0"
+              className="w-9 h-9 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white rounded-sm flex items-center justify-center transition-colors shrink-0"
               aria-label="Kirim pesan"
             >
               <Send className="w-4 h-4" />
@@ -280,7 +280,7 @@ export default function AIChatWidget() {
       {/* Toggle button */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
+        className={`w-14 h-14 rounded-full shadow-md flex items-center justify-center transition-all duration-300 ${
           isOpen
             ? "bg-gray-700 hover:bg-gray-800 rotate-0"
             : "bg-primary-600 hover:bg-primary-700 hover:scale-110"
