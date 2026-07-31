@@ -1,8 +1,9 @@
 import { PageHeader } from "../_components/PageHeader";
 import { ENTITY_LABELS } from "@/src/lib/constants";
 import { getStudentList } from "@/src/features/master/services/student";
+import { toStudentRow } from "@/src/features/master/utils/studentRow";
 import { prisma } from "@/src/lib/prisma";
-import { StudentTable } from "./_components/StudentTable";
+import { StudentManager } from "./_components/StudentManager";
 
 export const dynamic = "force-dynamic";
 
@@ -19,18 +20,10 @@ export default async function SiswaPage() {
     <div className="space-y-6">
       <PageHeader
         title={ENTITY_LABELS.STUDENT}
-        description="Penempatan kelas dan status siswa — akun dibuat dari menu Pendaftaran"
+        description="Tambah, ubah, impor dan ekspor data siswa — termasuk siswa yang tidak berasal dari pendaftaran online"
       />
-      <StudentTable
-        studentList={studentList.map((student) => ({
-          id: student.id,
-          name: student.user.name,
-          nis: student.nis,
-          specialization: student.specialization,
-          angkatan: student.angkatan,
-          classId: student.schoolClass?.id ?? null,
-          status: student.status,
-        }))}
+      <StudentManager
+        students={studentList.map(toStudentRow)}
         classOptions={classList}
       />
     </div>

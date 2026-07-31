@@ -24,7 +24,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/src/components/ui/form";
-import { resetPasswordSchema, type ResetPasswordFormData } from "./UserSchema";
+import {
+  resetPasswordSchema,
+  type ResetPasswordFormData,
+} from "@/src/lib/validation";
 
 interface ResetPasswordDialogProps {
   open: boolean;

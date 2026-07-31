@@ -92,8 +92,27 @@ model Student {
   angkatan       Int
   classId        String?        @map("class_id")
   status         StudentStatus  @default(AKTIF)
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  // Personal profile. Nullable because students created from a Registration
+  // carry this data on the registration record; students added manually or by
+  // import fill it in here.
+  gender             Gender?   @map("gender")
+  nik                String?   @unique
+  birthPlace         String?   @map("birth_place")
+  birthDate          DateTime? @map("birth_date")
+  streetAddress      String?   @map("street_address")
+  village            String?   @map("village")
+  district           String?   @map("district")
+  city               String?   @map("city")
+  province           String?   @map("province")
+  fatherName         String?   @map("father_name")
+  motherName         String?   @map("mother_name")
+  guardianName       String?   @map("guardian_name")
+  parentPhone        String?   @map("parent_phone")
+  previousSchoolName String?   @map("previous_school_name")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   user              User                @relation(fields: [userId], references: [id])
   registration      Registration?       @relation(fields: [registrationId], references: [id])

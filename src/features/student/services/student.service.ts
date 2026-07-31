@@ -1,6 +1,7 @@
 import { prisma } from "@/src/lib/prisma";
 import { createUser } from "@/src/features/auth/services/users";
 import { getRegistrationById } from "@/src/features/registration/services";
+import { toStudentProfile } from "../utils/registrationProfile";
 import type { Student } from "@prisma/client";
 import type { CreateStudentFromRegistrationInput } from "../types";
 
@@ -63,6 +64,7 @@ export async function createStudentFromRegistration(
         nisn: registration.nisn,
         specialization: registration.specialization,
         angkatan: input.angkatan,
+        ...toStudentProfile(registration),
       },
     });
 

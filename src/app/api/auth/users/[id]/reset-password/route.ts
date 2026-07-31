@@ -8,7 +8,7 @@ import {
   canManageUsers,
   canModifyUser,
 } from "@/src/features/auth/utils/permissions";
-import { resetPasswordSchema } from "@/src/app/admin/users/_components/UserSchema";
+import { resetPasswordSchema } from "@/src/lib/validation";
 
 interface RouteParams {
   params: Promise<{

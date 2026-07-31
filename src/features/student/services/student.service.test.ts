@@ -75,14 +75,54 @@ describe("createStudentFromRegistration", () => {
       "admin-1",
     );
     expect(prisma.student.create).toHaveBeenCalledWith({
-      data: {
+      data: expect.objectContaining({
         userId: "user-1",
         registrationId: "reg-1",
         nis: "999",
         nisn: "1234567890",
         specialization: "PPLG",
         angkatan: 2025,
-      },
+      }),
+    });
+  });
+
+  it("copies the registration biodata onto the student", async () => {
+    vi.mocked(getRegistrationById).mockResolvedValue({
+      ...baseRegistration,
+      gender: "MALE",
+      nik: "3210010101090001",
+      birthPlace: "Bandung",
+      birthDate: new Date("2009-05-01T00:00:00.000Z"),
+      streetAddress: "Jl. Merdeka No. 10",
+      rt: "01",
+      rw: "05",
+      fatherName: "Ahmad Santoso",
+      motherName: "Siti Aminah",
+      previousSchoolName: "SMPN 1 Bandung",
+    } as unknown as Registration & { student: Student | null });
+    vi.mocked(createUser).mockResolvedValue({
+      user: { id: "user-1" } as User,
+      error: null,
+    });
+    vi.mocked(prisma.student.create).mockResolvedValue({
+      id: "student-1",
+    } as Student);
+
+    await createStudentFromRegistration({
+      registrationId: "reg-1",
+      nis: "999",
+      angkatan: 2025,
+      password: "Password123",
+    });
+
+    expect(prisma.student.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        gender: "MALE",
+        birthPlace: "Bandung",
+        streetAddress: "Jl. Merdeka No. 10, RT 01/RW 05",
+        fatherName: "Ahmad Santoso",
+        previousSchoolName: "SMPN 1 Bandung",
+      }),
     });
   });
 

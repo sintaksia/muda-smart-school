@@ -14,7 +14,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { Button } from "@/src/components/ui/button";
 import { DeleteDialog } from "@/src/app/admin/_components/DeleteDialog";
-import { ResetPasswordDialog } from "./ResetPasswordDialog";
+import { ResetPasswordDialog } from "@/src/app/admin/_components/ResetPasswordDialog";
 import { canModifyUser } from "@/src/features/auth/utils/permissions";
 import type { User, UserRole } from "@prisma/client";
 

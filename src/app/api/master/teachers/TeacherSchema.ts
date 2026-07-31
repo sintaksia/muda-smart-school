@@ -1,11 +1,11 @@
 import { z } from "zod";
 import {
-  genderOptions,
   educationOptions,
   EMPLOYMENT_STATUS_VALUES,
+  GENDER_VALUES,
 } from "@/src/lib/constants";
 
-const GENDER_VALUES = genderOptions.map((o) => o.value) as ["MALE", "FEMALE"];
+const GENDER_TUPLE = GENDER_VALUES as ["MALE", "FEMALE"];
 const EDUCATION_VALUES = educationOptions.map((o) => o.value) as [
   "NO_SCHOOLING",
   "SD",
@@ -30,7 +30,7 @@ export const createTeacherSchema = z.object({
   phone: z.string().optional(),
   nip: z.string().optional(),
   nuptk: z.string().optional(),
-  gender: z.enum(GENDER_VALUES, {
+  gender: z.enum(GENDER_TUPLE, {
     message: "Jenis kelamin wajib dipilih",
   }),
   birthPlace: z.string({ message: "Tempat lahir wajib diisi" }).min(2),

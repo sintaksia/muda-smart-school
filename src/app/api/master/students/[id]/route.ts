@@ -1,24 +1,43 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
-import { updateStudent } from "@/src/features/master/services/student";
-import { STUDENT_STATUS_VALUES } from "@/src/lib/constants";
+import {
+  deleteStudent,
+  getStudentById,
+  updateStudent,
+} from "@/src/features/master/services/student";
+import { updateStudentSchema } from "../StudentSchema";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-const updateSiswaSchema = z.object({
-  classId: z.string().optional().nullable(),
-  status: z
-    .enum(STUDENT_STATUS_VALUES as ["AKTIF", "LULUS", "PINDAH", "DROPOUT"], {
-      message: "Status tidak valid",
-    })
-    .optional(),
-});
+// GET /api/master/students/[id]
+export async function GET(_request: Request, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    const currentUser = await getCurrentUser();
+    if (!currentUser || !canAccessAdmin(currentUser.role)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+    const student = await getStudentById(id);
+    if (!student) {
+      return NextResponse.json(
+        { error: "Siswa tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+    return NextResponse.json(student);
+  } catch (err: unknown) {
+    console.error("Get siswa error:", err);
+    return NextResponse.json(
+      { error: "Terjadi kesalahan server" },
+      { status: 500 },
+    );
+  }
+}
 
-// PATCH /api/master/students/[id] - assign class / change status
+// PATCH /api/master/students/[id] - edit profile, placement or status
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -27,7 +46,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     const body = await request.json();
-    const result = updateSiswaSchema.safeParse(body);
+    const result = updateStudentSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },
@@ -44,6 +63,31 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json(student);
   } catch (err: unknown) {
     console.error("Update siswa error:", err);
+    return NextResponse.json(
+      { error: "Terjadi kesalahan server" },
+      { status: 500 },
+    );
+  }
+}
+
+// DELETE /api/master/students/[id] - remove the student and their login
+export async function DELETE(_request: Request, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    const currentUser = await getCurrentUser();
+    if (!currentUser || !canAccessAdmin(currentUser.role)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+    const { success, error } = await deleteStudent(id);
+    if (!success) {
+      return NextResponse.json(
+        { error: error ?? "Gagal menghapus siswa" },
+        { status: 400 },
+      );
+    }
+    return NextResponse.json({ success: true });
+  } catch (err: unknown) {
+    console.error("Delete siswa error:", err);
     return NextResponse.json(
       { error: "Terjadi kesalahan server" },
       { status: 500 },

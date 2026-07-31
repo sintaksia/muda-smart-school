@@ -23,6 +23,8 @@ export const genderOptions = [
   { value: "FEMALE", label: "Perempuan" },
 ] as const;
 
+export const GENDER_VALUES = genderOptions.map((option) => option.value);
+
 export const GENDER_LABELS: Record<string, string> = Object.fromEntries(
   genderOptions.map((option) => [option.value, option.label]),
 );
@@ -59,6 +61,10 @@ export const specializationOptions = [
     color: "#9333EA",
   },
 ] as const;
+
+export const SPECIALIZATION_VALUES = specializationOptions.map(
+  (option) => option.value,
+);
 
 export const SPECIALIZATION_LABELS: Record<string, string> = Object.fromEntries(
   specializationOptions.map((option) => [option.value, option.label]),
