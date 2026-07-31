@@ -6,6 +6,39 @@ Enterprise Next.js school website with TypeScript, Tailwind CSS, Shadcn/ui, Pris
 
 ---
 
+## Enforced Guardrails — READ FIRST
+
+Some rules in this file are **machine-enforced**. They are not advisory.
+
+| Rule                                                                              | Severity | Enforced by                                |
+| --------------------------------------------------------------------------------- | -------- | ------------------------------------------ |
+| Banned radius (`rounded-xl/2xl/3xl/4xl`, `rounded-input/card/modal`)              | error    | `ds/banned-classes`                        |
+| Banned elevation (`shadow-lg/xl/2xl/2lg`, colored shadows)                        | error    | `ds/banned-classes`                        |
+| Deleted Jago tokens (`bg-brand`, `text-ink`, `border-hairline`, `var(--color-*)`) | error    | `ds/banned-classes`                        |
+| `features/` and `components/` importing from `app/`                               | error    | `@typescript-eslint/no-restricted-imports` |
+| `new PrismaClient()` outside `src/lib/prisma.ts`                                  | error    | `no-restricted-syntax`                     |
+| Off-palette hues (`blue-*`, `purple-*`, …)                                        | warn     | `ds/off-palette`                           |
+| Component files over 150 lines                                                    | warn     | `max-lines`                                |
+| Missing `.test.ts` for new `features/` or `api/` files                            | warn     | Claude `Stop` hook                         |
+
+Rules live in `eslint.config.mjs`. They run in three places:
+
+1. **As you write** — a `PostToolUse` hook (`.claude/hooks/guardrails.mjs`)
+   lints every `.ts`/`.tsx` written under `src/`. **Errors block the edit and
+   are returned to you — fix them in the same turn.** Warnings are shown only.
+2. **On commit** — `lint-staged` runs `eslint --fix`.
+3. **On PR** — CI runs `pnpm lint`, `tsc --noEmit` and the test suite.
+
+Errors currently sit at **zero**. If one fires, you introduced it — fix the
+code, don't weaken the rule. Type-only imports are exempt from the boundary
+rules. For a genuine exception (see `docs/design_system.md` §2.4), add an
+`eslint-disable-next-line` **with a written reason**; a bare disable is not
+acceptable.
+
+Never edit `eslint.config.mjs` to silence a rule you tripped.
+
+---
+
 ## Design System - STRICTLY FOLLOW
 
 **`docs/design_system.md` is the single source of truth** for color,
