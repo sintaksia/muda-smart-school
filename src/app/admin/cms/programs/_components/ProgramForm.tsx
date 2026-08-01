@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
+import { Textarea } from "@/src/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -165,8 +166,8 @@ export function ProgramForm({ defaultValues, programId }: ProgramFormProps) {
                   <FormItem>
                     <FormLabel>Deskripsi</FormLabel>
                     <FormControl>
-                      <textarea
-                        className="flex min-h-[120px] w-full rounded-sm border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      <Textarea
+                        className="min-h-[120px]"
                         placeholder="Deskripsi program keahlian..."
                         {...field}
                       />

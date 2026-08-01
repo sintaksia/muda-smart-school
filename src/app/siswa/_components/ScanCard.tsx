@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Camera, ScanLine } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
 
 interface BarcodeDetectorResult {
   rawValue: string;
@@ -149,24 +152,25 @@ export function ScanCard() {
             playsInline
             muted
           />
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={stopCamera}
-            className="border-neutral-300 text-neutral-600 rounded-sm h-11 w-full border text-sm font-semibold"
+            className="text-neutral-600 h-11 w-full font-semibold"
           >
             Batal
-          </button>
+          </Button>
         </div>
       ) : (
-        <button
+        <Button
           type="button"
           onClick={startCamera}
           disabled={submitting}
-          className="bg-green-600 hover:bg-green-500 active:bg-green-700 rounded-sm inline-flex h-11 w-full items-center justify-center gap-2 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+          className="bg-green-600 hover:bg-green-500 active:bg-green-700 h-11 w-full font-semibold text-white"
         >
           <Camera className="h-5 w-5" strokeWidth={1.75} />
           Buka Kamera & Scan QR
-        </button>
+        </Button>
       )}
 
       <form
@@ -176,20 +180,20 @@ export function ScanCard() {
           void submitToken(manualToken.trim());
         }}
       >
-        <input
+        <Input
           type="text"
           value={manualToken}
           onChange={(event) => setManualToken(event.target.value)}
           placeholder="Atau ketik kode dari layar guru"
-          className="border-neutral-300 text-foreground rounded-sm h-11 flex-1 border bg-white px-3 font-mono text-sm"
+          className={`${ADMIN_FIELD_CLASS} flex-1 font-mono text-sm`}
         />
-        <button
+        <Button
           type="submit"
           disabled={submitting || manualToken.trim().length === 0}
-          className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+          className="h-11"
         >
           {submitting ? "..." : "Kirim"}
-        </button>
+        </Button>
       </form>
     </section>
   );

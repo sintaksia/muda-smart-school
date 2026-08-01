@@ -3,8 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { DeleteRowButton } from "@/src/app/admin/_components/DeleteRowButton";
+import { SelectField } from "@/src/components/common/SelectField";
 import {
+  ADMIN_FIELD_CLASS,
+  FILTER_FIELD_CLASS,
+} from "@/src/components/common/formClasses";
+import {
+  gradeLevelOptions,
   SPECIALIZATION_SHORT_LABELS,
   specializationOptions,
 } from "@/src/lib/constants";
@@ -24,9 +32,6 @@ interface ClassManagerProps {
   classList: ClassRow[];
   teacherOptions: { id: string; name: string }[];
 }
-
-const inputClass =
-  "border-neutral-300 text-foreground rounded-sm h-11 border bg-white px-3 text-sm";
 
 export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
   const router = useRouter();
@@ -113,61 +118,56 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
           Tambah Kelas
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-          <input
+          <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Nama (mis. X PPLG 1)"
             required
             minLength={2}
-            className={inputClass}
+            className={ADMIN_FIELD_CLASS}
           />
-          <select
+          <SelectField
+            ariaLabel="Tingkat"
             value={gradeLevel}
-            onChange={(e) => setGradeLevel(e.target.value)}
-            className={inputClass}
-          >
-            <option value="10">Kelas 10</option>
-            <option value="11">Kelas 11</option>
-            <option value="12">Kelas 12</option>
-          </select>
-          <select
+            onChange={setGradeLevel}
+            className={ADMIN_FIELD_CLASS}
+            options={gradeLevelOptions.map((option) => ({
+              value: String(option.value),
+              label: option.label,
+            }))}
+          />
+          <SelectField
+            ariaLabel="Program Keahlian"
             value={specialization}
-            onChange={(e) => setSpecialization(e.target.value)}
-            className={inputClass}
-          >
-            {specializationOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.short}
-              </option>
-            ))}
-          </select>
-          <input
+            onChange={setSpecialization}
+            className={ADMIN_FIELD_CLASS}
+            options={specializationOptions.map((option) => ({
+              value: option.value,
+              label: option.short,
+            }))}
+          />
+          <Input
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
             placeholder="2026/2027"
             pattern="\d{4}/\d{4}"
             required
-            className={`${inputClass} tabular-nums`}
+            className={`${ADMIN_FIELD_CLASS} tabular-nums`}
           />
-          <select
+          <SelectField
+            ariaLabel="Wali Kelas"
             value={homeroomTeacherId}
-            onChange={(e) => setHomeroomTeacherId(e.target.value)}
-            className={inputClass}
-          >
-            <option value="">Wali kelas (opsional)</option>
-            {teacherOptions.map((teacher) => (
-              <option key={teacher.id} value={teacher.id}>
-                {teacher.name}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
-          >
+            onChange={setHomeroomTeacherId}
+            className={ADMIN_FIELD_CLASS}
+            emptyLabel="Wali kelas (opsional)"
+            options={teacherOptions.map((teacher) => ({
+              value: teacher.id,
+              label: teacher.name,
+            }))}
+          />
+          <Button type="submit" disabled={submitting} className="h-11">
             {submitting ? "Menyimpan..." : "Simpan"}
-          </button>
+          </Button>
         </div>
       </form>
 
@@ -200,31 +200,26 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
                     {row.academicYear}
                   </td>
                   <td className="px-4 py-3">
-                    <select
+                    <SelectField
+                      ariaLabel="Wali Kelas"
                       value={row.homeroomTeacherId ?? ""}
-                      onChange={(e) => changeWali(row, e.target.value)}
-                      className="border-neutral-300 text-neutral-600 rounded-sm h-9 border bg-white px-2 text-xs"
-                    >
-                      <option value="">— Belum ada —</option>
-                      {teacherOptions.map((teacher) => (
-                        <option key={teacher.id} value={teacher.id}>
-                          {teacher.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(next) => changeWali(row, next)}
+                      className={FILTER_FIELD_CLASS}
+                      emptyLabel="— Belum ada —"
+                      options={teacherOptions.map((teacher) => ({
+                        value: teacher.id,
+                        label: teacher.name,
+                      }))}
+                    />
                   </td>
                   <td className="text-foreground px-4 py-3 text-right font-semibold tabular-nums">
                     {row.jumlahSiswa}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      type="button"
+                    <DeleteRowButton
                       onClick={() => handleDelete(row.id)}
-                      className="text-muted-foreground hover:text-destructive transition-colors"
-                      aria-label="Hapus kelas"
-                    >
-                      <Trash2 className="h-5 w-5" strokeWidth={1.75} />
-                    </button>
+                      label="Hapus kelas"
+                    />
                   </td>
                 </tr>
               ))}

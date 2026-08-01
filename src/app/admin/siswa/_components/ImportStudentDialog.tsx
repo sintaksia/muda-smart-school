@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
 import { downloadStudentTemplate } from "@/src/features/master/utils/studentExcel";
 import { StudentBulkResultSummary } from "./StudentBulkResultSummary";
 import type { StudentImportResult } from "@/src/features/master/types";
@@ -96,7 +97,7 @@ export function ImportStudentDialog({
             Unduh Template
           </Button>
 
-          <input
+          <Input
             type="file"
             accept=".xlsx,.xls,.csv"
             disabled={importing}
@@ -105,7 +106,7 @@ export function ImportStudentDialog({
               event.target.value = "";
               if (file) void handleFile(file);
             }}
-            className="border-neutral-300 text-foreground rounded-sm w-full border bg-white p-3 text-sm disabled:opacity-50"
+            className="h-auto bg-white p-3"
           />
 
           {importing && (

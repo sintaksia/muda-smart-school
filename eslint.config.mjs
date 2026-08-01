@@ -52,6 +52,58 @@ const SOFT_CLASSES = [
   },
 ];
 
+/**
+ * Native form controls that have a shadcn primitive. Reaching for the raw
+ * element re-invents the trigger, the focus ring and the keyboard model, and
+ * silently drifts from the tokens — which is how the app ended up with two
+ * different dropdowns. `<button>` is deliberately absent: it is also the right
+ * element for a custom interactive surface (grid tile, sort header, chip
+ * remover), and shadcn's own primitives are built on it.
+ */
+const NATIVE_FORM_ELEMENTS = {
+  select:
+    "Use `SelectField` (plain value/onChange) or `FormSelect` (react-hook-form) from components/common, or shadcn `Select` directly. Never a native <select>. — docs/design_system.md §6.1",
+  textarea:
+    "Use `Textarea` from components/ui/textarea. — docs/design_system.md §6.1",
+  input:
+    "Use `Input` from components/ui/input. Only type=file/checkbox/radio/range may stay native — there is no shadcn primitive for those. — docs/design_system.md §6.1",
+};
+
+/** `<input>` types with no shadcn equivalent, so the raw element is correct. */
+const ALLOWED_INPUT_TYPES = new Set(["file", "checkbox", "radio", "range"]);
+
+const nativeFormElementsRule = {
+  meta: {
+    type: "problem",
+    docs: { description: "Require the shadcn form primitives" },
+    schema: [],
+  },
+  create(context) {
+    return {
+      JSXOpeningElement(node) {
+        // Only lowercase intrinsics are the DOM elements; <Input /> is fine.
+        if (node.name.type !== "JSXIdentifier") return;
+        const message = NATIVE_FORM_ELEMENTS[node.name.name];
+        if (!message) return;
+
+        if (node.name.name === "input") {
+          const type = node.attributes.find(
+            (attr) =>
+              attr.type === "JSXAttribute" && attr.name?.name === "type",
+          );
+          const value =
+            type?.value?.type === "Literal" ? type.value.value : null;
+          if (typeof value === "string" && ALLOWED_INPUT_TYPES.has(value)) {
+            return;
+          }
+        }
+
+        context.report({ node, message });
+      },
+    };
+  },
+};
+
 /** Reports any listed pattern found in a string literal or template chunk, so
  *  className, cn(...), cva() bases and extracted constants are all covered. */
 const makeClassRule = (patterns, description) => ({
@@ -82,6 +134,7 @@ const ds = {
       SOFT_CLASSES,
       "Flag hues outside the brand palette",
     ),
+    "native-form-elements": nativeFormElementsRule,
   },
 };
 
@@ -104,7 +157,13 @@ const eslintConfig = defineConfig([
     rules: {
       "ds/banned-classes": "error",
       "ds/off-palette": "warn",
+      "ds/native-form-elements": "error",
     },
+  },
+  // components/ui/* ARE the primitives — they wrap the native elements.
+  {
+    files: ["src/components/ui/**/*.tsx"],
+    rules: { "ds/native-form-elements": "off" },
   },
 
   // ---- Architecture: component size (CLAUDE.md "split over 150 lines") ----

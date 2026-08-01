@@ -3,6 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { SelectField } from "@/src/components/common/SelectField";
+import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
+import { booleanSettingOptions, qrModeOptions } from "@/src/lib/constants";
 
 interface SettingRow {
   key: string;
@@ -49,45 +54,39 @@ export function AttendanceSettingsForm({
   }
 
   function renderInput(setting: SettingRow): React.ReactNode {
-    const inputClass =
-      "border-neutral-300 text-foreground rounded-sm h-11 w-full border bg-white px-3 text-sm tabular-nums";
-    if (setting.type === "BOOLEAN") {
+    const fieldClass = `${ADMIN_FIELD_CLASS} tabular-nums`;
+    const set = (next: string): void =>
+      setValues({ ...values, [setting.key]: next });
+
+    const options =
+      setting.type === "BOOLEAN"
+        ? booleanSettingOptions
+        : setting.key === "QR_MODE"
+          ? qrModeOptions
+          : null;
+
+    if (options) {
       return (
-        <select
+        <SelectField
+          ariaLabel={setting.label}
           value={values[setting.key]}
-          onChange={(event) =>
-            setValues({ ...values, [setting.key]: event.target.value })
-          }
-          className={inputClass}
-        >
-          <option value="true">Ya</option>
-          <option value="false">Tidak</option>
-        </select>
+          onChange={set}
+          className={fieldClass}
+          options={options.map((option) => ({
+            value: option.value,
+            label: option.label,
+          }))}
+        />
       );
     }
-    if (setting.key === "QR_MODE") {
-      return (
-        <select
-          value={values[setting.key]}
-          onChange={(event) =>
-            setValues({ ...values, [setting.key]: event.target.value })
-          }
-          className={inputClass}
-        >
-          <option value="STATIC">Statis (satu QR per sesi)</option>
-          <option value="DYNAMIC">Dinamis (QR berganti berkala)</option>
-        </select>
-      );
-    }
+
     return (
-      <input
+      <Input
         type={setting.type === "NUMBER" ? "number" : "text"}
         step="any"
         value={values[setting.key]}
-        onChange={(event) =>
-          setValues({ ...values, [setting.key]: event.target.value })
-        }
-        className={inputClass}
+        onChange={(event) => set(event.target.value)}
+        className={fieldClass}
       />
     );
   }
@@ -107,13 +106,9 @@ export function AttendanceSettingsForm({
           </label>
         ))}
       </div>
-      <button
-        type="submit"
-        disabled={saving}
-        className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm mt-6 h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
-      >
+      <Button type="submit" disabled={saving} className="mt-6 h-11">
         {saving ? "Menyimpan..." : "Simpan Pengaturan"}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -3,9 +3,12 @@
 import { toast } from "sonner";
 import { MapPinOff } from "lucide-react";
 import { Badge } from "@/src/app/admin/_components/Badge";
+import { Button } from "@/src/components/ui/button";
+import { SelectField } from "@/src/components/common/SelectField";
 import {
   ATTENDANCE_STATUS_BADGES,
   ATTENDANCE_STATUS_LABELS,
+  manualAttendanceStatusOptions,
 } from "@/src/lib/constants";
 
 export interface SessionDetail {
@@ -104,37 +107,34 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
               </div>
               <div className="flex items-center gap-2">
                 {record?.needsReview && (
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => confirmGps(record.id)}
-                    className="text-yellow-600 inline-flex items-center gap-1 text-xs font-semibold hover:opacity-80"
+                    className="text-yellow-600 h-auto gap-1 px-1 py-0 text-xs font-semibold hover:bg-transparent hover:opacity-80"
                     title="GPS di luar radius — klik untuk konfirmasi"
                   >
                     <MapPinOff className="h-4 w-4" strokeWidth={1.75} />
                     Konfirmasi
-                  </button>
+                  </Button>
                 )}
                 {record ? (
                   <Badge variant={ATTENDANCE_STATUS_BADGES[record.status]}>
                     {ATTENDANCE_STATUS_LABELS[record.status]}
                   </Badge>
                 ) : isOpen ? (
-                  <select
-                    defaultValue=""
-                    onChange={(event) => {
-                      if (event.target.value) {
-                        void markManual(student.id, event.target.value);
-                      }
-                    }}
-                    className="border-neutral-300 text-neutral-600 rounded-sm h-8 border bg-white px-2 text-xs"
-                  >
-                    <option value="" disabled>
-                      Tandai…
-                    </option>
-                    <option value="PRESENT">Hadir</option>
-                    <option value="EXCUSED">Izin</option>
-                    <option value="SICK">Sakit</option>
-                  </select>
+                  <SelectField
+                    ariaLabel="Tandai kehadiran"
+                    placeholder="Tandai…"
+                    value=""
+                    onChange={(next) => void markManual(student.id, next)}
+                    className="h-8 w-32 text-xs"
+                    options={manualAttendanceStatusOptions.map((option) => ({
+                      value: option.value,
+                      label: option.label,
+                    }))}
+                  />
                 ) : (
                   <span className="text-muted-foreground text-xs">—</span>
                 )}

@@ -1,5 +1,7 @@
 "use client";
 
+import { SelectField } from "@/src/components/common/SelectField";
+import { FILTER_FIELD_CLASS } from "@/src/components/common/formClasses";
 import {
   specializationOptions,
   studentStatusOptions,
@@ -18,9 +20,6 @@ interface StudentFiltersProps {
   classOptions: { id: string; name: string }[];
 }
 
-const selectClass =
-  "border-neutral-300 text-foreground rounded-sm h-9 border bg-white px-2 text-xs";
-
 export function StudentFilters({
   value,
   onChange,
@@ -32,48 +31,44 @@ export function StudentFilters({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <select
-        aria-label={ENTITY_LABELS.CLASS}
+      <SelectField
+        ariaLabel={ENTITY_LABELS.CLASS}
+        className={FILTER_FIELD_CLASS}
         value={value.classId}
-        onChange={(e) => set("classId", e.target.value)}
-        className={selectClass}
-      >
-        <option value="">Semua {ENTITY_LABELS.CLASS}</option>
-        <option value="UNASSIGNED">Belum ditempatkan</option>
-        {classOptions.map((schoolClass) => (
-          <option key={schoolClass.id} value={schoolClass.id}>
-            {schoolClass.name}
-          </option>
-        ))}
-      </select>
+        onChange={(next) => set("classId", next)}
+        emptyLabel={`Semua ${ENTITY_LABELS.CLASS}`}
+        options={[
+          { value: "UNASSIGNED", label: "Belum ditempatkan" },
+          ...classOptions.map((schoolClass) => ({
+            value: schoolClass.id,
+            label: schoolClass.name,
+          })),
+        ]}
+      />
 
-      <select
-        aria-label="Program Keahlian"
+      <SelectField
+        ariaLabel="Program Keahlian"
+        className={FILTER_FIELD_CLASS}
         value={value.specialization}
-        onChange={(e) => set("specialization", e.target.value)}
-        className={selectClass}
-      >
-        <option value="">Semua Program</option>
-        {specializationOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.short}
-          </option>
-        ))}
-      </select>
+        onChange={(next) => set("specialization", next)}
+        emptyLabel="Semua Program"
+        options={specializationOptions.map((option) => ({
+          value: option.value,
+          label: option.short,
+        }))}
+      />
 
-      <select
-        aria-label="Status"
+      <SelectField
+        ariaLabel="Status"
+        className={FILTER_FIELD_CLASS}
         value={value.status}
-        onChange={(e) => set("status", e.target.value)}
-        className={selectClass}
-      >
-        <option value="">Semua Status</option>
-        {studentStatusOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+        onChange={(next) => set("status", next)}
+        emptyLabel="Semua Status"
+        options={studentStatusOptions.map((option) => ({
+          value: option.value,
+          label: option.label,
+        }))}
+      />
     </div>
   );
 }

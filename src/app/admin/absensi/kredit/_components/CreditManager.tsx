@@ -2,7 +2,22 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { SelectField } from "@/src/components/common/SelectField";
+import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
+import {
+  creditEntryTypeOptions,
+  creditOwnerTypeOptions,
+  CREDIT_OWNER_TYPE_LABELS,
+} from "@/src/lib/constants";
 import { CreditHistory, type CreditData } from "./CreditHistory";
+
+/** Manual entry records a prestasi or pelanggaran; CORRECTION is only ever
+ *  written by the system when an earlier entry is reversed. */
+const manualEntryTypeOptions = creditEntryTypeOptions.filter(
+  (option) => option.value !== "CORRECTION",
+);
 
 interface CreditManagerProps {
   students: { id: string; name: string }[];
@@ -75,9 +90,6 @@ export function CreditManager({
     }
   }
 
-  const inputClass =
-    "border-neutral-300 text-foreground rounded-sm h-11 border bg-white px-3 text-sm";
-
   return (
     <div className="space-y-6">
       <form
@@ -88,80 +100,79 @@ export function CreditManager({
           Entri Manual (Prestasi / Pelanggaran)
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <select
+          <SelectField
+            ariaLabel="Jenis Pemilik"
             value={ownerType}
-            onChange={(event) => {
-              setOwnerType(event.target.value as "STUDENT" | "TEACHER");
+            onChange={(next) => {
+              setOwnerType(next as "STUDENT" | "TEACHER");
               setOwnerId("");
               setCredit(null);
               setCategory("");
             }}
-            className={inputClass}
-          >
-            <option value="STUDENT">Siswa</option>
-            <option value="TEACHER">Guru</option>
-          </select>
-          <select
+            className={ADMIN_FIELD_CLASS}
+            options={creditOwnerTypeOptions.map((option) => ({
+              value: option.value,
+              label: option.label,
+            }))}
+          />
+          <SelectField
+            ariaLabel={CREDIT_OWNER_TYPE_LABELS[ownerType]}
+            placeholder={`Pilih ${CREDIT_OWNER_TYPE_LABELS[ownerType]}…`}
             value={ownerId}
-            onChange={(event) => loadCredit(event.target.value)}
-            className={inputClass}
-          >
-            <option value="">
-              Pilih {ownerType === "STUDENT" ? "siswa" : "guru"}…
-            </option>
-            {owners.map((owner) => (
-              <option key={owner.id} value={owner.id}>
-                {owner.name}
-              </option>
-            ))}
-          </select>
-          <select
+            onChange={loadCredit}
+            className={ADMIN_FIELD_CLASS}
+            options={owners.map((owner) => ({
+              value: owner.id,
+              label: owner.name,
+            }))}
+          />
+          <SelectField
+            ariaLabel="Jenis Entri"
             value={type}
-            onChange={(event) => {
-              setType(event.target.value as "ACHIEVEMENT" | "VIOLATION");
+            onChange={(next) => {
+              setType(next as "ACHIEVEMENT" | "VIOLATION");
               setCategory("");
             }}
-            className={inputClass}
-          >
-            <option value="VIOLATION">Pelanggaran</option>
-            <option value="ACHIEVEMENT">Prestasi</option>
-          </select>
-          <select
+            className={ADMIN_FIELD_CLASS}
+            options={manualEntryTypeOptions.map((option) => ({
+              value: option.value,
+              label: option.label,
+            }))}
+          />
+          <SelectField
+            ariaLabel="Kategori"
+            placeholder="Pilih kategori…"
             value={category}
-            onChange={(event) => setCategory(event.target.value)}
-            className={inputClass}
-            required
-          >
-            <option value="">Pilih kategori…</option>
-            {categoryOptions.map((option) => (
-              <option key={option.name} value={option.name}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-          <input
+            onChange={setCategory}
+            className={ADMIN_FIELD_CLASS}
+            options={categoryOptions.map((option) => ({
+              value: option.name,
+              label: option.name,
+            }))}
+          />
+          <Input
             type="number"
             value={points}
             onChange={(event) => setPoints(event.target.value)}
-            className={`${inputClass} tabular-nums`}
+            className={`${ADMIN_FIELD_CLASS} tabular-nums`}
             placeholder="Poin (mis. -5 / 10)"
             required
           />
-          <input
+          <Input
             type="text"
             value={note}
             onChange={(event) => setNote(event.target.value)}
-            className={inputClass}
+            className={ADMIN_FIELD_CLASS}
             placeholder="Catatan (opsional)"
           />
         </div>
-        <button
+        <Button
           type="submit"
           disabled={submitting || !ownerId || !category}
-          className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm mt-4 h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+          className="mt-4 h-11"
         >
           {submitting ? "Menyimpan..." : "Simpan Entri"}
-        </button>
+        </Button>
       </form>
 
       {credit && <CreditHistory credit={credit} />}

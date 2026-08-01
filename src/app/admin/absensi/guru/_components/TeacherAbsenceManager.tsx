@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Badge } from "@/src/app/admin/_components/Badge";
+import { SelectField } from "@/src/components/common/SelectField";
+import { FILTER_FIELD_CLASS } from "@/src/components/common/formClasses";
 import {
   ATTENDANCE_STATUS_BADGES,
   ATTENDANCE_STATUS_LABELS,
@@ -105,23 +107,18 @@ export function TeacherAbsenceManager({
                   </td>
                   <td className="px-4 py-3">
                     {record.substitute ?? (
-                      <select
+                      <SelectField
+                        ariaLabel="Guru Pengganti"
+                        placeholder="Pilih pengganti…"
                         disabled={busyId === record.id}
-                        defaultValue=""
-                        onChange={(event) =>
-                          assignSubstitute(record.id, event.target.value)
-                        }
-                        className="border-neutral-300 text-neutral-600 rounded-sm h-9 border bg-white px-2 text-xs"
-                      >
-                        <option value="" disabled>
-                          Pilih pengganti…
-                        </option>
-                        {teacherOptions.map((teacher) => (
-                          <option key={teacher.id} value={teacher.id}>
-                            {teacher.name}
-                          </option>
-                        ))}
-                      </select>
+                        value=""
+                        onChange={(next) => assignSubstitute(record.id, next)}
+                        className={FILTER_FIELD_CLASS}
+                        options={teacherOptions.map((teacher) => ({
+                          value: teacher.id,
+                          label: teacher.name,
+                        }))}
+                      />
                     )}
                   </td>
                 </tr>

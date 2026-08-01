@@ -1,5 +1,7 @@
 "use client";
 
+import { Input } from "@/src/components/ui/input";
+import { FormSelect } from "@/src/components/common/FormSelect";
 import { genderOptions } from "@/src/lib/constants";
 import { STUDENT_SHEET_COLUMNS } from "@/src/features/master/constants";
 import {
@@ -27,6 +29,7 @@ const TEXT_FIELDS = [
 
 export function StudentBiodataFields({
   register,
+  control,
   errors,
 }: StudentFieldGroupProps) {
   return (
@@ -35,23 +38,23 @@ export function StudentBiodataFields({
         Biodata & Orang Tua
       </legend>
       <StudentField label={STUDENT_SHEET_COLUMNS.gender}>
-        <select
-          {...register("gender", nullableField)}
+        <FormSelect
+          control={control}
+          name="gender"
+          ariaLabel={STUDENT_SHEET_COLUMNS.gender}
           className={studentInputClass}
-        >
-          <option value="">— Tidak diisi —</option>
-          {genderOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+          emptyLabel="— Tidak diisi —"
+          options={genderOptions.map((option) => ({
+            value: option.value,
+            label: option.label,
+          }))}
+        />
       </StudentField>
       <StudentField
         label={STUDENT_SHEET_COLUMNS.birthDate}
         error={errors.birthDate?.message}
       >
-        <input
+        <Input
           type="date"
           {...register("birthDate", nullableField)}
           className={studentInputClass}
@@ -59,7 +62,7 @@ export function StudentBiodataFields({
       </StudentField>
       {TEXT_FIELDS.map((field) => (
         <StudentField key={field} label={STUDENT_SHEET_COLUMNS[field]}>
-          <input
+          <Input
             {...register(field, nullableField)}
             className={studentInputClass}
           />

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import { RefreshCw } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
 import { AttendanceRoster, type SessionDetail } from "./AttendanceRoster";
 
 interface LiveSessionViewProps {
@@ -102,14 +103,15 @@ export function LiveSessionView({
           </p>
         </div>
         {isOpen && (
-          <button
+          <Button
             type="button"
+            variant="destructive"
             disabled={closing}
             onClick={closeSession}
-            className="bg-destructive rounded-sm h-11 px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="h-11 px-5 font-semibold"
           >
             {closing ? "Menutup..." : "Tutup Sesi"}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -124,14 +126,15 @@ export function LiveSessionView({
               {sesi.qrToken}
             </p>
             {qrMode === "DYNAMIC" && (
-              <button
+              <Button
                 type="button"
+                variant="link"
                 onClick={refreshQr}
-                className="text-green-600 hover:text-green-500 mt-3 inline-flex items-center gap-1 text-sm font-semibold"
+                className="text-green-600 hover:text-green-500 mt-3 h-auto gap-1 p-0 font-semibold no-underline hover:no-underline"
               >
                 <RefreshCw className="h-4 w-4" strokeWidth={1.75} />
                 Refresh QR
-              </button>
+              </Button>
             )}
           </div>
         </section>

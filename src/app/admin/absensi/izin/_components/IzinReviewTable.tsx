@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Check, X } from "lucide-react";
 import { Badge } from "@/src/app/admin/_components/Badge";
+import { Button } from "@/src/components/ui/button";
 import {
   LEAVE_TYPE_LABELS,
   LEAVE_STATUS_BADGES,
@@ -102,24 +103,25 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
                 <td className="px-4 py-3">
                   {izin.status === "PENDING" ? (
                     <div className="flex justify-end gap-2">
-                      <button
+                      <Button
                         type="button"
                         disabled={busyId === izin.id}
                         onClick={() => review(izin.id, "APPROVED")}
-                        className="bg-green-600 hover:bg-green-500 rounded-sm inline-flex h-9 items-center gap-1 px-3 text-xs font-semibold text-white transition-colors disabled:opacity-50"
+                        className="bg-green-600 hover:bg-green-500 h-9 gap-1 px-3 text-xs font-semibold text-white"
                       >
                         <Check className="h-4 w-4" strokeWidth={1.75} />
                         Setujui
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
+                        variant="outline"
                         disabled={busyId === izin.id}
                         onClick={() => review(izin.id, "REJECTED")}
-                        className="border-neutral-300 text-neutral-600 hover:border-destructive hover:text-destructive rounded-sm inline-flex h-9 items-center gap-1 border px-3 text-xs font-semibold transition-colors disabled:opacity-50"
+                        className="text-neutral-600 hover:border-destructive hover:text-destructive h-9 gap-1 px-3 text-xs font-semibold"
                       >
                         <X className="h-4 w-4" strokeWidth={1.75} />
                         Tolak
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <p className="text-muted-foreground text-right text-xs">

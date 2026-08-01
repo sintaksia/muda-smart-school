@@ -12,6 +12,7 @@ interface StudentFormSectionsProps extends StudentFieldGroupProps {
 
 export function StudentFormSections({
   register,
+  control,
   errors,
   classOptions,
   isEdit,
@@ -20,15 +21,21 @@ export function StudentFormSections({
     <div className="space-y-5">
       <StudentAccountFields
         register={register}
+        control={control}
         errors={errors}
         isEdit={isEdit}
       />
       <StudentAcademicFields
         register={register}
+        control={control}
         errors={errors}
         classOptions={classOptions}
       />
-      <StudentBiodataFields register={register} errors={errors} />
+      <StudentBiodataFields
+        register={register}
+        control={control}
+        errors={errors}
+      />
     </div>
   );
 }

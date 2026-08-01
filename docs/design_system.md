@@ -266,6 +266,50 @@ Use `src/app/admin/_components/Badge.tsx` for enum/status pills (it is a
 superset of the shadcn badge). See the enum single-source-of-truth rule in
 `CLAUDE.md`.
 
+### 6.1 Form primitives — which element to reach for
+
+The table above says how the primitives are styled. This section says that you
+must use them. A hand-rolled `<select className="rounded-sm …">` passes every
+class-level guardrail and still produces a control with a different popover, a
+different focus ring and a different keyboard model from the one two pages
+over. That is how this app ended up with two unrelated dropdowns.
+
+| Need                                    | Use                                                 |
+| --------------------------------------- | --------------------------------------------------- |
+| Dropdown, plain `value` / `onChange`    | `components/common/SelectField`                     |
+| Dropdown, react-hook-form via `control` | `components/common/FormSelect`                      |
+| Dropdown inside a shadcn `<Form>`       | `FormField` + `ui/select` (see `JadwalSelectField`) |
+| Text / number / date / email / password | `ui/input`                                          |
+| Multi-line text                         | `ui/textarea`                                       |
+| Anything shaped like a button           | `ui/button`                                         |
+
+`ds/native-form-elements` enforces this as an **error** for `<select>`,
+`<textarea>` and `<input>`. `src/components/ui/**` is exempt — those files are
+the primitives.
+
+**The `<input>` exceptions**, allowed because no shadcn primitive exists:
+`type="file"`, `"checkbox"`, `"radio"`, `"range"`. Nothing else.
+
+**`<button>` is deliberately not banned.** It is also the correct element for a
+custom interactive surface — a gallery tile, a sortable table header, a chip's
+remove affordance, a segmented-control segment — and shadcn's own primitives
+are built on it. Use `ui/button` when the thing _looks like a button_ (has a
+height, padding, a fill or a border); use a native `<button>` when you are
+making some other element clickable. Do not wrap a tile in `<Button
+variant="ghost" className="h-auto p-0 hover:bg-transparent">` to satisfy a rule
+— that is worse code.
+
+**Sizing overrides** live in `components/common/formClasses.ts`
+(`ADMIN_FIELD_CLASS` for the 44px master-data forms, `FILTER_FIELD_CLASS` for
+compact filter bars). Layer them on a primitive; never re-declare a local
+`inputClass` string.
+
+**Why the wrappers exist:** Radix `SelectItem` throws on `value=""`, but our
+filters and nullable fields use `""`/`null` for "no value".
+`components/common/selectSentinel.ts` translates between the two, so no caller
+has to invent a sentinel — inventing one per file is what pushed several forms
+back onto native `<select>` originally.
+
 ---
 
 ## 7. Status

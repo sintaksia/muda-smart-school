@@ -1,5 +1,6 @@
 "use client";
 
+import { Input } from "@/src/components/ui/input";
 import { STUDENT_SHEET_COLUMNS } from "@/src/features/master/constants";
 import {
   nullableField,
@@ -26,14 +27,14 @@ export function StudentAccountFields({
         label={STUDENT_SHEET_COLUMNS.name}
         error={errors.name?.message}
       >
-        <input {...register("name")} className={studentInputClass} />
+        <Input {...register("name")} className={studentInputClass} />
       </StudentField>
       <StudentField
         label={STUDENT_SHEET_COLUMNS.email}
         error={errors.email?.message}
         hint={isEdit ? "Email login tidak dapat diubah di sini" : undefined}
       >
-        <input
+        <Input
           type="email"
           {...register("email")}
           disabled={isEdit}
@@ -44,7 +45,7 @@ export function StudentAccountFields({
         label={STUDENT_SHEET_COLUMNS.phone}
         error={errors.phone?.message}
       >
-        <input
+        <Input
           {...register("phone", nullableField)}
           className={studentInputClass}
         />
@@ -55,7 +56,7 @@ export function StudentAccountFields({
           error={errors.password?.message}
           hint="Kosongkan untuk memakai password default dari NIS"
         >
-          <input
+          <Input
             type="text"
             autoComplete="off"
             {...register("password")}

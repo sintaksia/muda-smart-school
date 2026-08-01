@@ -15,6 +15,7 @@ Some rules in this file are **machine-enforced**. They are not advisory.
 | Banned radius (`rounded-xl/2xl/3xl/4xl`, `rounded-input/card/modal`)              | error    | `ds/banned-classes`                        |
 | Banned elevation (`shadow-lg/xl/2xl/2lg`, colored shadows)                        | error    | `ds/banned-classes`                        |
 | Deleted Jago tokens (`bg-brand`, `text-ink`, `border-hairline`, `var(--color-*)`) | error    | `ds/banned-classes`                        |
+| Native `<select>` / `<textarea>` / `<input>` instead of the shadcn primitive      | error    | `ds/native-form-elements`                  |
 | `features/` and `components/` importing from `app/`                               | error    | `@typescript-eslint/no-restricted-imports` |
 | `new PrismaClient()` outside `src/lib/prisma.ts`                                  | error    | `no-restricted-syntax`                     |
 | Off-palette hues (`blue-*`, `purple-*`, …)                                        | warn     | `ds/off-palette`                           |
@@ -66,6 +67,14 @@ The non-negotiables, so they're never guessed:
   `rounded-lg` (20px: modals, hero media). Never exceed 20px.
   `rounded-full` is for avatars, status dots and badges/pills only — §4.3 of
   the doc lists the decided cases, so don't re-litigate them per component.
+- **Form controls always come from a primitive, never hand-rolled** —
+  `SelectField` / `FormSelect` (`src/components/common/`) for dropdowns,
+  `ui/input`, `ui/textarea`, `ui/button`. A native `<select>`/`<textarea>`/
+  `<input>` is an ESLint error; the only exempt inputs are
+  `type="file|checkbox|radio|range"`. Native `<button>` stays legal for custom
+  clickable surfaces (tiles, sort headers) — §6.1 of the doc draws the line, so
+  don't re-litigate it per component. Size overrides come from
+  `components/common/formClasses.ts`; never declare a local `inputClass`.
 - **Elevation is hairline-first** — resting cards get `border border-border`
   and no shadow; hoverable cards add `hover:shadow-sm`; overlays get
   `shadow-md`. `shadow-lg`/`xl`/`2xl` and colored shadows are banned.

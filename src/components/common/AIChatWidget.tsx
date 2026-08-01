@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Bot, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
 
 interface Message {
   role: "user" | "model";
@@ -255,7 +257,7 @@ export default function AIChatWidget() {
 
           {/* Input */}
           <div className="p-3 bg-white border-t border-gray-100 flex gap-2">
-            <input
+            <Input
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -263,16 +265,17 @@ export default function AIChatWidget() {
               placeholder="Ketik pertanyaan kamu..."
               maxLength={500}
               disabled={isLoading}
-              className="flex-1 text-sm border border-gray-200 rounded-sm px-3 py-2 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 disabled:opacity-50 bg-gray-50"
+              className="flex-1 bg-gray-50 text-sm"
             />
-            <button
+            <Button
+              size="icon"
               onClick={sendMessage}
               disabled={!input.trim() || isLoading}
-              className="w-9 h-9 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 text-white rounded-sm flex items-center justify-center transition-colors shrink-0"
+              className="bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 shrink-0 text-white"
               aria-label="Kirim pesan"
             >
               <Send className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         </div>
       )}

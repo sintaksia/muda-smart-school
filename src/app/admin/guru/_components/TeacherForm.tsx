@@ -9,6 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { SelectField } from "@/src/components/common/SelectField";
+import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
 import {
   genderOptions,
   educationOptions,
@@ -20,9 +24,6 @@ interface TeacherFormProps {
   onOpenChange: (open: boolean) => void;
   subjectOptions: { id: string; name: string }[];
 }
-
-const inputClass =
-  "border-neutral-300 text-foreground rounded-sm h-11 w-full border bg-white px-3 text-sm";
 
 const initialState = {
   name: "",
@@ -100,93 +101,90 @@ export function TeacherForm({
           <DialogTitle className="text-foreground">Tambah Guru</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
-          <input
+          <Input
             value={form.name}
             onChange={(e) => set("name", e.target.value)}
             placeholder="Nama lengkap"
             required
             minLength={3}
-            className={inputClass}
+            className={ADMIN_FIELD_CLASS}
           />
           <div className="grid grid-cols-2 gap-3">
-            <input
+            <Input
               type="email"
               value={form.email}
               onChange={(e) => set("email", e.target.value)}
               placeholder="Email"
               required
-              className={inputClass}
+              className={ADMIN_FIELD_CLASS}
             />
-            <input
+            <Input
               type="password"
               value={form.password}
               onChange={(e) => set("password", e.target.value)}
               placeholder="Password (min. 8)"
               required
               minLength={8}
-              className={inputClass}
+              className={ADMIN_FIELD_CLASS}
             />
-            <input
+            <Input
               value={form.phone}
               onChange={(e) => set("phone", e.target.value)}
               placeholder="No. HP (opsional)"
-              className={inputClass}
+              className={ADMIN_FIELD_CLASS}
             />
-            <input
+            <Input
               value={form.nip}
               onChange={(e) => set("nip", e.target.value)}
               placeholder="NIP (opsional)"
-              className={inputClass}
+              className={ADMIN_FIELD_CLASS}
             />
-            <select
+            <SelectField
+              ariaLabel="Jenis Kelamin"
               value={form.gender}
-              onChange={(e) => set("gender", e.target.value)}
-              className={inputClass}
-            >
-              {genderOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-            <select
+              onChange={(next) => set("gender", next)}
+              className={ADMIN_FIELD_CLASS}
+              options={genderOptions.map((o) => ({
+                value: o.value,
+                label: o.label,
+              }))}
+            />
+            <SelectField
+              ariaLabel="Status Kepegawaian"
               value={form.employmentStatus}
-              onChange={(e) => set("employmentStatus", e.target.value)}
-              className={inputClass}
-            >
-              {employmentStatusOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-            <input
+              onChange={(next) => set("employmentStatus", next)}
+              className={ADMIN_FIELD_CLASS}
+              options={employmentStatusOptions.map((o) => ({
+                value: o.value,
+                label: o.label,
+              }))}
+            />
+            <Input
               value={form.birthPlace}
               onChange={(e) => set("birthPlace", e.target.value)}
               placeholder="Tempat lahir"
               required
               minLength={2}
-              className={inputClass}
+              className={ADMIN_FIELD_CLASS}
             />
-            <input
+            <Input
               type="date"
               value={form.birthDate}
               onChange={(e) => set("birthDate", e.target.value)}
               required
-              className={inputClass}
+              className={ADMIN_FIELD_CLASS}
             />
           </div>
-          <select
+          <SelectField
+            ariaLabel="Pendidikan Terakhir"
             value={form.education}
-            onChange={(e) => set("education", e.target.value)}
-            className={inputClass}
-          >
-            {educationOptions.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+            onChange={(next) => set("education", next)}
+            className={ADMIN_FIELD_CLASS}
+            options={educationOptions.map((o) => ({
+              value: o.value,
+              label: o.label,
+            }))}
+          />
 
           <fieldset className="border-border rounded-sm border p-3">
             <legend className="text-neutral-600 px-1 text-xs font-semibold">
@@ -216,13 +214,9 @@ export function TeacherForm({
             )}
           </fieldset>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 w-full text-sm font-semibold text-white transition-colors disabled:opacity-50"
-          >
+          <Button type="submit" disabled={submitting} className="h-11 w-full">
             {submitting ? "Menyimpan..." : "Buat Akun Guru"}
-          </button>
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

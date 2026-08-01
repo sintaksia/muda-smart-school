@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { FieldErrors, UseFormRegister } from "react-hook-form";
+import type { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import type { CreateStudentFormData } from "@/src/app/api/master/students/StudentSchema";
 
 interface StudentFieldProps {
@@ -14,11 +14,12 @@ interface StudentFieldProps {
 /** Props every field group of the student form receives. */
 export interface StudentFieldGroupProps {
   register: UseFormRegister<CreateStudentFormData>;
+  /** Radix Select is not a native control, so its fields go through Controller. */
+  control: Control<CreateStudentFormData>;
   errors: FieldErrors<CreateStudentFormData>;
 }
 
-export const studentInputClass =
-  "border-neutral-300 text-foreground rounded-sm h-11 w-full border bg-white px-3 text-sm";
+export { ADMIN_FIELD_CLASS as studentInputClass } from "@/src/components/common/formClasses";
 
 /** Registers an optional control so an empty value is stored as null. */
 export const nullableField = { setValueAs: (value: string) => value || null };

@@ -151,6 +151,18 @@ export const ATTENDANCE_STATUS_BADGES: Record<
   "success" | "warning" | "info" | "secondary" | "destructive"
 > = Object.fromEntries(attendanceStatusOptions.map((o) => [o.value, o.badge]));
 
+/** Statuses that record someone as not present — `attendanceStatusOptions`
+ *  minus the two "did show up" cases. Used by the teacher-absence form. */
+export const absenceStatusOptions = attendanceStatusOptions.filter(
+  (option) => option.value !== "PRESENT" && option.value !== "LATE",
+);
+
+/** Statuses a teacher may set by hand on the session roster. LATE and ABSENT
+ *  are derived from scan time / session close, never chosen. */
+export const manualAttendanceStatusOptions = attendanceStatusOptions.filter(
+  (option) => option.value !== "LATE" && option.value !== "ABSENT",
+);
+
 export const sessionStatusOptions = [
   { value: "OPEN", label: "Berlangsung", badge: "success" as const },
   { value: "CLOSED", label: "Selesai", badge: "secondary" as const },
@@ -165,6 +177,17 @@ export const SESSION_STATUS_BADGES: Record<
   string,
   "success" | "warning" | "secondary"
 > = Object.fromEntries(sessionStatusOptions.map((o) => [o.value, o.badge]));
+
+export const qrModeOptions = [
+  { value: "STATIC", label: "Statis (satu QR per sesi)" },
+  { value: "DYNAMIC", label: "Dinamis (QR berganti berkala)" },
+] as const;
+
+/** For settings persisted as the strings "true"/"false". */
+export const booleanSettingOptions = [
+  { value: "true", label: "Ya" },
+  { value: "false", label: "Tidak" },
+] as const;
 
 export const leaveTypeOptions = [
   { value: "PERMISSION", label: "Izin", badge: "info" as const },

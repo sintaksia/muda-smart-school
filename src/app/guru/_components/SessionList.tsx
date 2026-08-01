@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronRight, QrCode } from "lucide-react";
 import { Badge } from "@/src/app/admin/_components/Badge";
+import { Button } from "@/src/components/ui/button";
 import {
   SESSION_STATUS_BADGES,
   SESSION_STATUS_LABELS,
@@ -85,24 +86,25 @@ export function SessionList({ items }: SessionListProps) {
               </Badge>
             )}
             {item.sesiId && item.sesiStatus !== "NO_CLASS" ? (
-              <button
+              <Button
                 type="button"
+                variant="link"
                 onClick={() => router.push(`/guru/sesi/${item.sesiId}`)}
-                className="text-primary-900 hover:text-primary-800 inline-flex items-center gap-1 text-sm font-semibold"
+                className="text-primary-900 hover:text-primary-800 h-auto gap-1 p-0 font-semibold no-underline hover:no-underline"
               >
                 Lihat Sesi
                 <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
-              </button>
+              </Button>
             ) : !item.sesiId ? (
-              <button
+              <Button
                 type="button"
                 disabled={busyId === item.jadwalId}
                 onClick={() => openSession(item.jadwalId)}
-                className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm inline-flex h-11 items-center gap-2 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+                className="h-11 gap-2 px-5 font-semibold"
               >
                 <QrCode className="h-5 w-5" strokeWidth={1.75} />
                 {busyId === item.jadwalId ? "Membuka..." : "Buka Sesi"}
-              </button>
+              </Button>
             ) : null}
           </div>
         </div>

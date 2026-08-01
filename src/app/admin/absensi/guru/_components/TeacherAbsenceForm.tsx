@@ -3,6 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { SelectField } from "@/src/components/common/SelectField";
+import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
+import { absenceStatusOptions, ENTITY_LABELS } from "@/src/lib/constants";
 
 interface TeacherAbsenceFormProps {
   teacherOptions: { id: string; name: string }[];
@@ -49,59 +54,52 @@ export function TeacherAbsenceForm({
     }
   }
 
-  const inputClass =
-    "border-neutral-300 text-foreground rounded-sm h-11 border bg-white px-3 text-sm";
-
   return (
     <form
       onSubmit={handleSubmit}
       className="border-border rounded-md border bg-white p-5"
     >
       <h3 className="text-foreground mb-4 text-base font-semibold">
-        Catat Ketidakhadiran Guru
+        Catat Ketidakhadiran {ENTITY_LABELS.TEACHER}
       </h3>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <select
+        <SelectField
+          ariaLabel={ENTITY_LABELS.TEACHER}
           value={teacherId}
-          onChange={(event) => setTeacherId(event.target.value)}
-          className={inputClass}
-        >
-          <option value="">Pilih guru…</option>
-          {teacherOptions.map((teacher) => (
-            <option key={teacher.id} value={teacher.id}>
-              {teacher.name}
-            </option>
-          ))}
-        </select>
-        <input
+          onChange={setTeacherId}
+          className={ADMIN_FIELD_CLASS}
+          emptyLabel={`Pilih ${ENTITY_LABELS.TEACHER}…`}
+          options={teacherOptions.map((teacher) => ({
+            value: teacher.id,
+            label: teacher.name,
+          }))}
+        />
+        <Input
           type="date"
           value={date}
           onChange={(event) => setDate(event.target.value)}
-          className={inputClass}
+          className={ADMIN_FIELD_CLASS}
         />
-        <select
+        <SelectField
+          ariaLabel="Status"
           value={status}
-          onChange={(event) => setStatus(event.target.value)}
-          className={inputClass}
-        >
-          <option value="EXCUSED">Izin</option>
-          <option value="SICK">Sakit</option>
-          <option value="ABSENT">Alpa</option>
-        </select>
-        <input
+          onChange={setStatus}
+          className={ADMIN_FIELD_CLASS}
+          options={absenceStatusOptions.map((option) => ({
+            value: option.value,
+            label: option.label,
+          }))}
+        />
+        <Input
           type="text"
           placeholder="Catatan (opsional)"
           value={note}
           onChange={(event) => setNote(event.target.value)}
-          className={inputClass}
+          className={ADMIN_FIELD_CLASS}
         />
-        <button
-          type="submit"
-          disabled={submitting}
-          className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
-        >
+        <Button type="submit" disabled={submitting} className="h-11">
           {submitting ? "Menyimpan..." : "Simpan"}
-        </button>
+        </Button>
       </div>
     </form>
   );

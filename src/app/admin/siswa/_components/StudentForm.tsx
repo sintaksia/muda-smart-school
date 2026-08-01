@@ -70,6 +70,7 @@ export function StudentForm({
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<CreateStudentFormData>({
@@ -127,6 +128,7 @@ export function StudentForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <StudentFormSections
             register={register}
+            control={control}
             errors={errors}
             classOptions={classOptions}
             isEdit={isEdit}

@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { SelectField } from "@/src/components/common/SelectField";
+import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
+import { DeleteRowButton } from "@/src/app/admin/_components/DeleteRowButton";
 import {
   SPECIALIZATION_SHORT_LABELS,
   specializationOptions,
@@ -22,9 +26,6 @@ export interface SubjectRow {
 interface SubjectManagerProps {
   subjectList: SubjectRow[];
 }
-
-const inputClass =
-  "border-neutral-300 text-foreground rounded-sm h-11 border bg-white px-3 text-sm";
 
 export function SubjectManager({ subjectList }: SubjectManagerProps) {
   const router = useRouter();
@@ -89,42 +90,37 @@ export function SubjectManager({ subjectList }: SubjectManagerProps) {
           Tambah Mata Pelajaran
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <input
+          <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Nama (mis. Matematika)"
             required
             minLength={2}
-            className={inputClass}
+            className={ADMIN_FIELD_CLASS}
           />
-          <input
+          <Input
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="Kode (mis. MTK)"
             required
             minLength={2}
             maxLength={12}
-            className={`${inputClass} font-mono uppercase`}
+            className={`${ADMIN_FIELD_CLASS} font-mono uppercase`}
           />
-          <select
+          <SelectField
+            ariaLabel="Program Keahlian"
             value={specialization}
-            onChange={(e) => setSpecialization(e.target.value)}
-            className={inputClass}
-          >
-            <option value="">Umum (semua program)</option>
-            {specializationOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.short}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
-          >
+            onChange={setSpecialization}
+            className={ADMIN_FIELD_CLASS}
+            emptyLabel="Umum (semua program)"
+            options={specializationOptions.map((option) => ({
+              value: option.value,
+              label: option.short,
+            }))}
+          />
+          <Button type="submit" disabled={submitting} className="h-11">
             {submitting ? "Menyimpan..." : "Simpan"}
-          </button>
+          </Button>
         </div>
       </form>
 
@@ -163,14 +159,10 @@ export function SubjectManager({ subjectList }: SubjectManagerProps) {
                     {row.jumlahJadwal}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      type="button"
+                    <DeleteRowButton
                       onClick={() => handleDelete(row.id)}
-                      className="text-muted-foreground hover:text-destructive transition-colors"
-                      aria-label="Hapus mapel"
-                    >
-                      <Trash2 className="h-5 w-5" strokeWidth={1.75} />
-                    </button>
+                      label="Hapus mapel"
+                    />
                   </td>
                 </tr>
               ))}
