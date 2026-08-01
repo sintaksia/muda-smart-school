@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0](https://github.com/sintaksia/muda-smart-school/compare/v1.3.1...v1.4.0) (2026-08-01)
+
+### Features
+
+- add student profile fields and management components ([2a02648](https://github.com/sintaksia/muda-smart-school/commit/2a0264898853ebc4e208d946381811a2fbe63655))
+- add student promotion functionality and dialogs ([ee53c20](https://github.com/sintaksia/muda-smart-school/commit/ee53c207f32e39d6898fce09d0e045ce64ab7ef8))
+- enforce usage of shadcn form primitives across components ([83a6c0e](https://github.com/sintaksia/muda-smart-school/commit/83a6c0efb90daca1c6455867d5ebb4c575944ee1))
+- implement machine-enforced guardrails for design system compliance ([700daf4](https://github.com/sintaksia/muda-smart-school/commit/700daf4af7302674940e027b74a07535a21511a1))
+
+### Refactoring
+
+- enhance design system with typography and color adjustments ([b26e97e](https://github.com/sintaksia/muda-smart-school/commit/b26e97e1d224d3257bd58c7510e0a236d3b19d12))
+- improve admin sidebar layout with consistent spacing ([f0aeba1](https://github.com/sintaksia/muda-smart-school/commit/f0aeba150f584d1a0d7f4de16ac98a751685dc2d))
+- update design system for color, radius, and elevation consistency ([06922fc](https://github.com/sintaksia/muda-smart-school/commit/06922fc1b78dd23397b4165318eeaaee6f11cfe1))
+
 ## [1.3.1](https://github.com/sintaksia/muda-smart-school/compare/v1.2.0...v1.3.1) (2026-07-25)
 
 ### Features
