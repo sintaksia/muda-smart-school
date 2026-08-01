@@ -19,6 +19,13 @@ import {
   SidebarMenuSubItem,
 } from "@/src/components/ui/sidebar";
 
+/**
+ * Shared spacing for every top-level sidebar group. Neutralises the default
+ * `p-2` on SidebarGroup so group triggers sit on the same 4px rhythm as the
+ * items inside an expanded group (SidebarMenu / SidebarMenuSub use `gap-1`).
+ */
+export const SIDEBAR_GROUP_CLASS = "px-2 py-0";
+
 export interface SidebarNavItem {
   title: string;
   url: string;
@@ -47,7 +54,7 @@ export function SidebarCollapsibleGroup({
   const hasActiveChild = items.some((item) => isItemActive(pathname, item.url));
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className={SIDEBAR_GROUP_CLASS}>
       <SidebarGroupContent>
         <SidebarMenu>
           <Collapsible
@@ -63,7 +70,7 @@ export function SidebarCollapsibleGroup({
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <SidebarMenuSub>
+                <SidebarMenuSub className="mt-1 mb-1 py-0">
                   {items.map((item) => (
                     <SidebarMenuSubItem key={item.title}>
                       <SidebarMenuSubButton

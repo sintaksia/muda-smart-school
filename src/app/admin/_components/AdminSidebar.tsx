@@ -44,6 +44,7 @@ import {
 import { UserMenu } from "./UserMenu";
 import {
   SidebarCollapsibleGroup,
+  SIDEBAR_GROUP_CLASS,
   type SidebarNavItem,
 } from "./SidebarCollapsibleGroup";
 import type { SessionUser } from "@/src/features/auth/types";
@@ -237,9 +238,9 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="gap-1 py-2">
         {/* Menu Utama */}
-        <SidebarGroup>
+        <SidebarGroup className={SIDEBAR_GROUP_CLASS}>
           <SidebarGroupLabel>Menu Utama</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
