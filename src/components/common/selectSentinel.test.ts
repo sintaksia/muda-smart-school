@@ -13,10 +13,10 @@ describe("toSelectValue", () => {
   });
 
   it.each([
-    ["", "empty string"] as const,
-    [null, "null"] as const,
-    [undefined, "undefined"] as const,
-  ])("maps %s (%s) to the sentinel", (value) => {
+    { label: "empty string", value: "" },
+    { label: "null", value: null },
+    { label: "undefined", value: undefined },
+  ])("maps $label to the sentinel", ({ value }) => {
     // Radix throws if a SelectItem carries "", so every empty representation
     // has to collapse onto one non-empty token.
     expect(toSelectValue(value)).toBe(EMPTY_SELECT_VALUE);
