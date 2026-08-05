@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0](https://github.com/sintaksia/muda-smart-school/compare/muda-smart-school-v1.3.0...muda-smart-school-v1.4.0) (2026-08-05)
+
+
+### Features
+
+* add admin error handling components and cms access validation ([f52d557](https://github.com/sintaksia/muda-smart-school/commit/f52d5577dff5a54d904d4388c96f0950ff0f4740))
+* add app version to environment and display in admin sidebar ([fff8b22](https://github.com/sintaksia/muda-smart-school/commit/fff8b22a66c6359fdc4d78e303416c96b1f62d2c))
+* add collapsible sidebar component for admin navigation ([b01f205](https://github.com/sintaksia/muda-smart-school/commit/b01f205bf3913bc0a5f0ac7fb55eda6245809a7e))
+* add google analytics component and integrate into layout ([3624fcb](https://github.com/sintaksia/muda-smart-school/commit/3624fcbde3d48793956bbc4478fd93cefdeb701d))
+* add google login button and oauth callback handling ([ad798bd](https://github.com/sintaksia/muda-smart-school/commit/ad798bd51db4b60e05cd19be2745e21fb645677d))
+* add ishighlight property to achievement edit page ([9689b32](https://github.com/sintaksia/muda-smart-school/commit/9689b32a9291c59f397e6cfa781d99ddddc1c410))
+* add loading component for admin page ([4d686bd](https://github.com/sintaksia/muda-smart-school/commit/4d686bdb6372bcb3019354eb4985175ba347205f))
+* add revalidation paths for contacts and social links api ([357bae8](https://github.com/sintaksia/muda-smart-school/commit/357bae818a8d199d4319f1604807f0ce4ea89c18))
+* add shared cmsrowactions component for cms list actions ([5439b83](https://github.com/sintaksia/muda-smart-school/commit/5439b83b02c6e4983a088f06bad144222f6484c9))
+* add student profile fields and management components ([2a02648](https://github.com/sintaksia/muda-smart-school/commit/2a0264898853ebc4e208d946381811a2fbe63655))
+* add student promotion functionality and dialogs ([ee53c20](https://github.com/sintaksia/muda-smart-school/commit/ee53c207f32e39d6898fce09d0e045ce64ab7ef8))
+* add teacher, class, and subject management components ([ee25a8c](https://github.com/sintaksia/muda-smart-school/commit/ee25a8c403c75fac1a1a961c15130738356039fd))
+* create cta grid backgroud component and refactor cta banner ([2f5f3ec](https://github.com/sintaksia/muda-smart-school/commit/2f5f3ec8d87306061793dd55eaedbe4813ed4fd2))
+* create reusable create button component for admin pages ([07128c5](https://github.com/sintaksia/muda-smart-school/commit/07128c5e90fbc3bd367cde922b85af27b9754648))
+* enforce usage of shadcn form primitives across components ([83a6c0e](https://github.com/sintaksia/muda-smart-school/commit/83a6c0efb90daca1c6455867d5ebb4c575944ee1))
+* enhance admin page to display program keahlian labels ([de36411](https://github.com/sintaksia/muda-smart-school/commit/de36411525c836855c6bcf90a4f1823920162aef))
+* enhance award section layout for dynamic achievement display ([d79138c](https://github.com/sintaksia/muda-smart-school/commit/d79138c8a9e0e054804601087070c3629217f3f4))
+* implement centralized error handling for cms api routes ([401ea56](https://github.com/sintaksia/muda-smart-school/commit/401ea563e46a053a318cdf58ad27bc158646de37))
+* implement faq management features with crud operations ([ec5241a](https://github.com/sintaksia/muda-smart-school/commit/ec5241a543288fbbbc6ea8208284e8395ddde4fa))
+* implement leave request api with validation and testing ([9f02f7e](https://github.com/sintaksia/muda-smart-school/commit/9f02f7e1603d04cf7d75ec183ecece00a1f814cb))
+* implement machine-enforced guardrails for design system compliance ([700daf4](https://github.com/sintaksia/muda-smart-school/commit/700daf4af7302674940e027b74a07535a21511a1))
+* implement shared loading state component for admin pages ([a666f01](https://github.com/sintaksia/muda-smart-school/commit/a666f01ecaf4c61470b8a6377ebc4031cf9f9f03))
+* implement social links management with crud operations ([7fdfdd0](https://github.com/sintaksia/muda-smart-school/commit/7fdfdd0c4e5d2a38aa820c27549dc93e94ce38b5))
+* implement testimonials management with crud operations ([e198a12](https://github.com/sintaksia/muda-smart-school/commit/e198a12f62a4cf1fd0d5b4398fbb4f21f396e64b))
+* implement usecmsformsubmit hook for form submission handling ([7874ddf](https://github.com/sintaksia/muda-smart-school/commit/7874ddfd0865ec46b7d9eb99ce3635e8851e11d9))
+* refactor footer and contact components to use shared icon paths ([723489c](https://github.com/sintaksia/muda-smart-school/commit/723489c74035f0e26e0f85125f969adecd696594))
+* update contact location sections to include address details ([dca9dd5](https://github.com/sintaksia/muda-smart-school/commit/dca9dd568004634baf8fcac1048503d94ed778aa))
+* update header for ishighlight column with sortable functionality ([b960986](https://github.com/sintaksia/muda-smart-school/commit/b9609863139b138cde1a084dc45fee038cdc796d))
+* wrap program card in link for navigation ([8ff8c8d](https://github.com/sintaksia/muda-smart-school/commit/8ff8c8d0de9711739f0fa5ce91c9c75c36030b67))
+
+
+### Refactoring
+
+* enhance design system with typography and color adjustments ([b26e97e](https://github.com/sintaksia/muda-smart-school/commit/b26e97e1d224d3257bd58c7510e0a236d3b19d12))
+* improve admin sidebar layout with consistent spacing ([f0aeba1](https://github.com/sintaksia/muda-smart-school/commit/f0aeba150f584d1a0d7f4de16ac98a751685dc2d))
+* rename and update  endpoints for attendance and master resources ([a18a8f6](https://github.com/sintaksia/muda-smart-school/commit/a18a8f6fed0234a061124b5eb1e2f095e6f77ac1))
+* rename cms enum values to english for consistency ([261e6a9](https://github.com/sintaksia/muda-smart-school/commit/261e6a9e8f45e23778df6e5e7a9d8424fd59dd79))
+* rename guru, kelas, and mata_pelajaran models to teacher, school-class, and subject ([a948c9f](https://github.com/sintaksia/muda-smart-school/commit/a948c9f7bbee73f235b1039022f71579de50ba3a))
+* rename pendaftaran model to registration and update related fields ([27c7343](https://github.com/sintaksia/muda-smart-school/commit/27c73439c35cef409c76e814df89110b29b5efd2))
+* rename session-related variables for consistency ([703403a](https://github.com/sintaksia/muda-smart-school/commit/703403afea95f906e0f52718dff13db50b8141a8))
+* standardize attendance and credit domain naming to english ([6e66610](https://github.com/sintaksia/muda-smart-school/commit/6e666103fccbaaad6f3e018d72273252190eb122))
+* update admin components  for consistency ([c19a322](https://github.com/sintaksia/muda-smart-school/commit/c19a3223e5a2be5f33e81bc09e8577dccdfdaf45))
+* update design system for color, radius, and elevation consistency ([06922fc](https://github.com/sintaksia/muda-smart-school/commit/06922fc1b78dd23397b4165318eeaaee6f11cfe1))
+* update model and field names for consistency in english ([3090195](https://github.com/sintaksia/muda-smart-school/commit/309019578f67a8b8f19f2c2acb8f0e9cdc39f3a7))
+* update schemas to use mapped enum values for validation ([5e93726](https://github.com/sintaksia/muda-smart-school/commit/5e937260eeeaecc79e8ec4a24a2a57ca25548c23))
+
 ## [1.4.0](https://github.com/sintaksia/muda-smart-school/compare/v1.3.1...v1.4.0) (2026-08-01)
 
 ### Features
