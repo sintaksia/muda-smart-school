@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { dateOnlyUtc, toWibParts } from "@/src/features/attendance/utils/time";
-import { DAY_OF_WEEK_LABELS } from "@/src/lib/constants";
+import { ProfileNotLinkedNotice } from "@/src/components/common/ProfileNotLinkedNotice";
+import { DAY_OF_WEEK_LABELS, ENTITY_LABELS } from "@/src/lib/constants";
 import { SessionList } from "./_components/SessionList";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,12 @@ export default async function GuruDashboardPage() {
     where: { userId: user.id },
   });
   if (!teacher) {
-    redirect("/login");
+    return (
+      <ProfileNotLinkedNotice
+        entityLabel={ENTITY_LABELS.TEACHER}
+        email={user.email}
+      />
+    );
   }
 
   const { dateISO, dayOfWeek } = toWibParts(new Date());

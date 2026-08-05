@@ -9,26 +9,26 @@ import { Button } from "@/src/components/ui/button";
 import { AttendanceRoster, type SessionDetail } from "./AttendanceRoster";
 
 interface LiveSessionViewProps {
-  sesiId: string;
+  sessionId: string;
   qrMode: "STATIC" | "DYNAMIC";
   qrTtlSeconds: number;
 }
 
 export function LiveSessionView({
-  sesiId,
+  sessionId,
   qrMode,
   qrTtlSeconds,
 }: LiveSessionViewProps) {
   const router = useRouter();
-  const [sesi, setSesi] = useState<SessionDetail | null>(null);
+  const [session, setSession] = useState<SessionDetail | null>(null);
   const [closing, setClosing] = useState<boolean>(false);
 
   const load = useCallback(async (): Promise<void> => {
-    const response = await fetch(`/api/attendance/sessions/${sesiId}`);
+    const response = await fetch(`/api/attendance/sessions/${sessionId}`);
     if (response.ok) {
-      setSesi((await response.json()) as SessionDetail);
+      setSession((await response.json()) as SessionDetail);
     }
-  }, [sesiId]);
+  }, [sessionId]);
 
   // Live view: poll scans every 5s while the session is open.
   useEffect(() => {
@@ -48,7 +48,7 @@ export function LiveSessionView({
   }, [qrMode, qrTtlSeconds]);
 
   async function refreshQr(): Promise<void> {
-    const response = await fetch(`/api/attendance/sessions/${sesiId}`, {
+    const response = await fetch(`/api/attendance/sessions/${sessionId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "refresh-qr" }),
@@ -60,20 +60,20 @@ export function LiveSessionView({
 
   async function closeSession(): Promise<void> {
     if (
-      !window.confirm("Tutup sesi? Siswa tanpa presensi akan tercatat Alpa.")
+      !window.confirm("Tutup session? Siswa tanpa presensi akan tercatat Alpa.")
     ) {
       return;
     }
     setClosing(true);
     try {
-      const response = await fetch(`/api/attendance/sessions/${sesiId}`, {
+      const response = await fetch(`/api/attendance/sessions/${sessionId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "close" }),
       });
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error ?? "Gagal menutup sesi");
+        throw new Error(data.error ?? "Gagal menutup session");
       }
       toast.success("Sesi ditutup, skor kredit diproses");
       router.push("/guru");
@@ -84,22 +84,22 @@ export function LiveSessionView({
     }
   }
 
-  if (!sesi) {
+  if (!session) {
     return <div className="rounded-md bg-primary-50 h-64 animate-pulse" />;
   }
 
-  const isOpen = sesi.status === "OPEN";
+  const isOpen = session.status === "OPEN";
 
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-foreground text-3xl font-bold tracking-tight">
-            {sesi.jadwal.mataPelajaran.name}
+            {session.schedule.subject.name}
           </h1>
           <p className="text-neutral-600 mt-1 text-sm">
-            {sesi.jadwal.kelas.name} · {sesi.jadwal.startTime}–
-            {sesi.jadwal.endTime}
+            {session.schedule.schoolClass.name} · {session.schedule.startTime}–
+            {session.schedule.endTime}
           </p>
         </div>
         {isOpen && (
@@ -115,15 +115,15 @@ export function LiveSessionView({
         )}
       </div>
 
-      {isOpen && sesi.qrToken && (
+      {isOpen && session.qrToken && (
         <section className="border-border rounded-md flex flex-col items-center gap-4 border bg-white p-6 sm:flex-row sm:justify-center sm:gap-10">
-          <QRCodeSVG value={sesi.qrToken} size={220} marginSize={2} />
+          <QRCodeSVG value={session.qrToken} size={220} marginSize={2} />
           <div className="text-center sm:text-left">
             <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-[0.06em]">
               Kode manual
             </p>
             <p className="text-foreground mt-1 break-all font-mono text-sm font-semibold">
-              {sesi.qrToken}
+              {session.qrToken}
             </p>
             {qrMode === "DYNAMIC" && (
               <Button
@@ -140,7 +140,7 @@ export function LiveSessionView({
         </section>
       )}
 
-      <AttendanceRoster sesi={sesi} onChanged={load} />
+      <AttendanceRoster session={session} onChanged={load} />
     </div>
   );
 }

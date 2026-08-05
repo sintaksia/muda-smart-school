@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { getCreditTotal } from "@/src/features/attendance/services/credit";
+import { ProfileNotLinkedNotice } from "@/src/components/common/ProfileNotLinkedNotice";
+import { ENTITY_LABELS } from "@/src/lib/constants";
 import { ScanCard } from "./_components/ScanCard";
 import { CreditSummaryCard } from "./_components/CreditSummaryCard";
 import { AttendanceHistory } from "./_components/AttendanceHistory";
@@ -18,7 +20,12 @@ export default async function SiswaDashboardPage() {
     where: { userId: user.id },
   });
   if (!student) {
-    redirect("/login");
+    return (
+      <ProfileNotLinkedNotice
+        entityLabel={ENTITY_LABELS.STUDENT}
+        email={user.email}
+      />
+    );
   }
 
   const [total, history, izinList] = await Promise.all([

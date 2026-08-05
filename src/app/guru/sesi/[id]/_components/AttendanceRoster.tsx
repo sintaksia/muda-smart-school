@@ -15,14 +15,14 @@ export interface SessionDetail {
   id: string;
   status: string;
   qrToken: string | null;
-  jadwal: {
+  schedule: {
     startTime: string;
     endTime: string;
-    kelas: {
+    schoolClass: {
       name: string;
       students: { id: string; nis: string; user: { name: string } }[];
     };
-    mataPelajaran: { name: string };
+    subject: { name: string };
   };
   studentAttendance: {
     id: string;
@@ -35,15 +35,18 @@ export interface SessionDetail {
 }
 
 interface AttendanceRosterProps {
-  sesi: SessionDetail;
+  session: SessionDetail;
   onChanged: () => Promise<void>;
 }
 
-export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
+export function AttendanceRoster({
+  session,
+  onChanged,
+}: AttendanceRosterProps) {
   const recordByStudent = new Map(
-    sesi.studentAttendance.map((record) => [record.studentId, record]),
+    session.studentAttendance.map((record) => [record.studentId, record]),
   );
-  const isOpen = sesi.status === "OPEN";
+  const isOpen = session.status === "OPEN";
 
   async function confirmGps(recordId: string): Promise<void> {
     const response = await fetch(`/api/attendance/records/${recordId}`, {
@@ -60,7 +63,7 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
   }
 
   async function markManual(studentId: string, status: string): Promise<void> {
-    const response = await fetch(`/api/attendance/sessions/${sesi.id}`, {
+    const response = await fetch(`/api/attendance/sessions/${session.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "manual-attendance", studentId, status }),
@@ -81,12 +84,12 @@ export function AttendanceRoster({ sesi, onChanged }: AttendanceRosterProps) {
           Daftar Siswa
         </h3>
         <span className="text-muted-foreground text-xs font-medium tabular-nums">
-          {sesi.studentAttendance.length}/{sesi.jadwal.kelas.students.length}{" "}
-          tercatat
+          {session.studentAttendance.length}/
+          {session.schedule.schoolClass.students.length} tercatat
         </span>
       </header>
       <ul>
-        {sesi.jadwal.kelas.students.map((student) => {
+        {session.schedule.schoolClass.students.map((student) => {
           const record = recordByStudent.get(student.id);
           return (
             <li

@@ -13,7 +13,7 @@ export default async function SesiLivePage({ params }: PageProps) {
 
   return (
     <LiveSessionView
-      sesiId={id}
+      sessionId={id}
       qrMode={settings.qrMode}
       qrTtlSeconds={settings.qrTokenTtlSeconds}
     />
