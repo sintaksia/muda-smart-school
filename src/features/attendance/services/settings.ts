@@ -1,34 +1,35 @@
 import { prisma } from "@/src/lib/prisma";
-import type { AttendanceSettings } from "../types";
+import { ATTENDANCE_SCAN_MODE_VALUES } from "@/src/lib/constants";
+import { ATTENDANCE_SETTING_DEFINITIONS } from "../constants";
+import type { AttendanceScanMode, AttendanceSettings } from "../types";
 
 export const ATTENDANCE_SETTINGS_GROUP = "attendance";
 
 /**
- * Defaults mirror docs/business_process_attendance.md §1. They are seed
- * values only — runtime always reads from SchoolSetting so Admin can edit
- * every rule without a deploy.
+ * Defaults mirror docs/business_process_attendance.md §1, derived from the
+ * shared definitions so seed and runtime can never drift. They are fallbacks
+ * only — runtime always reads from SchoolSetting so Admin can edit every rule
+ * without a deploy.
  */
-export const ATTENDANCE_SETTING_DEFAULTS: Record<string, string> = {
-  SESSION_GRACE_PERIOD_MINUTES: "10",
-  QR_TOKEN_TTL_SECONDS: "45",
-  QR_MODE: "STATIC",
-  GPS_RADIUS_METERS: "100",
-  GPS_SCHOOL_LAT: "-6.9345",
-  GPS_SCHOOL_LNG: "107.7223",
-  CREDIT_POINTS_ALPA_STUDENT: "-10",
-  CREDIT_POINTS_TERLAMBAT_STUDENT: "-3",
-  CREDIT_POINTS_ALPA_TEACHER: "-15",
-  CREDIT_POINTS_TERLAMBAT_TEACHER: "-5",
-  CREDIT_SCORE_BASE: "100",
-  CREDIT_SCORE_THRESHOLD_WARNING: "70",
-  CREDIT_SCORE_THRESHOLD_CRITICAL: "40",
-  IZIN_SAKIT_APPROVAL_REQUIRED: "true",
-  MAX_WEEKLY_HOURS: "24",
-};
+export const ATTENDANCE_SETTING_DEFAULTS: Record<string, string> =
+  Object.fromEntries(
+    ATTENDANCE_SETTING_DEFINITIONS.map((definition) => [
+      definition.key,
+      definition.value,
+    ]),
+  );
 
 function toNumber(value: string | undefined, fallback: string): number {
   const parsed = Number(value ?? fallback);
   return Number.isFinite(parsed) ? parsed : Number(fallback);
+}
+
+function toScanMode(value: string | undefined): AttendanceScanMode {
+  return (ATTENDANCE_SCAN_MODE_VALUES as readonly string[]).includes(
+    value ?? "",
+  )
+    ? (value as AttendanceScanMode)
+    : "BOTH";
 }
 
 /**
@@ -54,6 +55,7 @@ export async function getAttendanceSettings(): Promise<AttendanceSettings> {
       d.QR_TOKEN_TTL_SECONDS,
     ),
     qrMode: get("QR_MODE") === "DYNAMIC" ? "DYNAMIC" : "STATIC",
+    scanMode: toScanMode(get("ATTENDANCE_SCAN_MODE")),
     gpsRadiusMeters: toNumber(get("GPS_RADIUS_METERS"), d.GPS_RADIUS_METERS),
     gpsSchoolLat: toNumber(get("GPS_SCHOOL_LAT"), d.GPS_SCHOOL_LAT),
     gpsSchoolLng: toNumber(get("GPS_SCHOOL_LNG"), d.GPS_SCHOOL_LNG),

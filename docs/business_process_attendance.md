@@ -35,6 +35,10 @@ Store these as system settings, editable by Admin — do not hardcode values in 
 - `CREDIT_SCORE_THRESHOLD_WARNING` — e.g. 70 (triggers notification)
 - `CREDIT_SCORE_THRESHOLD_CRITICAL` — e.g. 40 (triggers escalation to BK/Wakasek)
 - `IZIN_SAKIT_APPROVAL_REQUIRED` — boolean, whether Wali Kelas must approve before deduction is skipped
+- `ATTENDANCE_SCAN_MODE` — which direction scanning runs in (default: `BOTH`):
+  - `STUDENT_SCAN` — students scan the session QR from their own phones (Process 2)
+  - `TEACHER_SCAN` — the teacher scans each student's ID card (Process 2b)
+  - `BOTH` — either is accepted; each student is recorded by whichever happens first
 
 ---
 
@@ -103,6 +107,32 @@ Validate in this exact order — stop and return specific error at first failure
 7. Write `StudentAttendance` record: `session_id, student_id, status, scan_time, gps_lat, gps_lng, gps_valid, needs_review, method`.
 
 **Teacher-side reconciliation:** Teacher's live session view lists all scans in real time, with `needs_review` entries highlighted. Teacher can manually override any status (e.g. confirm a flagged GPS scan as valid, or mark a non-scanner as Izin if verbally informed).
+
+---
+
+## 4b. Process 2b — Student Attendance Capture (Teacher Scans ID Card)
+
+**Trigger:** Teacher scans a student's ID card from the live session view. Available when `ATTENDANCE_SCAN_MODE` is `TEACHER_SCAN` or `BOTH`.
+
+**Why it exists:** Process 2 assumes every student has a phone in class, and its session QR can be screenshotted and forwarded to an absent student — GPS is the only defense and it is deliberately soft. Here the teacher holds the only device and is looking at the student while scanning, so presence is verified by a human rather than by coordinates.
+
+Same validation order as Process 2, minus GPS:
+
+1. **Session check:** session exists and `status = open` → else `"Tidak ada sesi aktif"`.
+2. **Mode check:** `ATTENDANCE_SCAN_MODE ≠ STUDENT_SCAN` → else `"Mode presensi saat ini tidak mengizinkan scan kartu"`.
+3. **Card lookup:** `Student.cardToken` matches the scanned QR — or `nis` when the teacher types it in because the card is missing → else `"Kartu tidak dikenal"` / `"NIS tidak ditemukan"`.
+4. **Enrollment check:** student is `AKTIF` and belongs to this session's class → else `"Tidak terdaftar di kelas ini"`.
+5. **Duplicate check:** idempotent — reported back as "sudah tercatat", no second record, not an error.
+6. **Time evaluation:** identical grace-period rule as Process 2 (`Hadir` / `Terlambat`).
+7. Write `StudentAttendance` with `method = CARD`, `scan_time`, and **no GPS fields**; `needs_review` is never set, so nothing lands in the teacher's confirmation queue.
+
+**Student side:** when the mode is `TEACHER_SCAN` or `BOTH`, the student dashboard shows "Kartu Presensi Saya" — the same `cardToken` rendered on screen, so a student who left the printed card at home can still be scanned. The token is minted on first view if Admin has not printed the class yet. Under `TEACHER_SCAN` the student's own scanner is hidden, since the API would reject it anyway (step 2).
+
+**Card lifecycle:**
+
+- **Mint** — `Student.cardToken` is an opaque random token (same generator as the session QR), created per class from Admin → Kartu Siswa. Idempotent: students who already hold a card keep their token when a class is reprinted.
+- **Print** — Admin → Kartu Siswa renders an ID-1 (85.6 × 54 mm) sheet per class with photo (`User.avatar`), name, NIS, class and the QR.
+- **Revoke** — "Terbitkan Ulang Kartu" regenerates the token, so a lost card stops working immediately; the student's identity, NIS and history are untouched.
 
 ---
 

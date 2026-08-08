@@ -26,6 +26,7 @@ import {
   UserCog,
   Bot,
   Share2,
+  IdCard,
 } from "lucide-react";
 
 import {
@@ -139,6 +140,11 @@ const managementMenuItems: SidebarNavItem[] = [
     title: ENTITY_LABELS.STUDENT,
     url: "/admin/siswa",
     icon: Users,
+  },
+  {
+    title: `Kartu ${ENTITY_LABELS.STUDENT}`,
+    url: "/admin/siswa/kartu",
+    icon: IdCard,
   },
   {
     title: ENTITY_LABELS.TEACHER,

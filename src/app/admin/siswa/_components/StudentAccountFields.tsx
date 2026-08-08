@@ -1,6 +1,8 @@
 "use client";
 
+import { Controller } from "react-hook-form";
 import { Input } from "@/src/components/ui/input";
+import { ImageUpload } from "@/src/app/admin/_components/ImageUpload";
 import { STUDENT_SHEET_COLUMNS } from "@/src/features/master/constants";
 import {
   nullableField,
@@ -15,6 +17,7 @@ interface StudentAccountFieldsProps extends StudentFieldGroupProps {
 
 export function StudentAccountFields({
   register,
+  control,
   errors,
   isEdit,
 }: StudentAccountFieldsProps) {
@@ -23,6 +26,25 @@ export function StudentAccountFields({
       <legend className="text-foreground mb-2 text-sm font-semibold">
         Akun
       </legend>
+      <div className="sm:col-span-2">
+        <StudentField
+          label="Foto"
+          error={errors.avatar?.message}
+          hint="Dicetak pada kartu siswa — kosongkan untuk memakai inisial nama"
+        >
+          <Controller
+            control={control}
+            name="avatar"
+            render={({ field }) => (
+              <ImageUpload
+                value={field.value ?? ""}
+                folder="students"
+                onChange={(url) => field.onChange(url || null)}
+              />
+            )}
+          />
+        </StudentField>
+      </div>
       <StudentField
         label={STUDENT_SHEET_COLUMNS.name}
         error={errors.name?.message}

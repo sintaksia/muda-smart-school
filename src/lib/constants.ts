@@ -183,6 +183,27 @@ export const qrModeOptions = [
   { value: "DYNAMIC", label: "Dinamis (QR berganti berkala)" },
 ] as const;
 
+/**
+ * Which direction attendance scanning runs in. STUDENT_SCAN keeps the original
+ * flow (student scans the session QR); TEACHER_SCAN has the teacher scan each
+ * student's ID card; BOTH offers either.
+ */
+export const attendanceScanModeOptions = [
+  { value: "STUDENT_SCAN", label: `${ENTITY_LABELS.STUDENT} scan QR sesi` },
+  {
+    value: "TEACHER_SCAN",
+    label: `${ENTITY_LABELS.TEACHER} scan kartu ${ENTITY_LABELS.STUDENT.toLowerCase()}`,
+  },
+  { value: "BOTH", label: "Keduanya" },
+] as const;
+
+export const ATTENDANCE_SCAN_MODE_VALUES = attendanceScanModeOptions.map(
+  (o) => o.value,
+);
+
+export const ATTENDANCE_SCAN_MODE_LABELS: Record<string, string> =
+  Object.fromEntries(attendanceScanModeOptions.map((o) => [o.value, o.label]));
+
 /** For settings persisted as the strings "true"/"false". */
 export const booleanSettingOptions = [
   { value: "true", label: "Ya" },

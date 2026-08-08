@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/src/lib/prisma";
-import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
+import { authorizeSessionAccess } from "@/src/features/attendance/services/sessionAccess";
 import {
   closeSession,
   refreshQrToken,
@@ -33,35 +32,6 @@ const patchSchema = z.discriminatedUnion("action", [
     catatan: z.string().optional(),
   }),
 ]);
-
-async function authorizeSessionAccess(
-  sesiId: string,
-): Promise<{ status: number; error?: string }> {
-  const currentUser = await getCurrentUser();
-  if (!currentUser) {
-    return { status: 401, error: "Unauthorized" };
-  }
-  if (canAccessAdmin(currentUser.role)) {
-    return { status: 200 };
-  }
-  const teacher = await prisma.teacher.findUnique({
-    where: { userId: currentUser.id },
-  });
-  if (!teacher) {
-    return { status: 403, error: "Unauthorized" };
-  }
-  const session = await prisma.session.findUnique({
-    where: { id: sesiId },
-    include: { schedule: { select: { teacherId: true } } },
-  });
-  if (!session) {
-    return { status: 404, error: "Sesi tidak ditemukan" };
-  }
-  const isOwner =
-    session.schedule.teacherId === teacher.id ||
-    session.actualTeacherId === teacher.id;
-  return isOwner ? { status: 200 } : { status: 403, error: "Unauthorized" };
-}
 
 // GET /api/attendance/sessions/[id] - live session view (Process 2)
 export async function GET(request: Request, { params }: RouteParams) {

@@ -65,6 +65,8 @@ export interface StudentProfileInput {
 
 export interface CreateStudentInput extends StudentProfileInput {
   name: string;
+  /** Photo URL shown on the printed ID card; stored on User.avatar. */
+  avatar?: string | null;
   email: string;
   /** Omit to derive the default password from the NIS. */
   password?: string;
@@ -79,6 +81,7 @@ export interface CreateStudentInput extends StudentProfileInput {
 
 export interface UpdateStudentInput extends StudentProfileInput {
   name?: string;
+  avatar?: string | null;
   phone?: string | null;
   nis?: string;
   nisn?: string;
@@ -96,6 +99,7 @@ export interface StudentRow extends StudentProfileInput {
   id: string;
   userId: string;
   name: string;
+  avatar: string | null;
   email: string;
   phone: string | null;
   nis: string;

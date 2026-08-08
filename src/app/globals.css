@@ -464,3 +464,18 @@
   border-top: 1px solid var(--border);
   margin: 1rem 0;
 }
+
+/*
+ * Print sheets (e.g. student ID cards). App chrome opts out with Tailwind's
+ * `print:hidden`; these rules just flatten the page so cards land on paper
+ * at their true physical size.
+ */
+@media print {
+  body {
+    background: #fff;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+}

@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, KeyRound, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import {
+  Eye,
+  IdCard,
+  KeyRound,
+  MoreHorizontal,
+  Pencil,
+  RefreshCw,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -27,6 +35,28 @@ export function StudentActions({ student, onEdit }: StudentActionsProps) {
   const [showDelete, setShowDelete] = useState<boolean>(false);
   const [showResetPassword, setShowResetPassword] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isReissuing, setIsReissuing] = useState<boolean>(false);
+
+  /** Mint a new card token, revoking whatever card is currently out there. */
+  async function reissueCard(): Promise<void> {
+    setIsReissuing(true);
+    try {
+      const response = await fetch("/api/master/students/cards", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId: student.id }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error ?? "Gagal menerbitkan ulang kartu");
+      }
+      toast.success("Kartu lama tidak berlaku — cetak ulang kartu siswa ini");
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Terjadi kesalahan");
+    } finally {
+      setIsReissuing(false);
+    }
+  }
 
   async function handleDelete(): Promise<void> {
     setIsDeleting(true);
@@ -73,6 +103,20 @@ export function StudentActions({ student, onEdit }: StudentActionsProps) {
           <DropdownMenuItem onClick={() => setShowResetPassword(true)}>
             <KeyRound className="mr-2 h-4 w-4" />
             Reset Password
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() =>
+              router.push(`/admin/siswa/kartu?classId=${student.classId ?? ""}`)
+            }
+            disabled={!student.classId}
+          >
+            <IdCard className="mr-2 h-4 w-4" />
+            Cetak Kartu
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={reissueCard} disabled={isReissuing}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {isReissuing ? "Menerbitkan..." : "Terbitkan Ulang Kartu"}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem

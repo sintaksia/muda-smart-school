@@ -48,6 +48,8 @@ const profileFields = {
 };
 
 export const createStudentSchema = z.object({
+  /** Photo URL for the student ID card; lives on the User record. */
+  avatar: optionalText,
   name: z.string({ message: "Nama wajib diisi" }).trim().min(3, {
     message: "Nama minimal 3 karakter",
   }),
@@ -74,6 +76,7 @@ export const createStudentSchema = z.object({
 });
 
 export const updateStudentSchema = z.object({
+  avatar: optionalText,
   name: z
     .string()
     .trim()

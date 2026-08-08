@@ -28,9 +28,12 @@ export default async function AdminLayout({
 
   return (
     <SidebarProvider>
-      <AdminSidebar user={user} />
+      {/* Chrome is hidden when printing (e.g. the student card sheet). */}
+      <div className="print:hidden">
+        <AdminSidebar user={user} />
+      </div>
       <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 print:hidden">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <span className="text-sm font-medium">Admin Panel</span>

@@ -7,7 +7,7 @@ import type { SchoolSetting } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
   prisma: {
-    schoolSetting: { findMany: vi.fn(), update: vi.fn() },
+    schoolSetting: { findMany: vi.fn(), upsert: vi.fn() },
   },
 }));
 vi.mock("@/src/features/auth/services/auth", () => ({
@@ -44,7 +44,7 @@ describe("PUT /api/attendance/settings", () => {
       id: "admin-1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(prisma.schoolSetting.update).mockResolvedValue(
+    vi.mocked(prisma.schoolSetting.upsert).mockResolvedValue(
       {} as SchoolSetting,
     );
 
@@ -55,7 +55,7 @@ describe("PUT /api/attendance/settings", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(prisma.schoolSetting.update).toHaveBeenCalledTimes(2);
+    expect(prisma.schoolSetting.upsert).toHaveBeenCalledTimes(2);
   });
 
   it("rejects unknown keys", async () => {
@@ -68,6 +68,6 @@ describe("PUT /api/attendance/settings", () => {
       buildRequest({ settings: { HACK_THE_PLANET: "yes" } }),
     );
     expect(response.status).toBe(400);
-    expect(prisma.schoolSetting.update).not.toHaveBeenCalled();
+    expect(prisma.schoolSetting.upsert).not.toHaveBeenCalled();
   });
 });

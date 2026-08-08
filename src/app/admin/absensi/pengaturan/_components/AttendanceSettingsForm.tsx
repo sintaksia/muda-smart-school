@@ -7,7 +7,20 @@ import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { SelectField } from "@/src/components/common/SelectField";
 import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
-import { booleanSettingOptions, qrModeOptions } from "@/src/lib/constants";
+import {
+  attendanceScanModeOptions,
+  booleanSettingOptions,
+  qrModeOptions,
+} from "@/src/lib/constants";
+
+/** Settings whose value comes from a fixed options list rather than free text. */
+const SELECT_OPTIONS_BY_KEY: Record<
+  string,
+  readonly { value: string; label: string }[]
+> = {
+  QR_MODE: qrModeOptions,
+  ATTENDANCE_SCAN_MODE: attendanceScanModeOptions,
+};
 
 interface SettingRow {
   key: string;
@@ -61,9 +74,7 @@ export function AttendanceSettingsForm({
     const options =
       setting.type === "BOOLEAN"
         ? booleanSettingOptions
-        : setting.key === "QR_MODE"
-          ? qrModeOptions
-          : null;
+        : (SELECT_OPTIONS_BY_KEY[setting.key] ?? null);
 
     if (options) {
       return (

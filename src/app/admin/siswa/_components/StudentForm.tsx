@@ -31,6 +31,7 @@ interface StudentFormProps {
 function toDefaultValues(student: StudentRow | null): CreateStudentFormData {
   return {
     name: student?.name ?? "",
+    avatar: student?.avatar ?? null,
     email: student?.email ?? "",
     password: "",
     phone: student?.phone ?? null,

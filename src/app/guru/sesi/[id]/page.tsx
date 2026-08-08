@@ -16,6 +16,7 @@ export default async function SesiLivePage({ params }: PageProps) {
       sessionId={id}
       qrMode={settings.qrMode}
       qrTtlSeconds={settings.qrTokenTtlSeconds}
+      scanMode={settings.scanMode}
     />
   );
 }

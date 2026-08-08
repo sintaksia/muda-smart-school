@@ -9,7 +9,15 @@ import type {
 } from "../types";
 
 const studentListInclude = {
-  user: { select: { name: true, email: true, phone: true, status: true } },
+  user: {
+    select: {
+      name: true,
+      email: true,
+      phone: true,
+      status: true,
+      avatar: true,
+    },
+  },
   schoolClass: { select: { id: true, name: true } },
 } satisfies Prisma.StudentInclude;
 
@@ -126,6 +134,7 @@ export async function createStudent(
       name: input.name,
       role: "STUDENT",
       phone: input.phone ?? undefined,
+      avatar: input.avatar ?? undefined,
     },
     createdById,
   );
@@ -179,10 +188,14 @@ export async function updateStudent(
     return { student: null, error: "Kelas tidak ditemukan" };
   }
 
-  if (input.name !== undefined || input.phone !== undefined) {
+  if (
+    input.name !== undefined ||
+    input.phone !== undefined ||
+    input.avatar !== undefined
+  ) {
     await prisma.user.update({
       where: { id: existing.userId },
-      data: { name: input.name, phone: input.phone },
+      data: { name: input.name, phone: input.phone, avatar: input.avatar },
     });
   }
 

@@ -14,6 +14,7 @@ export function toStudentRow(student: StudentWithRelations): StudentRow {
     id: student.id,
     userId: student.userId,
     name: student.user.name,
+    avatar: student.user.avatar,
     email: student.user.email,
     phone: student.user.phone,
     nis: student.nis,

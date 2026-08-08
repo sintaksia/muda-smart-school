@@ -6,6 +6,12 @@ import type {
 } from "@prisma/client";
 
 /**
+ * Direction attendance scanning runs in. Values mirror
+ * `attendanceScanModeOptions` in src/lib/constants.ts.
+ */
+export type AttendanceScanMode = "STUDENT_SCAN" | "TEACHER_SCAN" | "BOTH";
+
+/**
  * Master rules (Process "Master Rules") — stored in SchoolSetting rows
  * (group = "attendance"), never hardcoded in business logic.
  */
@@ -14,6 +20,7 @@ export interface AttendanceSettings {
   qrTokenTtlSeconds: number;
   /** "STATIC" = one token per session, "DYNAMIC" = token rotates every TTL */
   qrMode: "STATIC" | "DYNAMIC";
+  scanMode: AttendanceScanMode;
   gpsRadiusMeters: number;
   gpsSchoolLat: number;
   gpsSchoolLng: number;
@@ -57,6 +64,27 @@ export interface ScanResult {
   ok: boolean;
   status?: AttendanceStatus;
   needsReview?: boolean;
+  error?: string;
+}
+
+/**
+ * Teacher-side card scan. Exactly one of `cardToken` (read from the card QR)
+ * or `nis` (typed in when the card is missing) identifies the student.
+ */
+export interface CardScanInput {
+  sessionId: string;
+  cardToken?: string;
+  nis?: string;
+}
+
+export interface CardScanResult {
+  ok: boolean;
+  /** True when the student was already recorded — success, but no new row. */
+  duplicate?: boolean;
+  status?: AttendanceStatus;
+  studentId?: string;
+  studentName?: string;
+  nis?: string;
   error?: string;
 }
 

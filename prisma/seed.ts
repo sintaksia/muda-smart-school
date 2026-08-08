@@ -8,6 +8,8 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import { createClient } from "@supabase/supabase-js";
+// Relative import: this script runs outside Next's path aliases.
+import { ATTENDANCE_SETTING_DEFINITIONS } from "../src/features/attendance/constants";
 
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -29,104 +31,6 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
     persistSession: false,
   },
 });
-
-const ATTENDANCE_SETTINGS: {
-  key: string;
-  value: string;
-  label: string;
-  type: "NUMBER" | "TEXT" | "BOOLEAN";
-}[] = [
-  {
-    key: "SESSION_GRACE_PERIOD_MINUTES",
-    value: "10",
-    label: "Toleransi keterlambatan (menit)",
-    type: "NUMBER",
-  },
-  {
-    key: "QR_TOKEN_TTL_SECONDS",
-    value: "45",
-    label: "Interval refresh QR dinamis (detik)",
-    type: "NUMBER",
-  },
-  {
-    key: "QR_MODE",
-    value: "STATIC",
-    label: "Mode QR (STATIC/DYNAMIC)",
-    type: "TEXT",
-  },
-  {
-    key: "GPS_RADIUS_METERS",
-    value: "100",
-    label: "Radius GPS dari sekolah (meter)",
-    type: "NUMBER",
-  },
-  {
-    key: "GPS_SCHOOL_LAT",
-    value: "-6.9345",
-    label: "Latitude sekolah",
-    type: "NUMBER",
-  },
-  {
-    key: "GPS_SCHOOL_LNG",
-    value: "107.7223",
-    label: "Longitude sekolah",
-    type: "NUMBER",
-  },
-  {
-    key: "CREDIT_POINTS_ALPA_STUDENT",
-    value: "-10",
-    label: "Poin alpa siswa",
-    type: "NUMBER",
-  },
-  {
-    key: "CREDIT_POINTS_TERLAMBAT_STUDENT",
-    value: "-3",
-    label: "Poin terlambat siswa",
-    type: "NUMBER",
-  },
-  {
-    key: "CREDIT_POINTS_ALPA_TEACHER",
-    value: "-15",
-    label: "Poin alpa guru",
-    type: "NUMBER",
-  },
-  {
-    key: "CREDIT_POINTS_TERLAMBAT_TEACHER",
-    value: "-5",
-    label: "Poin terlambat guru",
-    type: "NUMBER",
-  },
-  {
-    key: "CREDIT_SCORE_BASE",
-    value: "100",
-    label: "Skor kredit awal",
-    type: "NUMBER",
-  },
-  {
-    key: "CREDIT_SCORE_THRESHOLD_WARNING",
-    value: "70",
-    label: "Ambang peringatan skor kredit",
-    type: "NUMBER",
-  },
-  {
-    key: "CREDIT_SCORE_THRESHOLD_CRITICAL",
-    value: "40",
-    label: "Ambang kritis skor kredit",
-    type: "NUMBER",
-  },
-  {
-    key: "IZIN_SAKIT_APPROVAL_REQUIRED",
-    value: "true",
-    label: "Izin/sakit wajib disetujui wali kelas",
-    type: "BOOLEAN",
-  },
-  {
-    key: "MAX_WEEKLY_HOURS",
-    value: "24",
-    label: "Batas jam mengajar mingguan",
-    type: "NUMBER",
-  },
-];
 
 const CREDIT_CATEGORIES: {
   ownerType: "STUDENT" | "TEACHER";
@@ -159,7 +63,7 @@ const CREDIT_CATEGORIES: {
 ];
 
 async function seedAttendanceSettings() {
-  for (const [index, setting] of ATTENDANCE_SETTINGS.entries()) {
+  for (const [index, setting] of ATTENDANCE_SETTING_DEFINITIONS.entries()) {
     await prisma.schoolSetting.upsert({
       where: { key: setting.key },
       update: {},
@@ -173,7 +77,9 @@ async function seedAttendanceSettings() {
       },
     });
   }
-  console.log(`Attendance settings seeded (${ATTENDANCE_SETTINGS.length})`);
+  console.log(
+    `Attendance settings seeded (${ATTENDANCE_SETTING_DEFINITIONS.length})`,
+  );
 }
 
 async function seedCreditCategories() {

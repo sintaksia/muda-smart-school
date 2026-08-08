@@ -7,6 +7,7 @@ import {
   ATTENDANCE_SETTINGS_GROUP,
   ATTENDANCE_SETTING_DEFAULTS,
 } from "@/src/features/attendance/services/settings";
+import { ATTENDANCE_SETTING_DEFINITIONS } from "@/src/features/attendance/constants";
 
 const updateSchema = z.object({
   settings: z.partialRecord(
@@ -59,7 +60,25 @@ export async function PUT(request: Request) {
       if (typeof value !== "string") {
         continue;
       }
-      await prisma.schoolSetting.update({ where: { key }, data: { value } });
+      // Upsert, not update: a rule added in code has no row until it is either
+      // seeded or saved here for the first time.
+      const definition = ATTENDANCE_SETTING_DEFINITIONS.find(
+        (item) => item.key === key,
+      );
+      await prisma.schoolSetting.upsert({
+        where: { key },
+        update: { value },
+        create: {
+          key,
+          value,
+          label: definition?.label ?? key,
+          type: definition?.type ?? "TEXT",
+          group: ATTENDANCE_SETTINGS_GROUP,
+          order: ATTENDANCE_SETTING_DEFINITIONS.findIndex(
+            (item) => item.key === key,
+          ),
+        },
+      });
     }
     return NextResponse.json({ ok: true });
   } catch (err: unknown) {

@@ -93,6 +93,11 @@ model Student {
   classId        String?        @map("class_id")
   status         StudentStatus  @default(AKTIF)
 
+  // Opaque token printed as the QR on the student's ID card. Regenerating it
+  // revokes a lost card without touching the student's identity.
+  cardToken    String?   @unique @map("card_token")
+  cardIssuedAt DateTime? @map("card_issued_at")
+
   // Personal profile. Nullable because students created from a Registration
   // carry this data on the registration record; students added manually or by
   // import fill it in here.
@@ -756,6 +761,7 @@ enum AttendanceStatus {
 enum AttendanceMethod {
   QR
   MANUAL
+  CARD
 }
 
 enum SessionStatus {

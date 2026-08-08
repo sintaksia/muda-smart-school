@@ -4,7 +4,10 @@ import { getCurrentUser } from "@/src/features/auth/services/auth";
 import { getCreditTotal } from "@/src/features/attendance/services/credit";
 import { ProfileNotLinkedNotice } from "@/src/components/common/ProfileNotLinkedNotice";
 import { ENTITY_LABELS } from "@/src/lib/constants";
+import { getAttendanceSettings } from "@/src/features/attendance/services/settings";
+import { getStudentCard } from "@/src/features/master/services/studentCard";
 import { ScanCard } from "./_components/ScanCard";
+import { StudentQrCard } from "./_components/StudentQrCard";
 import { CreditSummaryCard } from "./_components/CreditSummaryCard";
 import { AttendanceHistory } from "./_components/AttendanceHistory";
 import { IzinSection } from "./_components/IzinSection";
@@ -28,7 +31,8 @@ export default async function SiswaDashboardPage() {
     );
   }
 
-  const [total, history, izinList] = await Promise.all([
+  const settings = await getAttendanceSettings();
+  const [total, history, izinList, card] = await Promise.all([
     getCreditTotal("STUDENT", student.id),
     prisma.studentAttendance.findMany({
       where: { studentId: student.id },
@@ -43,12 +47,16 @@ export default async function SiswaDashboardPage() {
       orderBy: { createdAt: "desc" },
       take: 10,
     }),
+    settings.scanMode === "STUDENT_SCAN"
+      ? Promise.resolve(null)
+      : getStudentCard(student.id),
   ]);
 
   return (
     <div className="space-y-6">
       <CreditSummaryCard total={total} name={user.name} />
-      <ScanCard />
+      {card && <StudentQrCard card={card} />}
+      {settings.scanMode !== "TEACHER_SCAN" && <ScanCard />}
       <IzinSection
         submissions={izinList.map((izin) => ({
           id: izin.id,

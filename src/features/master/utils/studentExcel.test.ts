@@ -22,6 +22,7 @@ function student(overrides: Partial<StudentRow> = {}): StudentRow {
     userId: "u1",
     classId: "k1",
     name: "Budi Santoso",
+    avatar: null,
     email: "budi@contoh.sch.id",
     nis: "2024001",
     nisn: "0091234567",

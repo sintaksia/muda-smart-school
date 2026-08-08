@@ -8,6 +8,24 @@ import { isQrTokenExpired } from "../utils/qr";
 import { wibInstant } from "../utils/time";
 
 /**
+ * PRESENT until the grace period after the scheduled start has passed, LATE
+ * after it. Shared by both scan directions so one rule governs lateness.
+ */
+export function resolveScanStatus(
+  sessionDate: Date,
+  scheduleStartTime: string,
+  gracePeriodMinutes: number,
+  now: Date,
+): AttendanceStatus {
+  const dateISO = sessionDate.toISOString().slice(0, 10);
+  const graceCutoff = new Date(
+    wibInstant(dateISO, scheduleStartTime).getTime() +
+      gracePeriodMinutes * 60 * 1000,
+  );
+  return now <= graceCutoff ? "PRESENT" : "LATE";
+}
+
+/**
  * Process 2 — student QR scan. Validations run in the documented order and
  * stop at the first failure with its specific error.
  */
@@ -62,12 +80,12 @@ export async function recordScan(
   }
 
   // 5. Time evaluation
-  const dateISO = session.date.toISOString().slice(0, 10);
-  const graceCutoff = new Date(
-    wibInstant(dateISO, session.schedule.startTime).getTime() +
-      settings.sessionGracePeriodMinutes * 60 * 1000,
+  const status = resolveScanStatus(
+    session.date,
+    session.schedule.startTime,
+    settings.sessionGracePeriodMinutes,
+    now,
   );
-  const status: AttendanceStatus = now <= graceCutoff ? "PRESENT" : "LATE";
 
   // 6. GPS evaluation — soft check, never blocks.
   const gps = evaluateGps(

@@ -87,41 +87,6 @@ className = "bg-yellow-400 text-yellow-950";
 
 ---
 
-## Folder Structure - STRICTLY FOLLOW
-
-```
-src/
-├── app/                          # Next.js App Router - routes ONLY
-│   ├── (public)/                 # Public pages group
-│   │   ├── page.tsx
-│   │   ├── courses/
-│   │   │   ├── page.tsx
-│   │   │   ├── [id]/page.tsx
-│   │   │   └── _components/      # Page-specific components ONLY
-│   │   └── layout.tsx
-│   ├── (dashboard)/              # Protected pages group
-│   │   ├── dashboard/
-│   │   ├── courses/
-│   │   │   └── _components/      # Page-specific components ONLY
-│   │   └── layout.tsx
-│   └── api/                      # API routes
-│       └── [feature]/
-├── features/                     # Business logic by domain
-│   └── [feature-name]/
-│       ├── components/           # Shared within feature (2+ uses)
-│       ├── hooks/
-│       ├── services/             # API calls
-│       ├── types/                # TypeScript interfaces
-│       └── utils/
-├── components/                   # Global shared components
-│   ├── ui/                       # Shadcn components
-│   ├── layout/                   # Header, Footer, Sidebar
-│   └── common/                   # LoadingSpinner, ErrorMessage
-└── lib/                          # Global utilities, DB client
-```
-
----
-
 ## Component Placement Rules - CRITICAL
 
 ### Rule 1: Page-Specific Components
@@ -180,40 +145,10 @@ If you ever find existing duplicate code while working in a file, extract and co
 
 ---
 
-## Technology Stack
+## Package Manager
 
-| Category        | Technology                          |
-| --------------- | ----------------------------------- |
-| Framework       | Next.js 14+ (App Router)            |
-| Language        | TypeScript (strict mode)            |
-| Styling         | Tailwind CSS + Shadcn/ui            |
-| Icons           | Lucide React                        |
-| Database        | Prisma ORM + Supabase PostgreSQL    |
-| Forms           | React Hook Form + Zod               |
-| Server State    | React Query (@tanstack/react-query) |
-| Client State    | Zustand (if needed)                 |
-| Package Manager | pnpm (ALWAYS use pnpm, NOT npm)     |
-
----
-
-## Package Manager - STRICTLY FOLLOW
-
-**ALWAYS use pnpm and pnpx instead of npm and npx:**
-
-```bash
-# Installing packages
-pnpm install           # NOT npm install
-pnpm add <package>     # NOT npm install <package>
-pnpm add -D <package>  # NOT npm install -D <package>
-
-# Running scripts
-pnpm dev               # NOT npm run dev
-pnpm build             # NOT npm run build
-
-# Running CLI tools
-pnpx prisma migrate dev    # NOT npx prisma migrate dev
-pnpx prisma generate       # NOT npx prisma generate
-```
+Use **pnpm** and **pnpx** — never `npm`/`npx`. CLI tools go through `pnpx`
+(e.g. `pnpx prisma generate`).
 
 ---
 
@@ -318,6 +253,14 @@ z.number({ invalid_type_error: "Must be a number" });
 
 ---
 
+## Admin CMS Features
+
+Building or restructuring anything under `src/app/admin/cms/`? Invoke the
+`cms-scaffold` skill — it carries the folder shape, file naming, service layer
+and API route conventions for a CMS feature.
+
+---
+
 ## Enum / Status Single Source of Truth — STRICTLY FOLLOW
 
 For any value backed by a Prisma enum (e.g. `StatusPendaftaran`, `UserStatus`, `StudentStatus`), **never** hardcode its valid values, labels, or badge/color variants in more than one place. Define an options array once in `src/lib/constants.ts` and derive every label map, badge-variant map, and "is valid" check from it.
@@ -388,56 +331,12 @@ Run `pnpm test:run` before marking any task complete.
 
 ---
 
-## Red Flags - NEVER DO
-
-- Putting page-specific components in `features/`
-- Duplicating types across features
-- Creating new components without checking `components/ui/`
-- Using `any` type
-- Skipping Zod validation in API routes
-- Not using Prisma client singleton
-- Mixing server and client components incorrectly
-
----
-
-## Before Creating Any Component - ASK:
-
-1. Where will this component be used?
-2. Does a similar component exist?
-3. What's the feature domain?
-4. Should this use an existing Shadcn component?
-5. Does this need to be a server or client component?
-
----
-
 ## Component Splitting Rules - STRICTLY FOLLOW
 
 ### Rule 1: Split by Section
 
-Each distinct section of a page should be its own component.
-
-```tsx
-// ✅ GOOD - page.tsx is clean, sections are split
-export default function ProfilPage() {
-  return (
-    <main>
-      <HeroSection />
-      <VisionMissionSection />
-      <FacilitiesSection />
-    </main>
-  );
-}
-
-// ❌ BAD - everything in one file
-export default function ProfilPage() {
-  return (
-    <main>
-      <section>{/* 100 lines of hero */}</section>
-      <section>{/* 100 lines of vision */}</section>
-    </main>
-  );
-}
-```
+Each distinct section of a page should be its own component — a page file
+composes sections, it never inlines them.
 
 ### Rule 2: Component Naming Convention
 
@@ -458,192 +357,6 @@ export default function ProfilPage() {
 
 ---
 
-## Admin CMS Page Structure - STRICTLY FOLLOW
-
-### Folder Structure for CMS Pages
-
-```
-src/app/admin/cms/[feature]/
-├── page.tsx                    # Main list page (server component)
-├── [id]/
-│   └── page.tsx               # Edit page
-├── create/
-│   └── page.tsx               # Create page
-└── _components/
-    ├── [Feature]Table.tsx     # Data table component
-    ├── [Feature]Form.tsx      # Create/Edit form
-    ├── [Feature]Card.tsx      # Card view (if needed)
-    ├── [Feature]Actions.tsx   # Row actions (edit, delete)
-    ├── [Feature]Columns.tsx   # Table column definitions
-    ├── [Feature]Schema.tsx    # Zod validation schema
-    └── Delete[Feature]Dialog.tsx  # Delete confirmation
-```
-
-### Example: News CMS Structure
-
-```
-src/app/admin/cms/news/
-├── page.tsx                   # List all news
-├── [id]/
-│   └── page.tsx              # Edit news
-├── create/
-│   └── page.tsx              # Create news
-└── _components/
-    ├── NewsTable.tsx
-    ├── NewsForm.tsx
-    ├── NewsColumns.tsx
-    ├── NewsActions.tsx
-    ├── NewsSchema.ts
-    └── DeleteNewsDialog.tsx
-```
-
-### CMS Page Patterns
-
-#### List Page (page.tsx)
-
-```tsx
-// Server component - fetches data
-import { NewsTable } from "./_components/NewsTable";
-import { getNews } from "@/src/features/cms/services/news";
-
-export default async function NewsPage() {
-  const news = await getNews();
-
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Berita"
-        description="Kelola berita dan pengumuman"
-        action={<CreateButton href="/admin/cms/news/create" />}
-      />
-      <NewsTable data={news} />
-    </div>
-  );
-}
-```
-
-#### Form Component Pattern
-
-```tsx
-// Client component - handles form
-"use client";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { newsSchema, type NewsFormData } from "./NewsSchema";
-
-export function NewsForm({ defaultValues, onSubmit }: NewsFormProps) {
-  const form = useForm<NewsFormData>({
-    resolver: zodResolver(newsSchema),
-    defaultValues,
-  });
-
-  return <Form {...form}>{/* form fields */}</Form>;
-}
-```
-
----
-
-## Features Folder for CMS - Business Logic
-
-```
-src/features/cms/
-├── services/                  # API/Database calls
-│   ├── news.ts
-│   ├── programs.ts
-│   ├── testimonials.ts
-│   └── ...
-├── types/                     # Shared TypeScript types
-│   └── index.ts
-└── utils/                     # CMS utilities
-    └── slug.ts
-```
-
-### Service Pattern
-
-```tsx
-// src/features/cms/services/news.ts
-import { prisma } from "@/src/lib/prisma";
-
-export async function getNews() {
-  return prisma.news.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-}
-
-export async function getNewsById(id: string) {
-  return prisma.news.findUnique({ where: { id } });
-}
-
-export async function createNews(data: CreateNewsInput) {
-  return prisma.news.create({ data });
-}
-
-export async function updateNews(id: string, data: UpdateNewsInput) {
-  return prisma.news.update({ where: { id }, data });
-}
-
-export async function deleteNews(id: string) {
-  return prisma.news.delete({ where: { id } });
-}
-```
-
----
-
-## Shared Admin Components
-
-Place reusable admin components in:
-
-```
-src/app/admin/_components/
-├── AdminSidebar.tsx           # Already exists
-├── PageHeader.tsx             # Page title + action button
-├── DataTable.tsx              # Generic data table wrapper
-├── DeleteDialog.tsx           # Reusable delete confirmation
-├── FormCard.tsx               # Card wrapper for forms
-├── StatusBadge.tsx            # Active/Inactive badge
-└── ImageUpload.tsx            # Image upload component
-```
-
----
-
-## API Routes for CMS
-
-```
-src/app/api/cms/
-├── news/
-│   ├── route.ts              # GET (list), POST (create)
-│   └── [id]/
-│       └── route.ts          # GET, PUT, DELETE
-├── programs/
-│   ├── route.ts
-│   └── [id]/route.ts
-└── ...
-```
-
-### API Route Pattern
-
-```tsx
-// src/app/api/cms/news/route.ts
-import { NextResponse } from "next/server";
-import { prisma } from "@/src/lib/prisma";
-import { newsSchema } from "@/src/app/admin/cms/news/_components/NewsSchema";
-
-export async function GET() {
-  const news = await prisma.news.findMany();
-  return NextResponse.json(news);
-}
-
-export async function POST(request: Request) {
-  const body = await request.json();
-  const validated = newsSchema.parse(body);
-  const news = await prisma.news.create({ data: validated });
-  return NextResponse.json(news, { status: 201 });
-}
-```
-
----
-
 ## World-Class Code Standards - STRICTLY FOLLOW
 
 Every change must meet these bars before it's considered done. This is not optional polish — it's the baseline.
@@ -653,10 +366,7 @@ Every change must meet these bars before it's considered done. This is not optio
 - **Default to Server Components.** Only add `"use client"` when the component needs interactivity (state, effects, browser APIs, event handlers). Push `"use client"` as far down the tree as possible — wrap just the interactive leaf, not the whole page.
 - **Fetch data where it's used, in parallel.** Use `Promise.all` for independent queries in a server component (see `AdminPage` pattern) instead of sequential `await`s.
 - **Every route segment that does async data fetching must have a `loading.tsx`** (reusing a shared loading component per the DRY rule) so navigation always gives instant feedback — never a silent, unresponsive gap.
-- **Memoize expensive client-side work.** Use `useMemo`/`useCallback` for derived data or callbacks passed to memoized children — but don't wrap trivial values/functions in them where the cost of memoizing exceeds the cost of recomputing.
-- **Avoid N+1 queries.** Use Prisma `include`/`select` to fetch related data in one query instead of looping and querying per-row.
 - **Paginate or limit any list that can grow unbounded** (tables, feeds) — never `findMany()` without a `take`/cursor on data that isn't inherently small and fixed.
-- **Images:** always use `next/image`, never a raw `<img>`, so sizing/lazy-loading/format optimization is automatic.
 
 ### 2. Error Handling & Resilience
 
@@ -678,10 +388,8 @@ Every change must meet these bars before it's considered done. This is not optio
 ### 4. Self-Review Checklist — run before marking any task complete
 
 1. **DRY check:** did I duplicate any component, constant, type, or util that already exists or that I just wrote elsewhere? Extract if so.
-2. **Types:** no `any`, all function params/returns typed, `catch` blocks typed `unknown`.
-3. **States covered:** loading / empty / error / success all handled for any new async UI.
-4. **Validation & auth:** every new API route / Server Action validates input with Zod and checks auth before mutating data.
-5. **Tests:** new files under `src/features/` or `src/app/api/` have a corresponding `.test.ts` with at least one happy-path and one error-case test.
-6. **Lint & types pass:** run `pnpm lint` and `pnpm test:run` (or the project's typecheck script) — don't hand off code that doesn't pass.
-7. **File size / structure:** no component over ~150 lines; sections split per Component Splitting Rules; files placed per Folder Structure and Component Placement Rules.
-8. **No dead code:** remove unused imports, commented-out blocks, and superseded duplicate helpers touched during the change.
+2. **States covered:** loading / empty / error / success all handled for any new async UI.
+3. **Validation & auth:** every new API route / Server Action validates input with Zod and checks auth before mutating data.
+4. **Tests:** new files under `src/features/` or `src/app/api/` have a corresponding `.test.ts` with at least one happy-path and one error-case test.
+5. **Lint & types pass:** run `pnpm lint` and `pnpm test:run` (or the project's typecheck script) — don't hand off code that doesn't pass.
+6. **No dead code:** remove unused imports, commented-out blocks, and superseded duplicate helpers touched during the change.

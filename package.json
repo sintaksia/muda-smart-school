@@ -13,7 +13,7 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
-    "lint:ci": "eslint --max-warnings 55",
+    "lint:ci": "eslint --max-warnings 54",
     "prepare": "husky",
     "db:seed": "pnpx prisma db seed",
     "release": "release-it",
