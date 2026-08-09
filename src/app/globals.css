@@ -376,6 +376,17 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Tailwind preflight resets buttons to cursor:default — every clickable
+     surface should read as clickable. Single source for the whole app. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary {
+    cursor: pointer;
+  }
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
 }
 
 /* Tiptap Editor Content Styles */

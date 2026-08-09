@@ -55,7 +55,7 @@ export function RosterRow({
             variant="ghost"
             size="sm"
             onClick={() => onConfirmGps(record.id)}
-            className="text-yellow-600 h-auto gap-1 px-1 py-0 text-xs font-semibold hover:bg-transparent hover:opacity-80"
+            className="text-yellow-600 hover:text-yellow-600 hover:bg-yellow-600/10 gap-1 px-2 text-xs font-semibold"
             title="GPS di luar radius — klik untuk konfirmasi"
           >
             <MapPinOff className="h-4 w-4" strokeWidth={1.75} />
@@ -70,9 +70,9 @@ export function RosterRow({
             <Button
               type="button"
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               onClick={() => onRequestDelete(record, student.user.name)}
-              className="text-destructive h-auto px-1 py-0 hover:bg-transparent hover:opacity-80"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full"
               title="Hapus presensi (salah scan)"
               aria-label={`Hapus presensi ${student.user.name}`}
             >
