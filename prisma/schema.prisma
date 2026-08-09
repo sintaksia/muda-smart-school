@@ -748,6 +748,7 @@ enum DayOfWeek {
   THURSDAY
   FRIDAY
   SATURDAY
+  SUNDAY
 }
 
 enum AttendanceStatus {

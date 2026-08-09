@@ -20,9 +20,6 @@ export async function GET() {
     }
 
     const { dateISO, dayOfWeek } = toWibParts(new Date());
-    if (!dayOfWeek) {
-      return NextResponse.json({ date: dateISO, jadwal: [] });
-    }
 
     let teacherFilter: { teacherId?: string } = {};
     if (!canAccessAdmin(currentUser.role)) {

@@ -79,6 +79,7 @@ describe("buildClassMatrix", () => {
       "Kamis",
       "Jumat",
       "Sabtu",
+      "Minggu",
     ]);
     expect(rows[1][0]).toBe("07:00–08:30");
     expect(rows[1][1]).toBe("Matematika — Budi");

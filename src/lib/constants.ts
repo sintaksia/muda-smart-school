@@ -311,6 +311,7 @@ export const dayOfWeekOptions = [
   { value: "THURSDAY", label: "Kamis" },
   { value: "FRIDAY", label: "Jumat" },
   { value: "SATURDAY", label: "Sabtu" },
+  { value: "SUNDAY", label: "Minggu" },
 ] as const;
 
 export const DAY_OF_WEEK_VALUES = dayOfWeekOptions.map((o) => o.value);

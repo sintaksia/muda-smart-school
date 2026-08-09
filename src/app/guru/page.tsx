@@ -26,17 +26,15 @@ export default async function GuruDashboardPage() {
   }
 
   const { dateISO, dayOfWeek } = toWibParts(new Date());
-  const jadwal = dayOfWeek
-    ? await prisma.schedule.findMany({
-        where: { dayOfWeek, isActive: true, teacherId: teacher.id },
-        include: {
-          schoolClass: { select: { name: true } },
-          subject: { select: { name: true } },
-          sessions: { where: { date: dateOnlyUtc(dateISO) } },
-        },
-        orderBy: { startTime: "asc" },
-      })
-    : [];
+  const jadwal = await prisma.schedule.findMany({
+    where: { dayOfWeek, isActive: true, teacherId: teacher.id },
+    include: {
+      schoolClass: { select: { name: true } },
+      subject: { select: { name: true } },
+      sessions: { where: { date: dateOnlyUtc(dateISO) } },
+    },
+    orderBy: { startTime: "asc" },
+  });
 
   return (
     <div className="space-y-6">
@@ -45,7 +43,7 @@ export default async function GuruDashboardPage() {
           Sesi Mengajar Hari Ini
         </h1>
         <p className="text-neutral-600 mt-1 text-sm">
-          {dayOfWeek ? DAY_OF_WEEK_LABELS[dayOfWeek] : "Minggu"}, {dateISO}
+          {DAY_OF_WEEK_LABELS[dayOfWeek]}, {dateISO}
         </p>
       </div>
       <SessionList

@@ -37,9 +37,6 @@ export async function reportTeacherAbsence(
 ): Promise<{ records: TeacherAttendance[]; error: string | null }> {
   const date = dateOnlyUtc(input.date);
   const dayOfWeek = dayOfWeekFromDateISO(input.date);
-  if (!dayOfWeek) {
-    return { records: [], error: "Tidak ada jadwal pada hari Minggu" };
-  }
 
   const jadwalList = await prisma.schedule.findMany({
     where: {
@@ -161,9 +158,6 @@ export async function detectMissedSessions(
 ): Promise<number> {
   const settings = await getAttendanceSettings();
   const { dateISO, dayOfWeek } = toWibParts(now);
-  if (!dayOfWeek) {
-    return 0;
-  }
   const date = dateOnlyUtc(dateISO);
 
   const jadwalList = await prisma.schedule.findMany({

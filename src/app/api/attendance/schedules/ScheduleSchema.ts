@@ -15,6 +15,7 @@ export const scheduleSchema = z.object({
       "THURSDAY",
       "FRIDAY",
       "SATURDAY",
+      "SUNDAY",
     ],
     { message: "Hari wajib dipilih" },
   ),

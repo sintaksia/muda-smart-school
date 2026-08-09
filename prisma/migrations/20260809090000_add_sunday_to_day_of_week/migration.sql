@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "DayOfWeek" ADD VALUE IF NOT EXISTS 'SUNDAY';

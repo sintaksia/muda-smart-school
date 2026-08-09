@@ -13,27 +13,25 @@ export const dynamic = "force-dynamic";
 export default async function AbsensiMonitorPage() {
   const { dateISO, dayOfWeek } = toWibParts(new Date());
 
-  const jadwal = dayOfWeek
-    ? await prisma.schedule.findMany({
-        where: { dayOfWeek, isActive: true },
-        include: {
-          schoolClass: { select: { name: true } },
-          subject: { select: { name: true } },
-          teacher: { select: { user: { select: { name: true } } } },
-          sessions: {
-            where: { date: dateOnlyUtc(dateISO) },
-            include: { studentAttendance: { select: { status: true } } },
-          },
-        },
-        orderBy: { startTime: "asc" },
-      })
-    : [];
+  const jadwal = await prisma.schedule.findMany({
+    where: { dayOfWeek, isActive: true },
+    include: {
+      schoolClass: { select: { name: true } },
+      subject: { select: { name: true } },
+      teacher: { select: { user: { select: { name: true } } } },
+      sessions: {
+        where: { date: dateOnlyUtc(dateISO) },
+        include: { studentAttendance: { select: { status: true } } },
+      },
+    },
+    orderBy: { startTime: "asc" },
+  });
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Sesi Hari Ini"
-        description={`Pemantauan sesi kelas ${dayOfWeek ? DAY_OF_WEEK_LABELS[dayOfWeek] : "Minggu"}, ${dateISO}`}
+        description={`Pemantauan sesi kelas ${DAY_OF_WEEK_LABELS[dayOfWeek]}, ${dateISO}`}
       />
 
       <section className="border-border rounded-md border bg-white">

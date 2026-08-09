@@ -6,8 +6,8 @@ import type { DayOfWeek } from "@prisma/client";
  */
 export const WIB_OFFSET_MINUTES = 7 * 60;
 
-const DAY_OF_WEEK_BY_JS_DAY: Record<number, DayOfWeek | null> = {
-  0: null, // Minggu — no schedule
+const DAY_OF_WEEK_BY_JS_DAY: Record<number, DayOfWeek> = {
+  0: "SUNDAY",
   1: "MONDAY",
   2: "TUESDAY",
   3: "WEDNESDAY",
@@ -53,7 +53,7 @@ export function rangeDurationHours(start: string, end: string): number {
 export function toWibParts(instant: Date): {
   dateISO: string;
   minutesOfDay: number;
-  dayOfWeek: DayOfWeek | null;
+  dayOfWeek: DayOfWeek;
 } {
   const shifted = new Date(instant.getTime() + WIB_OFFSET_MINUTES * 60 * 1000);
   const dateISO = shifted.toISOString().slice(0, 10);
@@ -81,6 +81,6 @@ export function wibInstant(dateISO: string, time: string): Date {
 }
 
 /** DayOfWeek for a WIB calendar date. */
-export function dayOfWeekFromDateISO(dateISO: string): DayOfWeek | null {
+export function dayOfWeekFromDateISO(dateISO: string): DayOfWeek {
   return DAY_OF_WEEK_BY_JS_DAY[dateOnlyUtc(dateISO).getUTCDay()];
 }

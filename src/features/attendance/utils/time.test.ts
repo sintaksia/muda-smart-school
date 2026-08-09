@@ -51,9 +51,9 @@ describe("WIB conversions", () => {
     expect(parts.dayOfWeek).toBe("THURSDAY");
   });
 
-  it("maps Sunday to null (no schedule)", () => {
+  it("maps Sunday to SUNDAY", () => {
     const parts = toWibParts(new Date("2026-07-12T05:00:00.000Z"));
-    expect(parts.dayOfWeek).toBeNull();
+    expect(parts.dayOfWeek).toBe("SUNDAY");
   });
 
   it("builds UTC midnight date and WIB instants", () => {
@@ -69,6 +69,6 @@ describe("WIB conversions", () => {
 
   it("derives DayOfWeek from a WIB date", () => {
     expect(dayOfWeekFromDateISO("2026-07-09")).toBe("THURSDAY");
-    expect(dayOfWeekFromDateISO("2026-07-12")).toBeNull();
+    expect(dayOfWeekFromDateISO("2026-07-12")).toBe("SUNDAY");
   });
 });
