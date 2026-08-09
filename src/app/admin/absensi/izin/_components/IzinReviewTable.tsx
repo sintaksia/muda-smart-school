@@ -117,7 +117,7 @@ export function IzinReviewTable({ submissions }: IzinReviewTableProps) {
                         variant="outline"
                         disabled={busyId === izin.id}
                         onClick={() => review(izin.id, "REJECTED")}
-                        className="text-neutral-600 hover:border-destructive hover:text-destructive h-9 gap-1 px-3 text-xs font-semibold"
+                        className="text-neutral-600 hover:border-destructive hover:bg-destructive/10 hover:text-destructive h-9 gap-1 px-3 text-xs font-semibold"
                       >
                         <X className="h-4 w-4" strokeWidth={1.75} />
                         Tolak

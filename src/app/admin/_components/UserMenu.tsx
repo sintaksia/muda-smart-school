@@ -1,9 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { LogOut, User, Loader2 } from "lucide-react";
-import { toast } from "sonner";
 
 import {
   DropdownMenu,
@@ -16,36 +13,14 @@ import {
 import { Button } from "@/src/components/ui/button";
 import type { SessionUser } from "@/src/features/auth/types";
 import { ROLE_LABELS } from "@/src/features/auth/types";
+import { useLogout } from "@/src/features/auth/hooks/useLogout";
 
 interface UserMenuProps {
   user: SessionUser;
 }
 
 export function UserMenu({ user }: UserMenuProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
-  async function handleLogout() {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Logout failed");
-      }
-
-      toast.success("Berhasil logout");
-      router.push("/login");
-      router.refresh();
-    } catch {
-      toast.error("Gagal logout. Silakan coba lagi.");
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const { logout, isLoading } = useLogout();
 
   const initials = user.name
     .split(" ")
@@ -85,7 +60,7 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={handleLogout}
+          onClick={logout}
           disabled={isLoading}
           className="text-red-600 focus:text-red-600"
         >

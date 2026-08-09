@@ -28,7 +28,7 @@ export function DeleteRowButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className="text-muted-foreground hover:text-destructive"
+      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
     >
       <Trash2 className="h-5 w-5" strokeWidth={1.75} />
     </Button>

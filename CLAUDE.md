@@ -16,6 +16,7 @@ Some rules in this file are **machine-enforced**. They are not advisory.
 | Banned elevation (`shadow-lg/xl/2xl/2lg`, colored shadows)                        | error    | `ds/banned-classes`                        |
 | Deleted Jago tokens (`bg-brand`, `text-ink`, `border-hairline`, `var(--color-*)`) | error    | `ds/banned-classes`                        |
 | Native `<select>` / `<textarea>` / `<input>` instead of the shadcn primitive      | error    | `ds/native-form-elements`                  |
+| Recolored `ghost`/`outline` button with no explicit `hover:bg-*`                  | error    | `ds/variant-hover`                         |
 | `features/` and `components/` importing from `app/`                               | error    | `@typescript-eslint/no-restricted-imports` |
 | `new PrismaClient()` outside `src/lib/prisma.ts`                                  | error    | `no-restricted-syntax`                     |
 | Off-palette hues (`blue-*`, `purple-*`, …)                                        | warn     | `ds/off-palette`                           |
@@ -24,6 +25,13 @@ Some rules in this file are **machine-enforced**. They are not advisory.
 
 Rules live in `eslint.config.mjs`. They run in three places:
 
+0. **Before you write** — a `PreToolUse` hook (`.claude/hooks/color-contract.mjs`)
+   parses `src/app/globals.css` and injects the **resolved** value of every
+   semantic token into context on any `.tsx` write that touches color, flagging
+   tokens that resolve into a non-brand ramp. Colors are never guessed or
+   recalled from memory; the contract arrives before the edit. Lint can only
+   see class names you wrote — it cannot see that `variant="ghost"` resolves to
+   `hover:bg-accent` → `--accent` → `#3b82f6`, which is why this layer exists.
 1. **As you write** — a `PostToolUse` hook (`.claude/hooks/guardrails.mjs`)
    lints every `.ts`/`.tsx` written under `src/`. **Errors block the edit and
    are returned to you — fix them in the same turn.** Warnings are shown only.

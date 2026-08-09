@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/src/features/auth/services/auth";
+import { PortalHeader } from "@/src/features/auth/components/PortalHeader";
 
 export default async function SiswaLayout({
   children,
@@ -17,19 +17,12 @@ export default async function SiswaLayout({
 
   return (
     <div className="bg-muted min-h-screen">
-      <header className="border-border sticky top-0 z-10 border-b bg-white">
-        <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
-          <Link href="/siswa" className="flex items-center gap-2">
-            <span className="bg-primary-900 flex h-8 w-8 items-center justify-center rounded-sm text-sm font-bold text-white">
-              M
-            </span>
-            <span className="text-foreground text-sm font-semibold">
-              Portal Siswa
-            </span>
-          </Link>
-          <span className="text-neutral-600 text-sm">{user.name}</span>
-        </div>
-      </header>
+      <PortalHeader
+        homeHref="/siswa"
+        title="Portal Siswa"
+        userName={user.name}
+        containerClassName="max-w-2xl"
+      />
       <main className="mx-auto max-w-2xl px-4 py-6">{children}</main>
     </div>
   );

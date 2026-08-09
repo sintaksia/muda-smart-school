@@ -104,6 +104,60 @@ const nativeFormElementsRule = {
   },
 };
 
+/**
+ * shadcn's `ghost` and `outline` variants hover with `bg-accent` +
+ * `text-accent-foreground`. `--accent` is not a brand hue, so a button that
+ * recolors its label (a red logout, a green confirm) but leaves the hover to
+ * the variant flips to accent-on-hover and throws the label color away. Force
+ * the author to state the hover explicitly.
+ */
+const VARIANT_HOVER_VARIANTS = new Set(["ghost", "outline"]);
+const RECOLORED_LABEL = /\btext-(destructive|green|yellow|primary|red)-?\d*\b/;
+
+const variantHoverRule = {
+  meta: {
+    type: "problem",
+    docs: { description: "Require an explicit hover on recolored ghost/outline buttons" },
+    schema: [],
+  },
+  create(context) {
+    /** Collect every string this attribute could contribute. */
+    const textOf = (attr) => {
+      const parts = [];
+      const walk = (node) => {
+        if (!node) return;
+        if (node.type === "Literal" && typeof node.value === "string") parts.push(node.value);
+        else if (node.type === "TemplateLiteral") node.quasis.forEach((q) => parts.push(q.value.raw));
+        else if (node.type === "JSXExpressionContainer") walk(node.expression);
+        else if (node.type === "CallExpression") node.arguments.forEach(walk);
+        else if (node.type === "ConditionalExpression") [node.consequent, node.alternate].forEach(walk);
+      };
+      walk(attr.value);
+      return parts.join(" ");
+    };
+
+    return {
+      JSXOpeningElement(node) {
+        const attrs = node.attributes.filter((a) => a.type === "JSXAttribute");
+        const variant = attrs.find((a) => a.name?.name === "variant");
+        const value = variant?.value?.type === "Literal" ? variant.value.value : null;
+        if (!VARIANT_HOVER_VARIANTS.has(value)) return;
+
+        const className = attrs.find((a) => a.name?.name === "className");
+        if (!className) return;
+        const text = textOf(className);
+        if (!RECOLORED_LABEL.test(text)) return;
+        if (/\bhover:bg-/.test(text)) return;
+
+        context.report({
+          node: className,
+          message: `variant="${value}" hovers with bg-accent/text-accent-foreground, which will override this label color. Add an explicit hover:bg-* (e.g. hover:bg-destructive/10) so the hover matches the label. — docs/design_system.md §2`,
+        });
+      },
+    };
+  },
+};
+
 /** Reports any listed pattern found in a string literal or template chunk, so
  *  className, cn(...), cva() bases and extracted constants are all covered. */
 const makeClassRule = (patterns, description) => ({
@@ -135,6 +189,7 @@ const ds = {
       "Flag hues outside the brand palette",
     ),
     "native-form-elements": nativeFormElementsRule,
+    "variant-hover": variantHoverRule,
   },
 };
 
@@ -158,6 +213,7 @@ const eslintConfig = defineConfig([
       "ds/banned-classes": "error",
       "ds/off-palette": "warn",
       "ds/native-form-elements": "error",
+      "ds/variant-hover": "error",
     },
   },
   // components/ui/* ARE the primitives — they wrap the native elements.
