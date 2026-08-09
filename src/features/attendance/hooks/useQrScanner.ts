@@ -1,20 +1,30 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-
-interface BarcodeDetectorResult {
-  rawValue: string;
-}
-
-interface BarcodeDetectorInstance {
-  detect: (source: CanvasImageSource) => Promise<BarcodeDetectorResult[]>;
-}
-
-interface BarcodeDetectorConstructor {
-  new (options?: { formats: string[] }): BarcodeDetectorInstance;
-}
+import {
+  createQrDecoder,
+  getCameraBlockReason,
+} from "@/src/features/attendance/utils/qrDecoder";
 
 const POLL_INTERVAL_MS = 400;
+const VIDEO_WAIT_TRIES = 20;
+const VIDEO_WAIT_MS = 50;
+
+/**
+ * The preview may still be mounting when the stream arrives (a caller that
+ * renders the <video> only while scanning), so give React a few frames.
+ */
+async function waitForVideo(
+  ref: React.RefObject<HTMLVideoElement | null>,
+): Promise<HTMLVideoElement | null> {
+  for (let attempt = 0; attempt < VIDEO_WAIT_TRIES; attempt += 1) {
+    if (ref.current) {
+      return ref.current;
+    }
+    await new Promise((resolve) => setTimeout(resolve, VIDEO_WAIT_MS));
+  }
+  return ref.current;
+}
 
 export interface UseQrScannerOptions {
   /** Called with the decoded value of each accepted frame. */
@@ -28,25 +38,20 @@ export interface UseQrScannerOptions {
 export interface UseQrScanner {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   scanning: boolean;
-  /** False when the browser has no BarcodeDetector — callers offer manual entry. */
+  /** False when the camera itself is unavailable — callers offer manual entry. */
   supported: boolean;
-  /** Resolves false when the browser cannot scan; throws if the camera is denied. */
+  /**
+   * Resolves false when the camera cannot be used at all; throws with a
+   * human-readable message when it is blocked or denied.
+   */
   start: () => Promise<boolean>;
   stop: () => void;
 }
 
-function getDetectorCtor(): BarcodeDetectorConstructor | undefined {
-  if (typeof window === "undefined") {
-    return undefined;
-  }
-  return (window as unknown as { BarcodeDetector?: BarcodeDetectorConstructor })
-    .BarcodeDetector;
-}
-
 /**
- * Camera QR scanning on the native BarcodeDetector API — no bundled decoder.
- * Shared by the student scanning the session QR and the teacher scanning
- * student ID cards, which differ only in `continuous`.
+ * Camera QR scanning, native BarcodeDetector where available and a jsQR
+ * fallback everywhere else. Shared by the student scanning the session QR and
+ * the teacher scanning student ID cards, which differ only in `continuous`.
  */
 export function useQrScanner({
   onDetect,
@@ -77,36 +82,37 @@ export function useQrScanner({
   useEffect(() => stop, [stop]);
 
   const start = useCallback(async (): Promise<boolean> => {
-    const DetectorCtor = getDetectorCtor();
-    if (!DetectorCtor) {
+    const blockReason = getCameraBlockReason();
+    if (blockReason) {
       setSupported(false);
-      return false;
+      throw new Error(blockReason);
     }
     if (streamRef.current) {
       return true;
     }
 
+    const decode = await createQrDecoder();
     const stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: "environment" },
     });
     streamRef.current = stream;
     setScanning(true);
 
-    const video = videoRef.current;
+    const video = await waitForVideo(videoRef);
     if (!video) {
+      // No preview element to read frames from — release the camera again.
+      stop();
       return false;
     }
     video.srcObject = stream;
     await video.play();
 
-    const detector = new DetectorCtor({ formats: ["qr_code"] });
     const tick = async (): Promise<void> => {
       if (!streamRef.current) {
         return;
       }
       try {
-        const codes = await detector.detect(video);
-        const value = codes[0]?.rawValue;
+        const value = await decode(video);
         if (value && !isOnCooldown(value)) {
           lastHitRef.current = { value, at: Date.now() };
           await onDetectRef.current(value);

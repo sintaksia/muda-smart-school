@@ -7,6 +7,8 @@ import { Camera, ScanLine } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { ManualCodeForm } from "@/src/components/common/ManualCodeForm";
 import { useQrScanner } from "@/src/features/attendance/hooks/useQrScanner";
+import { ScannerViewport } from "@/src/features/attendance/components/ScannerViewport";
+import { startScannerWithFeedback } from "@/src/features/attendance/utils/startScannerWithFeedback";
 
 export function ScanCard() {
   const router = useRouter();
@@ -71,15 +73,7 @@ export function ScanCard() {
   });
 
   async function handleStart(): Promise<void> {
-    try {
-      if (!(await start())) {
-        toast.info(
-          "Kamera pemindai tidak didukung browser ini — masukkan kode manual.",
-        );
-      }
-    } catch {
-      toast.error("Tidak dapat mengakses kamera");
-    }
+    await startScannerWithFeedback(start, "masukkan kode manual");
   }
 
   return (
@@ -91,24 +85,14 @@ export function ScanCard() {
         </h3>
       </div>
 
-      {scanning ? (
-        <div className="space-y-3">
-          <video
-            ref={videoRef}
-            className="rounded-sm aspect-square w-full bg-black object-cover"
-            playsInline
-            muted
-          />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={stop}
-            className="text-neutral-600 h-11 w-full font-semibold"
-          >
-            Batal
-          </Button>
-        </div>
-      ) : (
+      <ScannerViewport
+        videoRef={videoRef}
+        scanning={scanning}
+        aspectClassName="aspect-square"
+        cancelLabel="Batal"
+        onCancel={stop}
+      />
+      {!scanning && (
         <Button
           type="button"
           onClick={handleStart}

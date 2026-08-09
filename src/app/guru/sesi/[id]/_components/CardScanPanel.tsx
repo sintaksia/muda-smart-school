@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { toast } from "sonner";
 import { Camera, IdCard } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { ManualCodeForm } from "@/src/components/common/ManualCodeForm";
 import { useQrScanner } from "@/src/features/attendance/hooks/useQrScanner";
+import { ScannerViewport } from "@/src/features/attendance/components/ScannerViewport";
+import { startScannerWithFeedback } from "@/src/features/attendance/utils/startScannerWithFeedback";
 import { ATTENDANCE_STATUS_LABELS, ENTITY_LABELS } from "@/src/lib/constants";
 import { ScanFeedback, type ScanOutcome } from "./ScanFeedback";
 
@@ -80,15 +81,7 @@ export function CardScanPanel({
   });
 
   async function handleStart(): Promise<void> {
-    try {
-      if (!(await start())) {
-        toast.info(
-          "Kamera pemindai tidak didukung browser ini — masukkan NIS manual.",
-        );
-      }
-    } catch {
-      toast.error("Tidak dapat mengakses kamera");
-    }
+    await startScannerWithFeedback(start, "masukkan NIS manual");
   }
 
   return (
@@ -105,25 +98,16 @@ export function CardScanPanel({
         </span>
       </div>
 
-      {scanning ? (
-        <div className="space-y-3">
-          <video
-            ref={videoRef}
-            className="rounded-sm aspect-video w-full bg-black object-cover"
-            playsInline
-            muted
-          />
-          <ScanFeedback outcome={outcome} />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={stop}
-            className="text-neutral-600 h-11 w-full font-semibold"
-          >
-            Selesai Scan
-          </Button>
-        </div>
-      ) : (
+      <ScannerViewport
+        videoRef={videoRef}
+        scanning={scanning}
+        aspectClassName="aspect-video"
+        cancelLabel="Selesai Scan"
+        onCancel={stop}
+      >
+        <ScanFeedback outcome={outcome} />
+      </ScannerViewport>
+      {!scanning && (
         <>
           <Button
             type="button"

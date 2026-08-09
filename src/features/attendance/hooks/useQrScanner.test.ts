@@ -12,6 +12,10 @@ function installBarcodeDetector(): void {
 }
 
 function installCamera(): void {
+  Object.defineProperty(window, "isSecureContext", {
+    configurable: true,
+    value: true,
+  });
   Object.defineProperty(navigator, "mediaDevices", {
     configurable: true,
     value: {
@@ -80,17 +84,40 @@ describe("useQrScanner", () => {
     act(() => result.current.stop());
   });
 
-  it("flags an unsupported browser instead of throwing", async () => {
-    delete (window as unknown as { BarcodeDetector?: unknown }).BarcodeDetector;
+  it("releases the camera when no preview element ever mounts", async () => {
+    const onDetect = vi.fn();
+
+    const { result } = renderHook(() => useQrScanner({ onDetect }));
+    // videoRef is left null: the caller never rendered a <video>.
+
+    let started = true;
+    await act(async () => {
+      started = await result.current.start();
+    });
+
+    expect(started).toBe(false);
+    expect(stopTrack).toHaveBeenCalled();
+    await waitFor(() => expect(result.current.scanning).toBe(false));
+  }, 10_000);
+
+  it("explains why the camera is blocked on an insecure origin", async () => {
+    Object.defineProperty(window, "isSecureContext", {
+      configurable: true,
+      value: false,
+    });
     const onDetect = vi.fn();
 
     const { result } = renderHook(() => useQrScanner({ onDetect }));
 
+    let message = "";
     await act(async () => {
-      await result.current.start();
+      await result.current.start().catch((error: Error) => {
+        message = error.message;
+      });
     });
 
-    expect(result.current.supported).toBe(false);
+    expect(message).toMatch(/HTTPS/);
+    await waitFor(() => expect(result.current.supported).toBe(false));
     expect(result.current.scanning).toBe(false);
     expect(onDetect).not.toHaveBeenCalled();
   });
