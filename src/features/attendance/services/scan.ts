@@ -160,6 +160,22 @@ export async function overrideAttendance(
   });
 }
 
+/**
+ * Teacher removes a record created by mistake — a card scanned for the wrong
+ * student, say. The row is deleted outright so the student falls back to
+ * "belum tercatat" and can scan again.
+ */
+export async function deleteAttendance(recordId: string): Promise<boolean> {
+  const record = await prisma.studentAttendance.findUnique({
+    where: { id: recordId },
+  });
+  if (!record) {
+    return false;
+  }
+  await prisma.studentAttendance.delete({ where: { id: recordId } });
+  return true;
+}
+
 /** Teacher marks a non-scanner manually (e.g. verbal izin) while open. */
 export async function markManualAttendance(
   sessionId: string,

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
-import { recordScan, markManualAttendance } from "./scan";
+import { recordScan, markManualAttendance, deleteAttendance } from "./scan";
 import { getAttendanceSettings } from "./settings";
 import type { AttendanceSettings } from "../types";
 import type { StudentAttendance, Session, Student } from "@prisma/client";
@@ -9,7 +9,11 @@ vi.mock("@/src/lib/prisma", () => ({
   prisma: {
     session: { findUnique: vi.fn() },
     student: { findUnique: vi.fn() },
-    studentAttendance: { findUnique: vi.fn(), create: vi.fn() },
+    studentAttendance: {
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+    },
     teacher: { findUnique: vi.fn() },
     notification: { create: vi.fn() },
   },
@@ -182,5 +186,29 @@ describe("markManualAttendance", () => {
         data: expect.objectContaining({ status: "EXCUSED", method: "MANUAL" }),
       }),
     );
+  });
+});
+
+describe("deleteAttendance", () => {
+  it("removes an existing record", async () => {
+    vi.mocked(prisma.studentAttendance.findUnique).mockResolvedValue({
+      id: "abs-1",
+    } as StudentAttendance);
+
+    const removed = await deleteAttendance("abs-1");
+
+    expect(removed).toBe(true);
+    expect(prisma.studentAttendance.delete).toHaveBeenCalledWith({
+      where: { id: "abs-1" },
+    });
+  });
+
+  it("reports a missing record without deleting anything", async () => {
+    vi.mocked(prisma.studentAttendance.findUnique).mockResolvedValue(null);
+
+    const removed = await deleteAttendance("abs-404");
+
+    expect(removed).toBe(false);
+    expect(prisma.studentAttendance.delete).not.toHaveBeenCalled();
   });
 });

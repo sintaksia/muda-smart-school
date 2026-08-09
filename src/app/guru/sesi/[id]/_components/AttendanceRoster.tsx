@@ -1,15 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { toast } from "sonner";
-import { MapPinOff } from "lucide-react";
-import { Badge } from "@/src/app/admin/_components/Badge";
-import { Button } from "@/src/components/ui/button";
-import { SelectField } from "@/src/components/common/SelectField";
-import {
-  ATTENDANCE_STATUS_BADGES,
-  ATTENDANCE_STATUS_LABELS,
-  manualAttendanceStatusOptions,
-} from "@/src/lib/constants";
+import { DeleteDialog } from "@/src/app/admin/_components/DeleteDialog";
+import { ENTITY_LABELS } from "@/src/lib/constants";
+import { RosterRow } from "./RosterRow";
 
 export interface SessionDetail {
   id: string;
@@ -39,10 +34,20 @@ interface AttendanceRosterProps {
   onChanged: () => Promise<void>;
 }
 
+interface PendingDelete {
+  recordId: string;
+  studentName: string;
+}
+
 export function AttendanceRoster({
   session,
   onChanged,
 }: AttendanceRosterProps) {
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(
+    null,
+  );
+  const [deleting, setDeleting] = useState<boolean>(false);
+
   const recordByStudent = new Map(
     session.studentAttendance.map((record) => [record.studentId, record]),
   );
@@ -77,11 +82,37 @@ export function AttendanceRoster({
     }
   }
 
+  async function removeRecord(): Promise<void> {
+    if (!pendingDelete) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      const response = await fetch(
+        `/api/attendance/records/${pendingDelete.recordId}`,
+        { method: "DELETE" },
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error ?? "Gagal menghapus presensi");
+      }
+      toast.success(`Presensi ${pendingDelete.studentName} dihapus`);
+      setPendingDelete(null);
+      await onChanged();
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Gagal menghapus presensi",
+      );
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <section className="border-border rounded-md border bg-white">
       <header className="border-border flex items-center justify-between border-b px-5 py-4">
         <h3 className="text-foreground text-base font-semibold">
-          Daftar Siswa
+          Daftar {ENTITY_LABELS.STUDENT}
         </h3>
         <span className="text-muted-foreground text-xs font-medium tabular-nums">
           {session.studentAttendance.length}/
@@ -89,63 +120,31 @@ export function AttendanceRoster({
         </span>
       </header>
       <ul>
-        {session.schedule.schoolClass.students.map((student) => {
-          const record = recordByStudent.get(student.id);
-          return (
-            <li
-              key={student.id}
-              className={`border-border flex items-center justify-between border-b px-5 py-3 last:border-b-0 ${
-                record?.needsReview ? "bg-yellow-600/10" : ""
-              }`}
-            >
-              <div>
-                <p className="text-foreground text-sm font-semibold">
-                  {student.user.name}
-                </p>
-                <p className="text-muted-foreground text-xs tabular-nums">
-                  {student.nis}
-                  {record?.scanTime &&
-                    ` · scan ${new Date(record.scanTime).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}`}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                {record?.needsReview && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => confirmGps(record.id)}
-                    className="text-yellow-600 h-auto gap-1 px-1 py-0 text-xs font-semibold hover:bg-transparent hover:opacity-80"
-                    title="GPS di luar radius — klik untuk konfirmasi"
-                  >
-                    <MapPinOff className="h-4 w-4" strokeWidth={1.75} />
-                    Konfirmasi
-                  </Button>
-                )}
-                {record ? (
-                  <Badge variant={ATTENDANCE_STATUS_BADGES[record.status]}>
-                    {ATTENDANCE_STATUS_LABELS[record.status]}
-                  </Badge>
-                ) : isOpen ? (
-                  <SelectField
-                    ariaLabel="Tandai kehadiran"
-                    placeholder="Tandai…"
-                    value=""
-                    onChange={(next) => void markManual(student.id, next)}
-                    className="h-8 w-32 text-xs"
-                    options={manualAttendanceStatusOptions.map((option) => ({
-                      value: option.value,
-                      label: option.label,
-                    }))}
-                  />
-                ) : (
-                  <span className="text-muted-foreground text-xs">—</span>
-                )}
-              </div>
-            </li>
-          );
-        })}
+        {session.schedule.schoolClass.students.map((student) => (
+          <RosterRow
+            key={student.id}
+            student={student}
+            record={recordByStudent.get(student.id)}
+            isOpen={isOpen}
+            onConfirmGps={(recordId) => void confirmGps(recordId)}
+            onMarkManual={(studentId, status) =>
+              void markManual(studentId, status)
+            }
+            onRequestDelete={(record, studentName) =>
+              setPendingDelete({ recordId: record.id, studentName })
+            }
+          />
+        ))}
       </ul>
+
+      <DeleteDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        onConfirm={() => void removeRecord()}
+        title="Hapus Presensi"
+        description={`Hapus presensi ${pendingDelete?.studentName ?? ""}? ${ENTITY_LABELS.STUDENT} ini kembali berstatus belum tercatat dan bisa scan ulang.`}
+        isLoading={deleting}
+      />
     </section>
   );
 }
