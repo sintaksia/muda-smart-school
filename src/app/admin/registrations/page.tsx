@@ -3,7 +3,7 @@ import { Download, Filter, Users } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { PageHeader } from "@/src/app/admin/_components/PageHeader";
 import { RegistrationTable } from "./_components/RegistrationTable";
-import { StatsCards } from "./_components/StatsCards";
+import { StatsCards } from "@/src/app/admin/_components/StatsCards";
 import {
   getAllRegistrations,
   getRegistrationsByStatus,

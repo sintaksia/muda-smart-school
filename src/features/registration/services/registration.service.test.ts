@@ -3,6 +3,7 @@ import { prisma } from "@/src/lib/prisma";
 import type { Registration, RegistrationStatus } from "@prisma/client";
 import {
   getAllRegistrations,
+  getRecentRegistrations,
   getRegistrationById,
   createRegistration,
   convertZodToPrisma,
@@ -47,6 +48,30 @@ describe("getAllRegistrations / getRegistrationById", () => {
       include: { student: true },
       orderBy: { createdAt: "desc" },
     });
+  });
+
+  it("bounds the recent-registrations feed with take", async () => {
+    const rows = [{ id: "reg-1" }] as Registration[];
+    vi.mocked(prisma.registration.findMany).mockResolvedValue(rows);
+
+    const result = await getRecentRegistrations();
+
+    expect(result).toBe(rows);
+    expect(prisma.registration.findMany).toHaveBeenCalledWith({
+      include: { student: true },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    });
+  });
+
+  it("honours a custom recent-registrations limit", async () => {
+    vi.mocked(prisma.registration.findMany).mockResolvedValue([]);
+
+    await getRecentRegistrations(12);
+
+    expect(prisma.registration.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ take: 12 }),
+    );
   });
 
   it("fetches a single registration by id", async () => {

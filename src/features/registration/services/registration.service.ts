@@ -89,6 +89,18 @@ export async function getAllRegistrations() {
   });
 }
 
+/**
+ * Feed pendaftaran terbaru untuk dashboard admin.
+ * Selalu dibatasi `take` — jangan tarik seluruh tabel hanya untuk di-slice.
+ */
+export async function getRecentRegistrations(limit = 5) {
+  return prisma.registration.findMany({
+    include: { student: true },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+}
+
 /** Ambil satu pendaftaran berdasarkan id, beserta relasi akun siswa. */
 export async function getRegistrationById(id: string) {
   return prisma.registration.findUnique({
