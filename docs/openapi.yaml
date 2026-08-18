@@ -1,0 +1,1075 @@
+openapi: 3.1.0
+
+info:
+  title: Muda Smart School — Mobile API
+  version: 1.0.0
+  description: |
+    The mobile-facing surface of the Muda Smart School Next.js API. This is the
+    contract the Flutter client (`muda-smart-mobile`) generates its Dart client
+    from — it is not the full API. Admin-only CMS and master-data routes are
+    deliberately excluded.
+
+    ## Authentication
+
+    Two transports resolve to the same session, both handled by `getCurrentUser()`
+    (`src/features/auth/services/auth.ts`):
+
+    - **`Authorization: Bearer <jwt>`** — mobile. Sign in against Supabase Auth
+      directly with `supabase_flutter`, then send the access token on every
+      request. The server validates it and never issues its own token, so there
+      is no refresh endpoint here; refresh client-side via the Supabase SDK.
+    - **cookies** — the web app, via `@supabase/ssr`.
+
+    `POST /api/auth/login` exists for the web app and sets cookies. Mobile
+    clients should **not** use it: authenticate with the Supabase SDK instead,
+    then call `GET /api/me/profile`.
+
+    ### A valid token is not always enough
+
+    A token can be perfectly valid and still yield `401`, when the backing
+    `User.status` is not `ACTIVE` (`INACTIVE` / `SUSPENDED`). Treat that as a
+    terminal "account disabled" state — **do not** retry or trigger a token
+    refresh loop. Distinguish it from an expired token by attempting a refresh
+    once: if a freshly refreshed token still returns 401, the account is disabled.
+
+    ## Conventions
+
+    - Routes under `/api/me/*` wrap their payload in `{ "data": ... }`. Paginated
+      ones add `nextCursor`. Older `/api/attendance/*` routes predate that
+      convention and return bare objects or arrays — noted per-operation.
+    - Pagination is **cursor-based**: `?limit=&cursor=`. Offsets are not used,
+      because rows are ordered newest-first and new records arrive constantly.
+    - Dates in payloads are `YYYY-MM-DD` strings. Times are `"HH:mm"` strings
+      interpreted in **WIB (UTC+7)**, not the device timezone.
+    - Errors are always `{ "error": string }`, plus `details` when Zod validation
+      failed.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://{host}
+    description: Production
+    variables:
+      host:
+        default: mudasmartschool.sch.id
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+    description: Sign-in and session identity.
+  - name: Me
+    description: |
+      Caller-scoped reads. Every route here derives its subject from the token,
+      so no id is ever passed in and one user can never read another's data.
+  - name: Attendance
+    description: |
+      Scanning, leave requests, notifications and the credit-score ledger.
+      Predates the `{ data }` envelope, so shapes vary per operation.
+  - name: Sessions
+    description: |
+      The live class session a teacher opens: QR display, roster, card scanning
+      and closing.
+
+paths:
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Email/password login (web only — sets cookies)
+      operationId: login
+      description: |
+        Provided for completeness. Mobile clients should authenticate through
+        the Supabase SDK rather than calling this, since the session it
+        establishes is a cookie the app cannot use.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        "200":
+          description: Signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: "#/components/schemas/SessionUser" }
+        "400": { $ref: "#/components/responses/ValidationError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Current session user
+      operationId: getMe
+      description: |
+        The lightest possible token check. Prefer `/api/me/profile`, which also
+        returns the linked Student or Teacher record.
+      responses:
+        "200":
+          description: The session user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: "#/components/schemas/SessionUser" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/me/profile:
+    get:
+      tags: [Me]
+      summary: Session user plus the linked domain record
+      operationId: getMyProfile
+      description: |
+        Call once after login to decide which home screen to route to. At most
+        one of `student`/`teacher` is non-null; both are null for admins.
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user: { $ref: "#/components/schemas/SessionUser" }
+                      student:
+                        oneOf:
+                          - { $ref: "#/components/schemas/Student" }
+                          - { type: "null" }
+                      teacher:
+                        oneOf:
+                          - { $ref: "#/components/schemas/Teacher" }
+                          - { type: "null" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/me/student/dashboard:
+    get:
+      tags: [Me]
+      summary: Student home screen payload
+      operationId: getStudentDashboard
+      responses:
+        "200":
+          description: Dashboard
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      creditTotal:
+                        type: integer
+                        description: Base score plus the signed sum of all ledger entries.
+                      scanMode:
+                        { $ref: "#/components/schemas/AttendanceScanMode" }
+                      card:
+                        description: |
+                          Null in `STUDENT_SCAN` mode, where the student scans the
+                          teacher's QR and no ID card is issued.
+                        oneOf:
+                          - { $ref: "#/components/schemas/StudentCard" }
+                          - { type: "null" }
+                      recentAttendance:
+                        type: array
+                        maxItems: 20
+                        items: { $ref: "#/components/schemas/AttendanceRecord" }
+                      recentLeaveRequests:
+                        type: array
+                        maxItems: 10
+                        items:
+                          { $ref: "#/components/schemas/LeaveRequestSummary" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotLinkedToStudent" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/me/student/attendance:
+    get:
+      tags: [Me]
+      summary: Own attendance history, paginated
+      operationId: listMyAttendance
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+          description: Inclusive lower bound, `YYYY-MM-DD`.
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+          description: Inclusive upper bound, `YYYY-MM-DD`.
+      responses:
+        "200":
+          description: A page of attendance records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/AttendanceRecord" }
+                  nextCursor:
+                    type: [string, "null"]
+                    description: Pass as `cursor` for the next page; null on the last page.
+        "400": { $ref: "#/components/responses/ValidationError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotLinkedToStudent" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/me/teacher/dashboard:
+    get:
+      tags: [Me]
+      summary: Today's teaching slots with session state
+      operationId: getTeacherDashboard
+      description: |
+        "Today" is resolved in WIB, not the server's timezone. `sessionId` is
+        null until the teacher opens the session.
+      responses:
+        "200":
+          description: Today's slots
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      date: { type: string, format: date }
+                      dayOfWeek: { $ref: "#/components/schemas/DayOfWeek" }
+                      items:
+                        type: array
+                        items: { $ref: "#/components/schemas/TeacherSlot" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotLinkedToTeacher" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/me/schedule:
+    get:
+      tags: [Me]
+      summary: Own weekly timetable (role-scoped)
+      operationId: getMySchedule
+      description: |
+        A student gets their class's timetable; a teacher gets the slots they
+        teach. Admins get 403 — use `/api/attendance/schedules` for the
+        school-wide timetable. A student not yet placed in a class gets an empty
+        array, which is an empty state rather than an error. Not paginated.
+      responses:
+        "200":
+          description: Weekly timetable, ordered by day then start time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ScheduleSlot" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: |
+            Admin caller, or an account with no linked Student/Teacher record.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/attendance/scan:
+    post:
+      tags: [Attendance]
+      summary: Student scans the session QR (Process 2)
+      operationId: scanSessionQr
+      description: |
+        **STUDENT role only.** Validation runs in a fixed order: token → session
+        OPEN → student enrolled in the class → duplicate → time → GPS.
+
+        Two behaviours the client must respect:
+
+        - **A duplicate scan is a success, not an error.** It returns 201 with
+          the already-recorded status. Show "sudah tercatat", never an error.
+          This is what makes an offline replay queue safe.
+        - **GPS never blocks.** Coordinates are optional; out-of-radius still
+          records attendance, sets `needsReview: true` and notifies the teacher.
+          Never gate the scan button on a location fix.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+                  minLength: 1
+                  description: The QR payload. Rotates every `QR_TOKEN_TTL_SECONDS` in DYNAMIC mode.
+                gpsLat: { type: number }
+                gpsLng: { type: number }
+      responses:
+        "201":
+          description: Attendance recorded (or already present)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean, const: true }
+                  status: { $ref: "#/components/schemas/AttendanceStatus" }
+                  needsReview:
+                    type: boolean
+                    description: True when the GPS fix fell outside the allowed radius.
+        "400":
+          description: |
+            Rejected — expired QR, no open session, or not enrolled in the class.
+            `error` carries a user-displayable Indonesian message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean, const: false }
+                  error: { type: string }
+        "403":
+          description: Caller is not a student.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/attendance/sessions/{id}:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+    get:
+      tags: [Sessions]
+      summary: Live session with roster and attendance
+      operationId: getSession
+      description: |
+        Authorized to the scheduled teacher, the assigned substitute, or an
+        admin. Returns the Prisma Session with `schedule.schoolClass.students`
+        (active only, ordered by NIS) and `studentAttendance` embedded.
+      responses:
+        "200":
+          description: Session detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionDetail" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/ServerError" }
+    patch:
+      tags: [Sessions]
+      summary: Close, refresh QR, or mark attendance manually
+      operationId: updateSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [action]
+                  properties:
+                    action: { type: string, const: close }
+                - type: object
+                  required: [action]
+                  properties:
+                    action: { type: string, const: refresh-qr }
+                - type: object
+                  required: [action, studentId, status]
+                  properties:
+                    action: { type: string, const: manual-attendance }
+                    studentId: { type: string, minLength: 1 }
+                    status: { $ref: "#/components/schemas/AttendanceStatus" }
+                    catatan:
+                      type: string
+                      description: Optional note. Field name is Indonesian for historical reasons.
+              discriminator:
+                propertyName: action
+      responses:
+        "200":
+          description: |
+            The updated Session for `close`/`refresh-qr`, or the
+            StudentAttendance record for `manual-attendance`.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: "#/components/schemas/Session" }
+                  - { $ref: "#/components/schemas/StudentAttendance" }
+        "400": { $ref: "#/components/responses/ValidationError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/attendance/sessions/{id}/card-scan:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+    post:
+      tags: [Sessions]
+      summary: Teacher scans a student ID card (Process 2b)
+      operationId: scanStudentCard
+      description: |
+        Supply exactly one of `cardToken` (from the printed card QR) or `nis`
+        (typed in when the card is missing). Returns **201** for a new record and
+        **200** when the student was already recorded — both are successes, and
+        `duplicate` distinguishes them.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [cardToken]
+                  properties:
+                    cardToken: { type: string, minLength: 1 }
+                - type: object
+                  required: [nis]
+                  properties:
+                    nis: { type: string, minLength: 1 }
+      responses:
+        "201":
+          description: Attendance recorded
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CardScanResult" }
+        "200":
+          description: Already recorded (idempotent replay)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CardScanResult" }
+        "400":
+          description: No open session, student not enrolled, or neither field supplied.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean, const: false }
+                  error: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/attendance/leave-requests:
+    get:
+      tags: [Attendance]
+      summary: List leave requests (role-scoped)
+      operationId: listLeaveRequests
+      description: |
+        A student sees their own; a homeroom teacher sees their classes';
+        an admin sees all. A teacher who is not a homeroom teacher gets 403.
+        Returns a bare array — this route predates the `{ data }` convention.
+      responses:
+        "200":
+          description: Leave requests, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/LeaveRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/ServerError" }
+    post:
+      tags: [Attendance]
+      summary: Submit a leave request (Process 5)
+      operationId: submitLeaveRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, date, reason]
+              properties:
+                type: { $ref: "#/components/schemas/LeaveType" }
+                date:
+                  type: string
+                  pattern: '^\d{4}-\d{2}-\d{2}$'
+                reason: { type: string, minLength: 3 }
+                scheduleId:
+                  type: string
+                  description: Omit to cover the whole day.
+                attachment:
+                  type: string
+                  description: URL of an uploaded document, e.g. a doctor's note.
+                studentId:
+                  type: string
+                  description: Admins only — submit on a student's behalf.
+      responses:
+        "201":
+          description: Submitted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LeaveRequest" }
+        "400": { $ref: "#/components/responses/ValidationError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/attendance/notifications:
+    get:
+      tags: [Attendance]
+      summary: Own unread notifications
+      operationId: listNotifications
+      description: |
+        Poll this until push (FCM) lands. Returns a bare array. Only unread rows
+        are returned — a read notification disappears from this list.
+      responses:
+        "200":
+          description: Unread notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Notification" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/ServerError" }
+    patch:
+      tags: [Attendance]
+      summary: Mark one notification read
+      operationId: markNotificationRead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id: { type: string, minLength: 1 }
+      responses:
+        "200":
+          description: Marked read
+        "400": { $ref: "#/components/responses/ValidationError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/attendance/credit-scores:
+    get:
+      tags: [Attendance]
+      summary: Credit-score ledger and total
+      operationId: getCreditScores
+      description: |
+        Students and teachers are always forced to their own id regardless of
+        the query parameters, so a mobile client may call this with no
+        parameters at all to get the caller's own score.
+      parameters:
+        - name: ownerType
+          in: query
+          schema: { $ref: "#/components/schemas/CreditOwnerType" }
+          description: Ignored for STUDENT callers.
+        - name: ownerId
+          in: query
+          schema: { type: string }
+          description: Ignored for STUDENT callers.
+      responses:
+        "200":
+          description: Ledger entries and the computed total
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Base score plus the signed sum of `entries[].points`.
+                  entries:
+                    type: array
+                    items: { $ref: "#/components/schemas/CreditScoreEntry" }
+        "400":
+          description: ownerType/ownerId missing and not derivable from the caller.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/attendance/schedules:
+    get:
+      tags: [Attendance]
+      summary: School-wide active timetable
+      operationId: listSchedules
+      description: |
+        Every active schedule row for the whole school, unfiltered and
+        unpaginated. Mobile clients should prefer `/api/me/schedule`, which is
+        scoped to the caller.
+      responses:
+        "200":
+          description: Timetable, ordered by day then start time
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Schedule" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: A Supabase Auth access token obtained via `supabase_flutter`.
+
+  parameters:
+    SessionId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+      description: Session id (cuid).
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      description: |
+        Page size. A missing, non-numeric or out-of-range value falls back to
+        the default rather than erroring.
+    Cursor:
+      name: cursor
+      in: query
+      schema: { type: string }
+      description: The `nextCursor` from the previous page. Omit for page one.
+
+  responses:
+    Unauthorized:
+      description: |
+        No credentials, an expired/invalid token, or a valid token whose account
+        is not ACTIVE. See "A valid token is not always enough" above.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Forbidden:
+      description: Authenticated, but not permitted for this resource.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: Not found.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ValidationError:
+      description: Request body or query failed validation.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ServerError:
+      description: |
+        Unexpected server error. The message is always generic — internal
+        details are never returned to clients.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotLinkedToStudent:
+      description: |
+        The account has no linked Student record — either a wrong-role caller or
+        a profile that was never linked. The API cannot distinguish the two.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotLinkedToTeacher:
+      description: The account has no linked Teacher record.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    # ---------------------------------------------------------------- enums
+    # Mirrored verbatim from prisma/schema.prisma. Regenerate Dart enums from
+    # here whenever the schema changes.
+    UserRole:
+      type: string
+      enum: [SUPER_ADMIN, ADMIN, TEACHER, STUDENT]
+    UserStatus:
+      type: string
+      enum: [ACTIVE, INACTIVE, SUSPENDED]
+    StudentStatus:
+      type: string
+      enum: [AKTIF, LULUS, PINDAH, DROPOUT]
+    Gender:
+      type: string
+      enum: [MALE, FEMALE]
+    Specialization:
+      type: string
+      enum:
+        - AUTOMOTIVE_ENGINEERING
+        - SOFTWARE_AND_GAME_DEVELOPMENT
+        - NETWORK_AND_TELECOMMUNICATIONS_ENGINEERING
+        - OFFICE_MANAGEMENT_AND_BUSINESS_SERVICES
+        - ACCOUNTING_AND_INSTITUTIONAL_FINANCE
+    DayOfWeek:
+      type: string
+      enum: [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY]
+    AttendanceStatus:
+      type: string
+      enum: [PRESENT, LATE, SICK, EXCUSED, ABSENT]
+    AttendanceMethod:
+      type: string
+      enum: [QR, MANUAL, CARD]
+    AttendanceScanMode:
+      type: string
+      enum: [STUDENT_SCAN, TEACHER_SCAN, BOTH]
+      description: |
+        Server-configured scan direction. Read it from the dashboard and render
+        the matching UI — never hardcode a direction.
+    SessionStatus:
+      type: string
+      enum: [OPEN, CLOSED, NO_CLASS]
+      description: |
+        `NO_CLASS` means the teacher was absent with no substitute; no QR is
+        issued and no attendance is expected.
+    LeaveType:
+      type: string
+      enum: [PERMISSION, SICK]
+    LeaveStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED]
+    CreditOwnerType:
+      type: string
+      enum: [STUDENT, TEACHER]
+    CreditEntryType:
+      type: string
+      enum: [ACHIEVEMENT, VIOLATION, CORRECTION]
+    CreditSource:
+      type: string
+      enum: [AUTO, MANUAL]
+    NotificationType:
+      type: string
+      enum:
+        - CREDIT_WARNING
+        - CREDIT_CRITICAL
+        - CREDIT_MANUAL_ENTRY
+        - GPS_REVIEW
+        - TEACHER_ABSENCE
+        - NO_CLASS
+        - LEAVE_STATUS
+
+    # ---------------------------------------------------------------- shared
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: User-displayable Indonesian message.
+        details:
+          type: object
+          description: Flattened Zod issues; present only on validation failures.
+
+    SessionUser:
+      type: object
+      required: [id, email, name, role, status]
+      properties:
+        id:
+          type: string
+          description: Same value as the Supabase Auth user id.
+        email: { type: string, format: email }
+        name: { type: string }
+        role: { $ref: "#/components/schemas/UserRole" }
+        status: { $ref: "#/components/schemas/UserStatus" }
+        avatar: { type: [string, "null"] }
+
+    Student:
+      type: object
+      properties:
+        id: { type: string }
+        userId: { type: string }
+        nis: { type: string }
+        nisn: { type: string }
+        specialization: { $ref: "#/components/schemas/Specialization" }
+        angkatan: { type: integer }
+        classId: { type: [string, "null"] }
+        status: { $ref: "#/components/schemas/StudentStatus" }
+        gender:
+          oneOf:
+            - { $ref: "#/components/schemas/Gender" }
+            - { type: "null" }
+        parentPhone: { type: [string, "null"] }
+
+    Teacher:
+      type: object
+      properties:
+        id: { type: string }
+        userId: { type: string }
+        nip: { type: [string, "null"] }
+        nuptk: { type: [string, "null"] }
+        gender: { $ref: "#/components/schemas/Gender" }
+        position: { type: [string, "null"] }
+
+    StudentCard:
+      type: object
+      description: The printable ID card. `cardToken` is the QR payload a teacher scans.
+      required: [studentId, name, nis, className, cardToken]
+      properties:
+        studentId: { type: string }
+        name: { type: string }
+        nis: { type: string }
+        className: { type: string }
+        photo: { type: [string, "null"] }
+        cardToken: { type: string }
+
+    AttendanceRecord:
+      type: object
+      description: Flattened attendance row as returned by the `/api/me/*` routes.
+      required: [id, date, subjectName, status]
+      properties:
+        id: { type: string }
+        date: { type: string, format: date }
+        subjectName: { type: string }
+        status: { $ref: "#/components/schemas/AttendanceStatus" }
+
+    LeaveRequestSummary:
+      type: object
+      required: [id, type, date, reason, status]
+      properties:
+        id: { type: string }
+        type: { $ref: "#/components/schemas/LeaveType" }
+        date: { type: string, format: date }
+        reason: { type: string }
+        status: { $ref: "#/components/schemas/LeaveStatus" }
+
+    TeacherSlot:
+      type: object
+      required: [scheduleId, startTime, endTime, className, subjectName]
+      properties:
+        scheduleId: { type: string }
+        startTime: { type: string, example: "07:00" }
+        endTime: { type: string, example: "08:30" }
+        className: { type: string }
+        subjectName: { type: string }
+        sessionId:
+          type: [string, "null"]
+          description: Null until the teacher opens the session.
+        sessionStatus:
+          oneOf:
+            - { $ref: "#/components/schemas/SessionStatus" }
+            - { type: "null" }
+
+    ScheduleSlot:
+      type: object
+      description: One weekly timetable row, flattened for `/api/me/schedule`.
+      required:
+        [scheduleId, dayOfWeek, startTime, endTime, className, subjectName]
+      properties:
+        scheduleId: { type: string }
+        dayOfWeek: { $ref: "#/components/schemas/DayOfWeek" }
+        startTime: { type: string, example: "07:00" }
+        endTime: { type: string, example: "08:30" }
+        className: { type: string }
+        subjectName: { type: string }
+        teacherName: { type: string }
+
+    Schedule:
+      type: object
+      description: Raw Prisma Schedule as returned by `/api/attendance/schedules`.
+      properties:
+        id: { type: string }
+        classId: { type: string }
+        subjectId: { type: string }
+        teacherId: { type: string }
+        dayOfWeek: { $ref: "#/components/schemas/DayOfWeek" }
+        startTime: { type: string }
+        endTime: { type: string }
+        academicYear: { type: [string, "null"] }
+        isActive: { type: boolean }
+        schoolClass:
+          type: object
+          properties:
+            id: { type: string }
+            name: { type: string }
+        subject:
+          type: object
+          properties:
+            id: { type: string }
+            name: { type: string }
+        teacher:
+          type: object
+          properties:
+            id: { type: string }
+            user:
+              type: object
+              properties:
+                name: { type: string }
+
+    Session:
+      type: object
+      properties:
+        id: { type: string }
+        scheduleId: { type: string }
+        date: { type: string, format: date-time }
+        status: { $ref: "#/components/schemas/SessionStatus" }
+        openedAt: { type: [string, "null"], format: date-time }
+        closedAt: { type: [string, "null"], format: date-time }
+        qrToken:
+          type: [string, "null"]
+          description: Null for NO_CLASS sessions. Rotates in DYNAMIC mode.
+        qrTokenIssuedAt: { type: [string, "null"], format: date-time }
+        actualTeacherId:
+          type: [string, "null"]
+          description: The substitute, when the scheduled teacher was absent.
+
+    StudentAttendance:
+      type: object
+      properties:
+        id: { type: string }
+        scheduleId: { type: string }
+        studentId: { type: string }
+        sessionId: { type: [string, "null"] }
+        date: { type: string, format: date-time }
+        status: { $ref: "#/components/schemas/AttendanceStatus" }
+        note: { type: [string, "null"] }
+        scanTime: { type: [string, "null"], format: date-time }
+        gpsLat: { type: [number, "null"] }
+        gpsLng: { type: [number, "null"] }
+        gpsValid: { type: [boolean, "null"] }
+        needsReview:
+          type: boolean
+          description: Set when the GPS fix fell outside the allowed radius.
+        method: { $ref: "#/components/schemas/AttendanceMethod" }
+
+    SessionDetail:
+      allOf:
+        - { $ref: "#/components/schemas/Session" }
+        - type: object
+          properties:
+            schedule:
+              type: object
+              properties:
+                schoolClass:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    name: { type: string }
+                    students:
+                      type: array
+                      description: Active students only, ordered by NIS. This is the roster.
+                      items:
+                        allOf:
+                          - { $ref: "#/components/schemas/Student" }
+                          - type: object
+                            properties:
+                              user:
+                                type: object
+                                properties:
+                                  name: { type: string }
+                subject:
+                  type: object
+                  properties:
+                    name: { type: string }
+            studentAttendance:
+              type: array
+              items: { $ref: "#/components/schemas/StudentAttendance" }
+
+    CardScanResult:
+      type: object
+      required: [ok, duplicate, status]
+      properties:
+        ok: { type: boolean, const: true }
+        duplicate:
+          type: boolean
+          description: True when the student was already recorded. Still a success.
+        status: { $ref: "#/components/schemas/AttendanceStatus" }
+        studentName: { type: string }
+        nis: { type: string }
+
+    LeaveRequest:
+      type: object
+      properties:
+        id: { type: string }
+        studentId: { type: string }
+        type: { $ref: "#/components/schemas/LeaveType" }
+        date: { type: string, format: date-time }
+        scheduleId: { type: [string, "null"] }
+        sessionId: { type: [string, "null"] }
+        reason: { type: string }
+        attachment: { type: [string, "null"] }
+        status: { $ref: "#/components/schemas/LeaveStatus" }
+        reviewedAt: { type: [string, "null"], format: date-time }
+        reviewNote: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+        student:
+          type: object
+          properties:
+            nis: { type: string }
+            classId: { type: [string, "null"] }
+            user:
+              type: object
+              properties:
+                name: { type: string }
+            schoolClass:
+              type: object
+              properties:
+                name: { type: string }
+        reviewedBy:
+          type: [object, "null"]
+          properties:
+            name: { type: string }
+
+    Notification:
+      type: object
+      properties:
+        id: { type: string }
+        userId: { type: string }
+        title: { type: string }
+        body: { type: string }
+        type: { $ref: "#/components/schemas/NotificationType" }
+        refId:
+          type: [string, "null"]
+          description: Id of the related record — use it to deep-link.
+        channel: { type: string, default: IN_APP }
+        readAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+
+    CreditScoreEntry:
+      type: object
+      description: One append-only ledger row. `points` is signed.
+      properties:
+        id: { type: string }
+        ownerType: { $ref: "#/components/schemas/CreditOwnerType" }
+        studentId: { type: [string, "null"] }
+        teacherId: { type: [string, "null"] }
+        type: { $ref: "#/components/schemas/CreditEntryType" }
+        category: { type: string }
+        points: { type: integer }
+        note: { type: [string, "null"] }
+        evidence: { type: [string, "null"] }
+        source: { $ref: "#/components/schemas/CreditSource" }
+        createdAt: { type: string, format: date-time }
+        reportedBy:
+          type: [object, "null"]
+          properties:
+            name: { type: string }
+        refSession:
+          type: [object, "null"]
+          properties:
+            date: { type: string, format: date-time }
+            schedule:
+              type: object
+              properties:
+                subject:
+                  type: object
+                  properties:
+                    name: { type: string }
