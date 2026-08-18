@@ -43,8 +43,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
+  // Mobile clients carry their session in an `Authorization: Bearer <jwt>`
+  // header instead of cookies, so `user` is always null for them here. Hand
+  // those API requests to the route handler, which resolves the token through
+  // getCurrentUser() and applies its own check. This is only safe because
+  // every /api/cms handler now guards itself — nothing under a protected
+  // prefix relies on this middleware for authorization any more.
+  const hasBearerToken = /^Bearer\s+\S/i.test(
+    request.headers.get("authorization") ?? "",
+  );
+  const deferToHandler = hasBearerToken && pathname.startsWith("/api/");
+
   // If it's a protected route and user is not authenticated
-  if (!isPublicRoute && !user) {
+  if (!isPublicRoute && !user && !deferToHandler) {
     // For API routes, return 401
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

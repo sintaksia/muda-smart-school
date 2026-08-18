@@ -86,7 +86,11 @@ describe("GET /api/registrations/export", () => {
       id: "u1",
       role: "ADMIN",
     } as SessionUser);
-    vi.mocked(getAllRegistrations).mockResolvedValue([registration]);
+    // getAllRegistrations includes the `student` relation; the export only
+    // reads scalar fields, so a null relation is enough here.
+    vi.mocked(getAllRegistrations).mockResolvedValue([
+      { ...registration, student: null },
+    ] as unknown as Awaited<ReturnType<typeof getAllRegistrations>>);
 
     const response = await GET();
 
