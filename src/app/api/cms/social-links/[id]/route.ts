@@ -16,6 +16,9 @@ interface RouteParams {
 
 export async function GET(request: Request, { params }: RouteParams) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const { id } = await params;
     const socialLink = await getSocialLinkById(id);
 

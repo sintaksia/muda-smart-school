@@ -11,6 +11,9 @@ import { handleApiError } from "@/src/lib/api-error";
 
 export async function GET(request: NextRequest) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const active = request.nextUrl.searchParams.get("active");
     const slides =
       active === "true" ? await getActiveHeroSlides() : await getHeroSlides();

@@ -1,24 +1,55 @@
+import { headers } from "next/headers";
 import { prisma } from "@/src/lib/prisma";
-import { createClient as createServerClient } from "@/src/lib/supabase/server";
+import {
+  createClient as createServerClient,
+  createTokenClient,
+} from "@/src/lib/supabase/server";
 import type { AuthUser, SessionUser } from "../types";
+
+/**
+ * Resolve the Supabase auth user id for the current request.
+ *
+ * Two transports, one result:
+ *  - `Authorization: Bearer <jwt>` — mobile clients, which hold their session
+ *    in the app rather than in cookies.
+ *  - cookies — the web app, via the SSR client.
+ *
+ * A malformed or expired token resolves to `null`, exactly like a missing
+ * cookie, so callers keep returning their existing 401/403.
+ */
+async function resolveAuthUserId(): Promise<string | null> {
+  const bearerToken = (await headers())
+    .get("authorization")
+    ?.match(/^Bearer\s+(.+)$/i)?.[1]
+    ?.trim();
+
+  if (bearerToken) {
+    const { data, error } = await createTokenClient().auth.getUser(bearerToken);
+    return error ? null : (data.user?.id ?? null);
+  }
+
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return user?.id ?? null;
+}
 
 /**
  * Get the current authenticated user from session
  */
 export async function getCurrentUser(): Promise<SessionUser | null> {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser();
+    const authUserId = await resolveAuthUserId();
 
-    if (!authUser) {
+    if (!authUserId) {
       return null;
     }
 
     // Get user data from database
     const dbUser = await prisma.user.findUnique({
-      where: { id: authUser.id },
+      where: { id: authUserId },
       select: {
         id: true,
         email: true,

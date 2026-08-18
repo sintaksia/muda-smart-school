@@ -11,6 +11,9 @@ import { handleApiError } from "@/src/lib/api-error";
 
 export async function GET(request: Request) {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const { searchParams } = new URL(request.url);
     const published = searchParams.get("published");
 

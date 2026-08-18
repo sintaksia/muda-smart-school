@@ -10,6 +10,9 @@ import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET() {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const setting = await getAiChatSetting();
     return NextResponse.json(setting);
   } catch {

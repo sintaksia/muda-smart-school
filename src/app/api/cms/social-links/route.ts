@@ -9,6 +9,9 @@ import { requireCmsAccess } from "@/src/features/auth/utils/api-auth";
 
 export async function GET() {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const socialLinks = await getSocialLinks();
     return NextResponse.json(socialLinks);
   } catch (error) {

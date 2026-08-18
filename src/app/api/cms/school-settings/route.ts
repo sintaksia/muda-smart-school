@@ -10,6 +10,9 @@ import { handleApiError } from "@/src/lib/api-error";
 
 export async function GET() {
   try {
+    const authCheck = await requireCmsAccess();
+    if ("response" in authCheck) return authCheck.response;
+
     const settings = await getAllSettings();
     return NextResponse.json(settings);
   } catch (error) {
