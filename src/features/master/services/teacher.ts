@@ -3,6 +3,13 @@ import { createUser } from "@/src/features/auth/services/users";
 import type { Teacher } from "@prisma/client";
 import type { CreateTeacherInput, UpdateTeacherInput } from "../types";
 
+/** Resolve the Teacher record linked to an authenticated user, if any. */
+export async function getTeacherByUserId(
+  userId: string,
+): Promise<Teacher | null> {
+  return prisma.teacher.findUnique({ where: { userId } });
+}
+
 export async function getTeacherList() {
   return prisma.teacher.findMany({
     include: {
