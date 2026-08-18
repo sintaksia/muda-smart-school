@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getRegistrationById } from "@/src/features/registration/services";
+import { requireAdminAccess } from "@/src/features/auth/utils/api-auth";
 import {
   SPECIALIZATION_LABELS,
   EDUCATION_LABELS,
@@ -84,6 +85,9 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const authCheck = await requireAdminAccess();
+  if ("response" in authCheck) return authCheck.response;
+
   const { id } = await params;
   const reg = await getRegistrationById(id);
 

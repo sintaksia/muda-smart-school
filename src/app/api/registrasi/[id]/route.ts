@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { getCurrentUser } from "@/src/features/auth/services/auth";
-import { canAccessAdmin } from "@/src/features/auth/utils/permissions";
+import { requireAdminAccess } from "@/src/features/auth/utils/api-auth";
 import { REGISTRATION_STATUS_VALUES } from "@/src/lib/constants";
 import {
   getRegistrationById,
@@ -28,22 +27,12 @@ const statusUpdateSchema = z.object({
 });
 
 // All handlers are admin-only: registration records contain applicant PII
-async function requireAdmin(): Promise<NextResponse | null> {
-  const currentUser = await getCurrentUser();
-  if (!currentUser) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  if (!canAccessAdmin(currentUser.role)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-  return null;
-}
 
 // GET: Get single registration by ID
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const authError = await requireAdmin();
-    if (authError) return authError;
+    const authCheck = await requireAdminAccess();
+    if ("response" in authCheck) return authCheck.response;
 
     const { id } = await params;
     const registration = await getRegistrationById(id);
@@ -68,8 +57,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PATCH: Partial update (status update)
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const authError = await requireAdmin();
-    if (authError) return authError;
+    const authCheck = await requireAdminAccess();
+    if ("response" in authCheck) return authCheck.response;
 
     const { id } = await params;
     const body = await request.json();
@@ -100,8 +89,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 // PUT: Full update of registration data
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const authError = await requireAdmin();
-    if (authError) return authError;
+    const authCheck = await requireAdminAccess();
+    if ("response" in authCheck) return authCheck.response;
 
     const { id } = await params;
 
@@ -142,8 +131,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE: Delete registration
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const authError = await requireAdmin();
-    if (authError) return authError;
+    const authCheck = await requireAdminAccess();
+    if ("response" in authCheck) return authCheck.response;
 
     const { id } = await params;
 

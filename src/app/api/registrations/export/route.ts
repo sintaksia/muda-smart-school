@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import { getAllRegistrations } from "@/src/features/registration/services";
 import type { Registration } from "@/src/features/registration/services";
+import { requireAdminAccess } from "@/src/features/auth/utils/api-auth";
 import {
   SPECIALIZATION_LABELS,
   REGISTRATION_STATUS_LABELS,
@@ -39,14 +40,39 @@ function toRow(item: Registration) {
 
 // GET - export all registrations (from page header button)
 export async function GET() {
-  const registrations = await getAllRegistrations();
-  return buildExcelResponse(registrations, "pendaftaran-semua");
+  const authCheck = await requireAdminAccess();
+  if ("response" in authCheck) return authCheck.response;
+
+  try {
+    const registrations = await getAllRegistrations();
+    return buildExcelResponse(registrations, "pendaftaran-semua");
+  } catch (err: unknown) {
+    console.error("Export registrations error:", err);
+    return NextResponse.json(
+      { error: "Gagal mengekspor data pendaftaran" },
+      { status: 500 },
+    );
+  }
 }
 
 // POST - export filtered data (from table export button)
 export async function POST(request: Request) {
-  const body = (await request.json()) as { data: Registration[] };
-  return buildExcelResponse(body.data, "pendaftaran-filtered");
+  const authCheck = await requireAdminAccess();
+  if ("response" in authCheck) return authCheck.response;
+
+  try {
+    const body = (await request.json()) as { data: Registration[] };
+    if (!Array.isArray(body?.data)) {
+      return NextResponse.json({ error: "Data tidak valid" }, { status: 400 });
+    }
+    return buildExcelResponse(body.data, "pendaftaran-filtered");
+  } catch (err: unknown) {
+    console.error("Export registrations error:", err);
+    return NextResponse.json(
+      { error: "Gagal mengekspor data pendaftaran" },
+      { status: 500 },
+    );
+  }
 }
 
 function buildExcelResponse(data: Registration[], filename: string) {
