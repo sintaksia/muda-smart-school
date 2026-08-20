@@ -157,6 +157,34 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/ServerError" }
 
+  /api/me/attendance/settings:
+    get:
+      tags: [Me]
+      summary: Client-visible attendance master rules
+      operationId: getMyAttendanceSettings
+      description: |
+        The slice of the attendance master rules the apps must render against:
+        who shows the QR, who scans it, and whether the token rotates. Readable
+        by any signed-in user (the full table is admin-only at
+        `/api/attendance/settings`). Credit points and thresholds are policy the
+        client never branches on, so they are deliberately absent.
+
+        Cache it for the session and re-read on pull-to-refresh — an admin can
+        change the direction at any time and both apps must follow without a
+        rebuild.
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    { $ref: "#/components/schemas/ClientAttendanceSettings" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
   /api/me/student/dashboard:
     get:
       tags: [Me]
@@ -351,6 +379,82 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /api/attendance/sessions:
+    get:
+      tags: [Sessions]
+      summary: Today's teaching slots and their session state
+      operationId: listSessions
+      description: |
+        Active schedule rows for today (WIB), scoped to the caller's own
+        teacher record — or every class when the caller is an admin. Each row
+        embeds `sessions`, holding today's Session if one has been opened.
+      responses:
+        "200":
+          description: Today's slots
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [date, jadwal]
+                properties:
+                  date:
+                    type: string
+                    pattern: '^\d{4}-\d{2}-\d{2}$'
+                    description: Today's date in WIB.
+                  jadwal:
+                    type: array
+                    description: |
+                      Field name is Indonesian for historical reasons. Items are
+                      Schedules with today's `sessions` embedded (0 or 1 entry).
+                    items:
+                      allOf:
+                        - { $ref: "#/components/schemas/Schedule" }
+                        - type: object
+                          properties:
+                            sessions:
+                              type: array
+                              maxItems: 1
+                              items: { $ref: "#/components/schemas/Session" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotLinkedToTeacher" }
+        "500": { $ref: "#/components/responses/ServerError" }
+    post:
+      tags: [Sessions]
+      summary: Open a class session (Process 1)
+      operationId: openSession
+      description: |
+        Opens today's session for a schedule. Only the scheduled teacher, an
+        assigned substitute, or an admin may open one. Re-opening a session
+        that is already OPEN returns it unchanged; a schedule whose teacher is
+        absent with no substitute yields a `NO_CLASS` session with no QR token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scheduleId]
+              properties:
+                scheduleId: { type: string, minLength: 1 }
+      responses:
+        "201":
+          description: Session opened, or the existing OPEN session
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Session" }
+        "400":
+          description: |
+            Validation failure, or the session cannot be opened — the schedule
+            is inactive, is not scheduled for today, or its session is already
+            closed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/ServerError" }
 
   /api/attendance/sessions/{id}:
@@ -733,8 +837,34 @@ components:
       type: string
       enum: [STUDENT_SCAN, TEACHER_SCAN, BOTH]
       description: |
-        Server-configured scan direction. Read it from the dashboard and render
-        the matching UI — never hardcode a direction.
+        Server-configured scan direction. Read it from
+        `/api/me/attendance/settings` and render the matching UI — never
+        hardcode a direction. `STUDENT_SCAN`: the teacher shows the session
+        QR and students scan it. `TEACHER_SCAN`: students show their ID-card
+        QR and the teacher scans it. `BOTH`: either, whichever happens first.
+    QrMode:
+      type: string
+      enum: [STATIC, DYNAMIC]
+      description: |
+        `STATIC` issues one token for the whole session; `DYNAMIC` rotates it
+        every `qrTokenTtlSeconds`. Clients must not rotate in `STATIC` mode.
+    ClientAttendanceSettings:
+      type: object
+      description: |
+        The rules both apps branch on. `scanMode` decides which side shows the
+        QR and which side scans it.
+      properties:
+        scanMode: { $ref: "#/components/schemas/AttendanceScanMode" }
+        qrMode: { $ref: "#/components/schemas/QrMode" }
+        qrTokenTtlSeconds:
+          type: integer
+          description: Rotation period in DYNAMIC mode; the client must mirror it.
+        sessionGracePeriodMinutes:
+          type: integer
+          description: Minutes after start still counted LATE rather than ABSENT.
+        gpsRadiusMeters: { type: integer }
+        gpsSchoolLat: { type: number }
+        gpsSchoolLng: { type: number }
     SessionStatus:
       type: string
       enum: [OPEN, CLOSED, NO_CLASS]

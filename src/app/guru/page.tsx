@@ -48,7 +48,7 @@ export default async function GuruDashboardPage() {
       </div>
       <SessionList
         items={jadwal.map((row) => ({
-          jadwalId: row.id,
+          scheduleId: row.id,
           jam: `${row.startTime}–${row.endTime}`,
           kelas: row.schoolClass.name,
           mapel: row.subject.name,

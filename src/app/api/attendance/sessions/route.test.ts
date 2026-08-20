@@ -35,7 +35,7 @@ describe("POST /api/attendance/sessions", () => {
 
   it("returns 401 when unauthenticated", async () => {
     vi.mocked(getCurrentUser).mockResolvedValue(null);
-    const response = await POST(buildRequest({ jadwalId: "j1" }));
+    const response = await POST(buildRequest({ scheduleId: "j1" }));
     expect(response.status).toBe(401);
   });
 
@@ -53,7 +53,7 @@ describe("POST /api/attendance/sessions", () => {
     } as Schedule);
     vi.mocked(prisma.teacherAttendance.findFirst).mockResolvedValue(null);
 
-    const response = await POST(buildRequest({ jadwalId: "j1" }));
+    const response = await POST(buildRequest({ scheduleId: "j1" }));
 
     expect(response.status).toBe(403);
     expect(openSession).not.toHaveBeenCalled();
@@ -76,7 +76,7 @@ describe("POST /api/attendance/sessions", () => {
       error: null,
     });
 
-    const response = await POST(buildRequest({ jadwalId: "j1" }));
+    const response = await POST(buildRequest({ scheduleId: "j1" }));
     const data = await response.json();
 
     expect(response.status).toBe(201);
@@ -95,7 +95,7 @@ describe("POST /api/attendance/sessions", () => {
       error: "Jadwal bukan untuk hari ini",
     });
 
-    const response = await POST(buildRequest({ jadwalId: "j1" }));
+    const response = await POST(buildRequest({ scheduleId: "j1" }));
     const data = await response.json();
 
     expect(response.status).toBe(400);

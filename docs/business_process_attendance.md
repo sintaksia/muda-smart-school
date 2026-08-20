@@ -40,6 +40,11 @@ Store these as system settings, editable by Admin — do not hardcode values in 
   - `TEACHER_SCAN` — the teacher scans each student's ID card (Process 2b)
   - `BOTH` — either is accepted; each student is recorded by whichever happens first
 
+Admin edits the whole table through `GET/PUT /api/attendance/settings`. The mobile and web clients
+read only the subset they must render against — `scanMode`, `qrMode`, `qrTokenTtlSeconds`, the grace
+period and the GPS fence — from `GET /api/me/attendance/settings`, which any signed-in user may call.
+Credit points and thresholds stay admin-only: no client branches on them.
+
 ---
 
 ## 2. Process 0 — Schedule Mapping (Teacher × Mata Pelajaran × Class × Classroom × Time)

@@ -7,7 +7,7 @@ import { openSession } from "@/src/features/attendance/services/session";
 import { toWibParts, dateOnlyUtc } from "@/src/features/attendance/utils/time";
 
 const openSessionSchema = z.object({
-  jadwalId: z.string({ message: "Jadwal wajib dipilih" }).min(1),
+  scheduleId: z.string({ message: "Jadwal wajib dipilih" }).min(1),
 });
 
 // GET /api/attendance/sessions - today's schedule entries + session state
@@ -64,6 +64,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const result = openSessionSchema.safeParse(body);
     if (!result.success) {
+      console.warn("Open session validation failed:", result.error.flatten());
       return NextResponse.json(
         { error: "Data tidak valid", details: result.error.flatten() },
         { status: 400 },
@@ -78,20 +79,20 @@ export async function POST(request: Request) {
       if (!teacher) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
-      const jadwal = await prisma.schedule.findUnique({
-        where: { id: result.data.jadwalId },
+      const schedule = await prisma.schedule.findUnique({
+        where: { id: result.data.scheduleId },
       });
-      if (!jadwal) {
+      if (!schedule) {
         return NextResponse.json(
           { error: "Jadwal tidak ditemukan" },
           { status: 404 },
         );
       }
       // The scheduled teacher — or the assigned substitute — may open.
-      if (jadwal.teacherId !== teacher.id) {
+      if (schedule.teacherId !== teacher.id) {
         const substitution = await prisma.teacherAttendance.findFirst({
           where: {
-            scheduleId: jadwal.id,
+            scheduleId: schedule.id,
             date: dateOnlyUtc(toWibParts(new Date()).dateISO),
             substituteTeacherId: teacher.id,
           },
@@ -102,7 +103,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const { session, error } = await openSession(result.data.jadwalId, {
+    const { session, error } = await openSession(result.data.scheduleId, {
       byTeacherId: teacher?.id,
     });
     if (error || !session) {

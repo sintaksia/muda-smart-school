@@ -12,7 +12,7 @@ import {
 } from "@/src/lib/constants";
 
 interface SessionItem {
-  jadwalId: string;
+  scheduleId: string;
   jam: string;
   kelas: string;
   mapel: string;
@@ -28,13 +28,13 @@ export function SessionList({ items }: SessionListProps) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  async function openSession(jadwalId: string): Promise<void> {
-    setBusyId(jadwalId);
+  async function openSession(scheduleId: string): Promise<void> {
+    setBusyId(scheduleId);
     try {
       const response = await fetch("/api/attendance/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jadwalId }),
+        body: JSON.stringify({ scheduleId }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -65,7 +65,7 @@ export function SessionList({ items }: SessionListProps) {
     <div className="space-y-3">
       {items.map((item) => (
         <div
-          key={item.jadwalId}
+          key={item.scheduleId}
           className="border-border rounded-md hover:shadow-sm hover:border-neutral-300 flex items-center justify-between border bg-white p-5 transition-[box-shadow,border-color] duration-150"
         >
           <div className="flex items-center gap-4">
@@ -98,12 +98,12 @@ export function SessionList({ items }: SessionListProps) {
             ) : !item.sesiId ? (
               <Button
                 type="button"
-                disabled={busyId === item.jadwalId}
-                onClick={() => openSession(item.jadwalId)}
+                disabled={busyId === item.scheduleId}
+                onClick={() => openSession(item.scheduleId)}
                 className="h-11 gap-2 px-5 font-semibold"
               >
                 <QrCode className="h-5 w-5" strokeWidth={1.75} />
-                {busyId === item.jadwalId ? "Membuka..." : "Buka Sesi"}
+                {busyId === item.scheduleId ? "Membuka..." : "Buka Sesi"}
               </Button>
             ) : null}
           </div>
