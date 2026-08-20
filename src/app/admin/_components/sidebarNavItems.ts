@@ -4,7 +4,6 @@ import {
   GraduationCap,
   FileText,
   Settings,
-  Bell,
   Calendar,
   BookOpen,
   Globe,
@@ -169,20 +168,6 @@ export const attendanceMenuItems: SidebarNavItem[] = [
   {
     title: "Pengaturan Absensi",
     url: "/admin/absensi/pengaturan",
-    icon: Settings,
-  },
-];
-
-// Pengaturan
-export const settingsMenuItems: SidebarNavItem[] = [
-  {
-    title: "Notifikasi",
-    url: "/admin/notifikasi",
-    icon: Bell,
-  },
-  {
-    title: "Pengaturan",
-    url: "/admin/pengaturan",
     icon: Settings,
   },
 ];

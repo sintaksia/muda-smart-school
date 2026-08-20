@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { APP_VERSION } from "@/src/lib/constants";
-import { Globe, School, Activity, Settings, UserCog } from "lucide-react";
+import { Globe, School, Activity, UserCog } from "lucide-react";
 
 import {
   Sidebar,
@@ -28,7 +28,6 @@ import {
   cmsMenuItems,
   managementMenuItems,
   attendanceMenuItems,
-  settingsMenuItems,
   userManagementItems,
 } from "./sidebarNavItems";
 import type { SessionUser } from "@/src/features/auth/types";
@@ -98,12 +97,6 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           label="Absensi & Kredit"
           icon={Activity}
           items={attendanceMenuItems}
-        />
-
-        <SidebarCollapsibleGroup
-          label="Pengaturan"
-          icon={Settings}
-          items={settingsMenuItems}
         />
 
         {showUserManagement && (
