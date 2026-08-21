@@ -292,10 +292,10 @@ export const EMPLOYMENT_STATUS_LABELS: Record<string, string> =
   Object.fromEntries(employmentStatusOptions.map((o) => [o.value, o.label]));
 
 export const studentStatusOptions = [
-  { value: "AKTIF", label: "Aktif", badge: "success" as const },
-  { value: "LULUS", label: "Lulus", badge: "info" as const },
-  { value: "PINDAH", label: "Pindah", badge: "warning" as const },
-  { value: "DROPOUT", label: "Dropout", badge: "destructive" as const },
+  { value: "ACTIVE", label: "Aktif", badge: "success" as const },
+  { value: "GRADUATED", label: "Lulus", badge: "info" as const },
+  { value: "TRANSFERRED", label: "Pindah", badge: "warning" as const },
+  { value: "DROPPED_OUT", label: "Dropout", badge: "destructive" as const },
 ] as const;
 
 export const STUDENT_STATUS_VALUES = studentStatusOptions.map((o) => o.value);
@@ -308,6 +308,42 @@ export const STUDENT_STATUS_BADGES: Record<
   string,
   "success" | "info" | "warning" | "destructive"
 > = Object.fromEntries(studentStatusOptions.map((o) => [o.value, o.badge]));
+
+/**
+ * What happens to one student in a yearly class promotion. RETAIN behaves like
+ * PROMOTE — both just move the student to a class in the new year — but stays a
+ * separate action so reports can tell a held-back student from a promoted one.
+ */
+export const promotionActionOptions = [
+  { value: "PROMOTE", label: "Naik Kelas", badge: "success" as const },
+  { value: "RETAIN", label: "Tinggal Kelas", badge: "warning" as const },
+  { value: "GRADUATE", label: "Lulus", badge: "info" as const },
+  { value: "EXIT", label: "Keluar", badge: "destructive" as const },
+] as const;
+
+export const PROMOTION_ACTION_VALUES = promotionActionOptions.map(
+  (o) => o.value,
+);
+
+export const PROMOTION_ACTION_LABELS: Record<string, string> =
+  Object.fromEntries(promotionActionOptions.map((o) => [o.value, o.label]));
+
+export const PROMOTION_ACTION_BADGES: Record<
+  string,
+  "success" | "info" | "warning" | "destructive"
+> = Object.fromEntries(promotionActionOptions.map((o) => [o.value, o.badge]));
+
+/** Actions that move a student into a class, so a destination is required. */
+export const PROMOTION_ACTIONS_NEEDING_CLASS = ["PROMOTE", "RETAIN"] as const;
+
+/** Terminal statuses an EXIT may resolve to, derived from the status options. */
+export const promotionExitStatusOptions = studentStatusOptions.filter(
+  (option) => option.value === "TRANSFERRED" || option.value === "DROPPED_OUT",
+);
+
+export const PROMOTION_EXIT_STATUS_VALUES = promotionExitStatusOptions.map(
+  (o) => o.value,
+);
 
 export const gradeLevelOptions = [
   { value: 10, label: "Kelas 10" },

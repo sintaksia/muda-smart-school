@@ -32,7 +32,7 @@ const STUDENT = {
   id: "s1",
   nis: "1001",
   classId: "class-1",
-  status: "AKTIF",
+  status: "ACTIVE",
   user: { name: "Ani" },
 } as unknown as Student;
 
@@ -177,7 +177,7 @@ describe("recordCardScan", () => {
   it("rejects a card of a student who is no longer active", async () => {
     vi.mocked(prisma.student.findUnique).mockResolvedValue({
       ...STUDENT,
-      status: "LULUS",
+      status: "GRADUATED",
     } as unknown as Student);
 
     const result = await recordCardScan(

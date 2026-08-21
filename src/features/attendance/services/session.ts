@@ -27,7 +27,7 @@ export async function openSession(
   const schedule = await prisma.schedule.findUnique({
     where: { id: scheduleId },
     include: {
-      schoolClass: { include: { students: { where: { status: "AKTIF" } } } },
+      schoolClass: { include: { students: { where: { status: "ACTIVE" } } } },
     },
   });
   if (!schedule || !schedule.isActive) {

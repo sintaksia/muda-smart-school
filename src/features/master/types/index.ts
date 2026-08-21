@@ -3,6 +3,7 @@ import type {
   Education,
   Specialization,
   EmploymentStatus,
+  PromotionAction,
   StudentStatus,
 } from "@prisma/client";
 
@@ -132,15 +133,84 @@ export interface StudentImportResult {
   failures: StudentImportFailure[];
 }
 
-export interface StudentPromotionFailure {
+export interface StudentIntakeFailure {
   registrationNumber: string;
   name: string;
   error: string;
 }
 
 /** Outcome of syncing ACCEPTED registrations into the student table. */
-export interface StudentPromotionResult {
+export interface StudentIntakeResult {
   created: number;
   credentials: StudentCredential[];
-  failures: StudentPromotionFailure[];
+  failures: StudentIntakeFailure[];
+}
+
+/* ---- Yearly class promotion ---------------------------------------------- */
+
+export interface PromotionClassRef {
+  id: string;
+  name: string;
+  gradeLevel: number;
+  specialization: string;
+}
+
+export interface PromotionStudentPreview {
+  studentId: string;
+  name: string;
+  nis: string;
+  defaultAction: PromotionAction;
+}
+
+/** One source class with the students it is about to hand over. */
+export interface PromotionClassPreview extends PromotionClassRef {
+  /** Null when this class graduates instead of moving up. */
+  targetGradeLevel: number | null;
+  /** Null when the destination is ambiguous — the admin picks it. */
+  suggestedClassId: string | null;
+  students: PromotionStudentPreview[];
+}
+
+export interface PromotionPreview {
+  fromAcademicYear: string;
+  toAcademicYear: string;
+  classes: PromotionClassPreview[];
+  /** Every class in the destination year, for the dropdowns. */
+  targetClasses: PromotionClassRef[];
+  /** Active students with no class — outside the run, but worth flagging. */
+  unplacedStudents: { studentId: string; name: string; nis: string }[];
+}
+
+export interface PromotionEntryInput {
+  studentId: string;
+  action: PromotionAction;
+  targetClassId?: string | null;
+  exitStatus?: "TRANSFERRED" | "DROPPED_OUT" | null;
+}
+
+export interface PromotionInput {
+  fromAcademicYear: string;
+  toAcademicYear: string;
+  entries: PromotionEntryInput[];
+}
+
+export interface PromotionResult {
+  batchId: string;
+  promoted: number;
+  retained: number;
+  graduated: number;
+  exited: number;
+}
+
+export interface PromotionBatchRow {
+  id: string;
+  fromAcademicYear: string;
+  toAcademicYear: string;
+  promotedCount: number;
+  retainedCount: number;
+  graduatedCount: number;
+  exitedCount: number;
+  executedByName: string | null;
+  revertedAt: Date | null;
+  createdAt: Date;
 }

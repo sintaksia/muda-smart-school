@@ -14,7 +14,7 @@ function prismaStudent(
     specialization: "SOFTWARE_AND_GAME_DEVELOPMENT",
     angkatan: 2024,
     classId: "k1",
-    status: "AKTIF",
+    status: "ACTIVE",
     gender: "MALE",
     nik: null,
     birthPlace: "Bandung",

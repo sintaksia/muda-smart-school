@@ -42,3 +42,28 @@ export const STUDENT_SHEET_REQUIRED_FIELDS: StudentSheetField[] = [
   "specialization",
   "angkatan",
 ];
+
+/**
+ * Academic-year master setting, stored as a SchoolSetting row (group
+ * "academic"). Kept here rather than in a feature service so prisma/seed.ts can
+ * import it by relative path, the same arrangement the attendance rules use.
+ *
+ * The seed value is intentionally empty: the real fallback is computed from
+ * today's date (see services/academicYear.ts), so a fresh install is never
+ * pinned to whichever year the seed happened to be written in.
+ */
+export const ACADEMIC_SETTINGS_GROUP = "academic";
+
+export const ACTIVE_ACADEMIC_YEAR_KEY = "ACTIVE_ACADEMIC_YEAR";
+
+export const ACADEMIC_SETTING_DEFINITIONS = [
+  {
+    key: ACTIVE_ACADEMIC_YEAR_KEY,
+    value: "",
+    label: "Tahun Ajaran Aktif",
+    type: "TEXT" as const,
+  },
+];
+
+/** Month (1–12) a new academic year starts in. July, per the national calendar. */
+export const ACADEMIC_YEAR_START_MONTH = 7;

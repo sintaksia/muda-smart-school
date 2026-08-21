@@ -46,7 +46,7 @@ export async function processSessionDeductions(
       schedule: {
         include: {
           schoolClass: {
-            include: { students: { where: { status: "AKTIF" } } },
+            include: { students: { where: { status: "ACTIVE" } } },
           },
         },
       },

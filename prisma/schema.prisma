@@ -28,6 +28,7 @@ model User {
   leaveRequestsSubmitted    LeaveRequest[]      @relation("IzinSubmitter")
   leaveRequestsReviewed     LeaveRequest[]      @relation("IzinReviewer")
   teacherAttendanceReported TeacherAttendance[] @relation("TeacherAttendanceReporter")
+  promotionBatches          PromotionBatch[]    @relation("PromotionExecutor")
 
   @@map("users")
 }
@@ -91,7 +92,7 @@ model Student {
   specialization Specialization @map("specialization")
   angkatan       Int
   classId        String?        @map("class_id")
-  status         StudentStatus  @default(AKTIF)
+  status         StudentStatus  @default(ACTIVE)
 
   // Opaque token printed as the QR on the student's ID card. Regenerating it
   // revokes a lost card without touching the student's identity.
@@ -119,12 +120,13 @@ model Student {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user              User                @relation(fields: [userId], references: [id])
-  registration      Registration?       @relation(fields: [registrationId], references: [id])
-  schoolClass       SchoolClass?        @relation(fields: [classId], references: [id])
+  user              User                  @relation(fields: [userId], references: [id])
+  registration      Registration?         @relation(fields: [registrationId], references: [id])
+  schoolClass       SchoolClass?          @relation(fields: [classId], references: [id])
   studentAttendance StudentAttendance[]
   creditScores      CreditScore[]
   leaveRequests     LeaveRequest[]
+  classHistories    StudentClassHistory[]
 
   @@map("students")
 }
@@ -166,9 +168,10 @@ model SchoolClass {
   createdAt         DateTime       @default(now()) @map("created_at")
   updatedAt         DateTime       @updatedAt @map("updated_at")
 
-  homeroomTeacher Teacher?   @relation(fields: [homeroomTeacherId], references: [id])
-  students        Student[]
-  schedules       Schedule[]
+  homeroomTeacher  Teacher?              @relation(fields: [homeroomTeacherId], references: [id])
+  students         Student[]
+  schedules        Schedule[]
+  studentHistories StudentClassHistory[]
 
   @@unique([name, academicYear])
   @@map("school_classes")
@@ -606,6 +609,63 @@ model SchoolSetting {
   @@map("school_settings")
 }
 
+/**
+ * One row per (student, academic year): the class a student belonged to, and
+ * the status they held, during that year. Student.classId only ever holds the
+ * current placement, so without this a report on a past year would be scored
+ * against the class the student sits in today.
+ */
+model StudentClassHistory {
+  id           String           @id @default(cuid())
+  studentId    String           @map("student_id")
+  classId      String?          @map("class_id")
+  academicYear String           @map("academic_year")
+  status       StudentStatus    @default(ACTIVE)
+  /// The action that produced this row. Null for rows created by the backfill.
+  action       PromotionAction?
+  batchId      String?          @map("batch_id")
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  student     Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  schoolClass SchoolClass?    @relation(fields: [classId], references: [id])
+  batch       PromotionBatch? @relation(fields: [batchId], references: [id])
+
+  @@unique([studentId, academicYear])
+  @@index([academicYear, classId])
+  @@index([batchId])
+  @@map("student_class_histories")
+}
+
+/**
+ * One run of the yearly class promotion. Kept so the operation can be audited
+ * and — while nothing has been built on top of the new year yet — reverted.
+ */
+model PromotionBatch {
+  id               String    @id @default(cuid())
+  fromAcademicYear String    @map("from_academic_year")
+  toAcademicYear   String    @map("to_academic_year")
+  promotedCount    Int       @default(0) @map("promoted_count")
+  retainedCount    Int       @default(0) @map("retained_count")
+  graduatedCount   Int       @default(0) @map("graduated_count")
+  exitedCount      Int       @default(0) @map("exited_count")
+  executedById     String?   @map("executed_by_id")
+  revertedAt       DateTime? @map("reverted_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  executedBy User?                 @relation("PromotionExecutor", fields: [executedById], references: [id])
+  histories  StudentClassHistory[]
+
+  @@map("promotion_batches")
+}
+
+enum PromotionAction {
+  PROMOTE
+  RETAIN
+  GRADUATE
+  EXIT
+}
+
 enum UserRole {
   SUPER_ADMIN
   ADMIN
@@ -728,10 +788,10 @@ enum RegistrationStatus {
 }
 
 enum StudentStatus {
-  AKTIF
-  LULUS
-  PINDAH
-  DROPOUT
+  ACTIVE
+  GRADUATED
+  TRANSFERRED
+  DROPPED_OUT
 }
 
 enum EmploymentStatus {

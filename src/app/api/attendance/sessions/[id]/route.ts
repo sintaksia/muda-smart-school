@@ -50,7 +50,7 @@ export async function GET(request: Request, { params }: RouteParams) {
             schoolClass: {
               include: {
                 students: {
-                  where: { status: "AKTIF" },
+                  where: { status: "ACTIVE" },
                   include: { user: { select: { name: true } } },
                   orderBy: { nis: "asc" },
                 },

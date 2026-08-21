@@ -15,10 +15,10 @@ const SPECIALIZATION_TUPLE = SPECIALIZATION_VALUES as [
   "ACCOUNTING_AND_INSTITUTIONAL_FINANCE",
 ];
 const STUDENT_STATUS_TUPLE = STUDENT_STATUS_VALUES as [
-  "AKTIF",
-  "LULUS",
-  "PINDAH",
-  "DROPOUT",
+  "ACTIVE",
+  "GRADUATED",
+  "TRANSFERRED",
+  "DROPPED_OUT",
 ];
 
 /** Optional free-text field: an empty cell/input means "not filled in". */

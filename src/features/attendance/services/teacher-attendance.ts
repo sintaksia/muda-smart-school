@@ -98,7 +98,7 @@ export async function reportTeacherAbsence(
 
     const waliUserId = await getWaliKelasUserId(jadwal.classId);
     const students = await prisma.student.findMany({
-      where: { classId: jadwal.classId, status: "AKTIF" },
+      where: { classId: jadwal.classId, status: "ACTIVE" },
       select: { userId: true },
     });
     await notifyUsers(

@@ -21,7 +21,7 @@ export interface StudentCard {
  */
 export async function ensureCardTokens(classId: string): Promise<number> {
   const pending = await prisma.student.findMany({
-    where: { classId, status: "AKTIF", cardToken: null },
+    where: { classId, status: "ACTIVE", cardToken: null },
     select: { id: true },
   });
 
@@ -76,7 +76,7 @@ export async function getStudentCard(
       schoolClass: { select: { name: true } },
     },
   });
-  if (!student || student.status !== "AKTIF") {
+  if (!student || student.status !== "ACTIVE") {
     return null;
   }
 
@@ -107,7 +107,7 @@ export async function getClassCards(classId: string): Promise<StudentCard[]> {
   await ensureCardTokens(classId);
 
   const students = await prisma.student.findMany({
-    where: { classId, status: "AKTIF" },
+    where: { classId, status: "ACTIVE" },
     select: {
       id: true,
       nis: true,

@@ -44,7 +44,7 @@ export async function recordCardScan(
 
   // 4. Enrollment check
   if (
-    student.status !== "AKTIF" ||
+    student.status !== "ACTIVE" ||
     student.classId !== session.schedule.classId
   ) {
     return { ok: false, error: "Tidak terdaftar di kelas ini" };

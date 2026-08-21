@@ -29,7 +29,7 @@ function student(overrides: Partial<StudentRow> = {}): StudentRow {
     specialization: "SOFTWARE_AND_GAME_DEVELOPMENT",
     angkatan: 2024,
     className: "X PPLG 1",
-    status: "AKTIF",
+    status: "ACTIVE",
     gender: "MALE",
     nik: null,
     birthPlace: null,

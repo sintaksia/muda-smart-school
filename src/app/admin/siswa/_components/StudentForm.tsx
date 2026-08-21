@@ -41,7 +41,7 @@ function toDefaultValues(student: StudentRow | null): CreateStudentFormData {
       "AUTOMOTIVE_ENGINEERING") as CreateStudentFormData["specialization"],
     angkatan: student?.angkatan ?? new Date().getFullYear(),
     classId: student?.classId ?? null,
-    status: (student?.status ?? "AKTIF") as CreateStudentFormData["status"],
+    status: (student?.status ?? "ACTIVE") as CreateStudentFormData["status"],
     gender: student?.gender ?? null,
     nik: student?.nik ?? null,
     birthPlace: student?.birthPlace ?? null,

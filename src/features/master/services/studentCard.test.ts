@@ -83,7 +83,7 @@ describe("getStudentCard", () => {
     vi.mocked(prisma.student.findUnique).mockResolvedValue({
       id: "s1",
       nis: "1001",
-      status: "AKTIF",
+      status: "ACTIVE",
       cardToken: "tok-1",
       user: { name: "Ani", avatar: null },
       schoolClass: { name: "X RPL 1" },
@@ -106,7 +106,7 @@ describe("getStudentCard", () => {
     vi.mocked(prisma.student.findUnique).mockResolvedValue({
       id: "s1",
       nis: "1001",
-      status: "AKTIF",
+      status: "ACTIVE",
       cardToken: null,
       user: { name: "Ani", avatar: null },
       schoolClass: { name: "X RPL 1" },
@@ -124,7 +124,7 @@ describe("getStudentCard", () => {
   it("returns null for a student who is no longer active", async () => {
     vi.mocked(prisma.student.findUnique).mockResolvedValue({
       id: "s1",
-      status: "LULUS",
+      status: "GRADUATED",
       cardToken: "tok-1",
     } as unknown as Student);
 

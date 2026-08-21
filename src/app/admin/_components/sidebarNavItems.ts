@@ -22,6 +22,7 @@ import {
   Share2,
   IdCard,
   ClipboardList,
+  ArrowUpNarrowWide,
 } from "lucide-react";
 
 import { ENTITY_LABELS } from "@/src/lib/constants";
@@ -121,6 +122,11 @@ export const managementMenuItems: SidebarNavItem[] = [
     title: `Kartu ${ENTITY_LABELS.STUDENT}`,
     url: "/admin/siswa/kartu",
     icon: IdCard,
+  },
+  {
+    title: "Kenaikan Kelas",
+    url: "/admin/siswa/kenaikan-kelas",
+    icon: ArrowUpNarrowWide,
   },
   {
     title: ENTITY_LABELS.TEACHER,

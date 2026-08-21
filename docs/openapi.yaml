@@ -812,7 +812,7 @@ components:
       enum: [ACTIVE, INACTIVE, SUSPENDED]
     StudentStatus:
       type: string
-      enum: [AKTIF, LULUS, PINDAH, DROPOUT]
+      enum: [ACTIVE, GRADUATED, TRANSFERRED, DROPPED_OUT]
     Gender:
       type: string
       enum: [MALE, FEMALE]

@@ -1,18 +1,20 @@
 import { PageHeader } from "../_components/PageHeader";
 import { ENTITY_LABELS } from "@/src/lib/constants";
 import { getClassList } from "@/src/features/master/services/schoolClass";
+import { getActiveAcademicYear } from "@/src/features/master/services/academicYear";
 import { prisma } from "@/src/lib/prisma";
 import { ClassManager } from "./_components/ClassManager";
 
 export const dynamic = "force-dynamic";
 
 export default async function KelasPage() {
-  const [classList, teacherList] = await Promise.all([
+  const [classList, teacherList, activeAcademicYear] = await Promise.all([
     getClassList(),
     prisma.teacher.findMany({
       select: { id: true, user: { select: { name: true } } },
       orderBy: { user: { name: "asc" } },
     }),
+    getActiveAcademicYear(),
   ]);
 
   return (
@@ -30,12 +32,13 @@ export default async function KelasPage() {
           academicYear: schoolClass.academicYear,
           homeroomTeacherId: schoolClass.homeroomTeacher?.id ?? null,
           homeroomTeacher: schoolClass.homeroomTeacher?.user.name ?? null,
-          jumlahSiswa: schoolClass._count.students,
+          studentCount: schoolClass._count.students,
         }))}
-        teacherOptions={teacherList.map((t) => ({
-          id: t.id,
-          name: t.user.name,
+        teacherOptions={teacherList.map((teacher) => ({
+          id: teacher.id,
+          name: teacher.user.name,
         }))}
+        activeAcademicYear={activeAcademicYear}
       />
     </div>
   );

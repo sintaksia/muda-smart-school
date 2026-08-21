@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { DeleteRowButton } from "@/src/app/admin/_components/DeleteRowButton";
+import { ClassAcademicYearFilter } from "./ClassAcademicYearFilter";
 import { SelectField } from "@/src/components/common/SelectField";
 import {
   ADMIN_FIELD_CLASS,
@@ -25,16 +26,39 @@ export interface ClassRow {
   academicYear: string;
   homeroomTeacherId: string | null;
   homeroomTeacher: string | null;
-  jumlahSiswa: number;
+  studentCount: number;
 }
 
 interface ClassManagerProps {
   classList: ClassRow[];
   teacherOptions: { id: string; name: string }[];
+  /** Preselected in the filter, so the table opens on the year in progress. */
+  activeAcademicYear: string;
 }
 
-export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
+export function ClassManager({
+  classList,
+  teacherOptions,
+  activeAcademicYear,
+}: ClassManagerProps) {
   const router = useRouter();
+  const [yearFilter, setYearFilter] = useState<string>(activeAcademicYear);
+
+  const academicYears = useMemo(
+    () =>
+      Array.from(new Set(classList.map((row) => row.academicYear))).sort((a, b) =>
+        b.localeCompare(a),
+      ),
+    [classList],
+  );
+
+  const visibleClasses = useMemo(
+    () =>
+      yearFilter
+        ? classList.filter((row) => row.academicYear === yearFilter)
+        : classList,
+    [classList, yearFilter],
+  );
   const currentYear = new Date().getFullYear();
   const [name, setName] = useState<string>("");
   const [gradeLevel, setGradeLevel] = useState<string>("10");
@@ -171,6 +195,13 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
         </div>
       </form>
 
+      <ClassAcademicYearFilter
+        value={yearFilter}
+        onChange={setYearFilter}
+        academicYears={academicYears}
+        totalShown={visibleClasses.length}
+      />
+
       <section className="border-border rounded-md border bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -185,7 +216,7 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
               </tr>
             </thead>
             <tbody>
-              {classList.map((row) => (
+              {visibleClasses.map((row) => (
                 <tr
                   key={row.id}
                   className="border-border border-b last:border-b-0"
@@ -213,7 +244,7 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
                     />
                   </td>
                   <td className="text-foreground px-4 py-3 text-right font-semibold tabular-nums">
-                    {row.jumlahSiswa}
+                    {row.studentCount}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <DeleteRowButton
@@ -223,13 +254,15 @@ export function ClassManager({ classList, teacherOptions }: ClassManagerProps) {
                   </td>
                 </tr>
               ))}
-              {classList.length === 0 && (
+              {visibleClasses.length === 0 && (
                 <tr>
                   <td
                     colSpan={6}
                     className="text-muted-foreground px-5 py-12 text-center"
                   >
-                    Belum ada kelas.
+                    {classList.length === 0
+                      ? "Belum ada kelas."
+                      : "Tidak ada kelas pada tahun ajaran ini."}
                   </td>
                 </tr>
               )}

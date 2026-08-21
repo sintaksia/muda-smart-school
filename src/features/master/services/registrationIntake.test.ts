@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "@/src/lib/prisma";
 import { createStudentFromRegistration } from "@/src/features/student/services/student.service";
 import {
-  getPendingPromotionCount,
-  promoteAcceptedRegistrations,
-} from "./studentPromotion";
+  getPendingIntakeCount,
+  intakeAcceptedRegistrations,
+} from "./registrationIntake";
 import type { Registration, Student, User } from "@prisma/client";
 
 vi.mock("@/src/lib/prisma", () => ({
@@ -40,22 +40,22 @@ beforeEach(() => {
   });
 });
 
-describe("getPendingPromotionCount", () => {
+describe("getPendingIntakeCount", () => {
   it("counts accepted registrations with no student yet", async () => {
     vi.mocked(prisma.registration.count).mockResolvedValue(3);
 
-    await expect(getPendingPromotionCount()).resolves.toBe(3);
+    await expect(getPendingIntakeCount()).resolves.toBe(3);
     expect(prisma.registration.count).toHaveBeenCalledWith({
       where: { status: "ACCEPTED", student: null },
     });
   });
 });
 
-describe("promoteAcceptedRegistrations", () => {
+describe("intakeAcceptedRegistrations", () => {
   it("issues a NIS from the intake year and mints an email when there is none", async () => {
     vi.mocked(prisma.registration.findMany).mockResolvedValue([registration()]);
 
-    const result = await promoteAcceptedRegistrations("admin-1");
+    const result = await intakeAcceptedRegistrations("admin-1");
 
     expect(result.created).toBe(1);
     expect(result.credentials[0]).toEqual({
@@ -79,7 +79,7 @@ describe("promoteAcceptedRegistrations", () => {
       registration({ studentEmail: "dadan@contoh.sch.id" }),
     ]);
 
-    const result = await promoteAcceptedRegistrations();
+    const result = await intakeAcceptedRegistrations();
 
     expect(result.credentials[0].email).toBe("dadan@contoh.sch.id");
   });
@@ -92,7 +92,7 @@ describe("promoteAcceptedRegistrations", () => {
       registration({ id: "reg-3", studentEmail: shared }),
     ]);
 
-    const result = await promoteAcceptedRegistrations();
+    const result = await intakeAcceptedRegistrations();
 
     expect(result.created).toBe(3);
     expect(result.credentials.map((c) => c.email)).toEqual([
@@ -110,7 +110,7 @@ describe("promoteAcceptedRegistrations", () => {
       registration({ studentEmail: "dadan@contoh.sch.id" }),
     ]);
 
-    const result = await promoteAcceptedRegistrations();
+    const result = await intakeAcceptedRegistrations();
 
     expect(result.credentials[0].email).toBe("2026001@siswa.muda.sch.id");
   });
@@ -121,7 +121,7 @@ describe("promoteAcceptedRegistrations", () => {
     ] as User[]);
     vi.mocked(prisma.registration.findMany).mockResolvedValue([registration()]);
 
-    const result = await promoteAcceptedRegistrations();
+    const result = await intakeAcceptedRegistrations();
 
     expect(result.created).toBe(1);
     expect(result.credentials[0]).toMatchObject({
@@ -140,7 +140,7 @@ describe("promoteAcceptedRegistrations", () => {
       registration({ id: "reg-2", registrationNumber: "SPMB-2026-154" }),
     ]);
 
-    const result = await promoteAcceptedRegistrations();
+    const result = await intakeAcceptedRegistrations();
 
     expect(result.credentials.map((c) => c.nis)).toEqual([
       "2026005",
@@ -148,7 +148,7 @@ describe("promoteAcceptedRegistrations", () => {
     ]);
   });
 
-  it("reports a failed registration and still promotes the others", async () => {
+  it("reports a failed registration and still processes the others", async () => {
     vi.mocked(prisma.registration.findMany).mockResolvedValue([
       registration(),
       registration({ id: "reg-2", registrationNumber: "SPMB-2026-154" }),
@@ -157,7 +157,7 @@ describe("promoteAcceptedRegistrations", () => {
       .mockResolvedValueOnce({ student: null, error: "Email sudah terdaftar" })
       .mockResolvedValueOnce({ student: { id: "s2" } as Student, error: null });
 
-    const result = await promoteAcceptedRegistrations();
+    const result = await intakeAcceptedRegistrations();
 
     expect(result.created).toBe(1);
     expect(result.failures).toEqual([

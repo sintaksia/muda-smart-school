@@ -151,7 +151,7 @@ export async function createStudent(
         specialization: input.specialization,
         angkatan: input.angkatan,
         classId: input.classId || null,
-        status: input.status ?? "AKTIF",
+        status: input.status ?? "ACTIVE",
         ...toProfileData(input),
       },
     });
@@ -216,7 +216,7 @@ export async function updateStudent(
 
 /**
  * Hard-delete a student and their login. Blocked while attendance, credit or
- * leave records reference them — those students should be marked LULUS/PINDAH
+ * leave records reference them — those students should be marked GRADUATED/TRANSFERRED
  * instead so history stays intact.
  */
 export async function deleteStudent(

@@ -14,36 +14,36 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { ENTITY_LABELS } from "@/src/lib/constants";
 import { StudentBulkResultSummary } from "./StudentBulkResultSummary";
-import type { StudentPromotionResult } from "@/src/features/master/types";
+import type { StudentIntakeResult } from "@/src/features/master/types";
 
-interface PromoteRegistrationsDialogProps {
+interface RegistrationIntakeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   /** Accepted registrations that have no student record yet. */
   pendingCount: number;
 }
 
-export function PromoteRegistrationsDialog({
+export function RegistrationIntakeDialog({
   open,
   onOpenChange,
   pendingCount,
-}: PromoteRegistrationsDialogProps) {
+}: RegistrationIntakeDialogProps) {
   const router = useRouter();
   const [running, setRunning] = useState<boolean>(false);
-  const [result, setResult] = useState<StudentPromotionResult | null>(null);
+  const [result, setResult] = useState<StudentIntakeResult | null>(null);
 
-  async function handlePromote(): Promise<void> {
+  async function handleIntake(): Promise<void> {
     setRunning(true);
     setResult(null);
     try {
-      const response = await fetch("/api/master/students/promote", {
+      const response = await fetch("/api/master/students/intake", {
         method: "POST",
       });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error ?? "Gagal menarik data pendaftaran");
       }
-      setResult(data as StudentPromotionResult);
+      setResult(data as StudentIntakeResult);
       if (data.created > 0) {
         toast.success(`${data.created} siswa berhasil ditambahkan`);
         router.refresh();
@@ -96,7 +96,7 @@ export function PromoteRegistrationsDialog({
           ) : (
             <Button
               type="button"
-              onClick={handlePromote}
+              onClick={handleIntake}
               disabled={running || pendingCount === 0}
             >
               {running && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

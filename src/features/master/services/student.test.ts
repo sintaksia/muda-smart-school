@@ -115,7 +115,7 @@ describe("updateStudent", () => {
     } as Student);
     vi.mocked(prisma.student.update).mockResolvedValue({ id: "s1" } as Student);
 
-    await updateStudent("s1", { status: "LULUS" });
+    await updateStudent("s1", { status: "GRADUATED" });
 
     const data = vi.mocked(prisma.student.update).mock.calls[0][0].data;
     expect(data).not.toHaveProperty("fatherName");
@@ -139,7 +139,7 @@ describe("updateStudent", () => {
 
   it("errors for a missing student", async () => {
     vi.mocked(prisma.student.findUnique).mockResolvedValue(null);
-    const result = await updateStudent("missing", { status: "LULUS" });
+    const result = await updateStudent("missing", { status: "GRADUATED" });
     expect(result.error).toBe("Siswa tidak ditemukan");
   });
 });

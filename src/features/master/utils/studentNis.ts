@@ -40,13 +40,13 @@ interface PickStudentEmailOptions {
 }
 
 /**
- * Decide which address a promoted student logs in with.
+ * Decide which address a student created from a registration logs in with.
  *
  * A registration's own email is used only when it can actually identify one
  * person: schools routinely put their own address on many registrations, and a
  * shared or already-registered address can't become a personal login. In those
  * cases the student gets a generated `<nis>@domain` address instead of the
- * promotion failing.
+ * intake failing.
  */
 export function pickStudentEmail({
   registrationEmail,

@@ -126,7 +126,7 @@ Same validation order as Process 2, minus GPS:
 1. **Session check:** session exists and `status = open` → else `"Tidak ada sesi aktif"`.
 2. **Mode check:** `ATTENDANCE_SCAN_MODE ≠ STUDENT_SCAN` → else `"Mode presensi saat ini tidak mengizinkan scan kartu"`.
 3. **Card lookup:** `Student.cardToken` matches the scanned QR — or `nis` when the teacher types it in because the card is missing → else `"Kartu tidak dikenal"` / `"NIS tidak ditemukan"`.
-4. **Enrollment check:** student is `AKTIF` and belongs to this session's class → else `"Tidak terdaftar di kelas ini"`.
+4. **Enrollment check:** student is `ACTIVE` and belongs to this session's class → else `"Tidak terdaftar di kelas ini"`.
 5. **Duplicate check:** idempotent — reported back as "sudah tercatat", no second record, not an error.
 6. **Time evaluation:** identical grace-period rule as Process 2 (`Hadir` / `Terlambat`).
 7. Write `StudentAttendance` with `method = CARD`, `scan_time`, and **no GPS fields**; `needs_review` is never set, so nothing lands in the teacher's confirmation queue.

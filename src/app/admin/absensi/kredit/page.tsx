@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function CreditAdminPage() {
   const [students, teachers, categories] = await Promise.all([
     prisma.student.findMany({
-      where: { status: "AKTIF" },
+      where: { status: "ACTIVE" },
       select: {
         id: true,
         nis: true,

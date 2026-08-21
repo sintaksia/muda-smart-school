@@ -2,10 +2,10 @@ import { prisma } from "@/src/lib/prisma";
 import { createStudentFromRegistration } from "@/src/features/student/services/student.service";
 import { nextNis, pickStudentEmail } from "../utils/studentNis";
 import { defaultStudentPassword } from "../utils/studentPassword";
-import type { StudentPromotionResult } from "../types";
+import type { StudentIntakeResult } from "../types";
 
 /** Registrations that are accepted but have no student record yet. */
-export async function getPendingPromotionCount(): Promise<number> {
+export async function getPendingIntakeCount(): Promise<number> {
   return prisma.registration.count({
     where: { status: "ACCEPTED", student: null },
   });
@@ -21,9 +21,9 @@ export async function getPendingPromotionCount(): Promise<number> {
  * or names an address that already has a login. Each registration is
  * independent — a failure is reported and the rest still go through.
  */
-export async function promoteAcceptedRegistrations(
+export async function intakeAcceptedRegistrations(
   createdById?: string,
-): Promise<StudentPromotionResult> {
+): Promise<StudentIntakeResult> {
   const [registrations, existingStudents, existingUsers] = await Promise.all([
     prisma.registration.findMany({
       where: { status: "ACCEPTED", student: null },
@@ -52,7 +52,7 @@ export async function promoteAcceptedRegistrations(
     const email = registration.studentEmail?.trim().toLowerCase();
     if (email) emailUsage.set(email, (emailUsage.get(email) ?? 0) + 1);
   }
-  const result: StudentPromotionResult = {
+  const result: StudentIntakeResult = {
     created: 0,
     credentials: [],
     failures: [],
