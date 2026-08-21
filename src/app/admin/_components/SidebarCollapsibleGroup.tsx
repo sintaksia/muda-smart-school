@@ -30,6 +30,9 @@ export interface SidebarNavItem {
   title: string;
   url: string;
   icon: LucideIcon;
+  /** Renders a heading above this item, opening a labelled run of items inside
+   *  the group (e.g. "Siswa" vs "Guru" under Absensi). */
+  section?: string;
 }
 
 interface SidebarCollapsibleGroupProps {
@@ -72,7 +75,12 @@ export function SidebarCollapsibleGroup({
               <CollapsibleContent>
                 <SidebarMenuSub className="mt-1 mb-1 py-0">
                   {items.map((item) => (
-                    <SidebarMenuSubItem key={item.title}>
+                    <SidebarMenuSubItem key={item.url}>
+                      {item.section && (
+                        <p className="text-sidebar-foreground/60 px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wide">
+                          {item.section}
+                        </p>
+                      )}
                       <SidebarMenuSubButton
                         asChild
                         isActive={isItemActive(pathname, item.url)}

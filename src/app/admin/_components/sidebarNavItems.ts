@@ -21,6 +21,7 @@ import {
   Bot,
   Share2,
   IdCard,
+  ClipboardList,
 } from "lucide-react";
 
 import { ENTITY_LABELS } from "@/src/lib/constants";
@@ -143,7 +144,8 @@ export const managementMenuItems: SidebarNavItem[] = [
   },
 ];
 
-// Absensi & Skor Kredit
+// Absensi & Skor Kredit — split into a Siswa run and a Guru run so the two
+// halves read as peers instead of one of them looking absent.
 export const attendanceMenuItems: SidebarNavItem[] = [
   {
     title: "Sesi Hari Ini",
@@ -151,16 +153,24 @@ export const attendanceMenuItems: SidebarNavItem[] = [
     icon: Activity,
   },
   {
+    section: ENTITY_LABELS.STUDENT,
+    title: "Rekap Kehadiran",
+    url: "/admin/absensi/siswa",
+    icon: ClipboardList,
+  },
+  {
     title: "Izin / Sakit",
     url: "/admin/absensi/izin",
     icon: FileText,
   },
   {
-    title: "Absensi Guru",
+    section: ENTITY_LABELS.TEACHER,
+    title: "Rekap Kehadiran",
     url: "/admin/absensi/guru",
-    icon: GraduationCap,
+    icon: ClipboardList,
   },
   {
+    section: "Umum",
     title: "Skor Kredit",
     url: "/admin/absensi/kredit",
     icon: Trophy,

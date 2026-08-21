@@ -151,6 +151,17 @@ export const ATTENDANCE_STATUS_BADGES: Record<
   "success" | "warning" | "info" | "secondary" | "destructive"
 > = Object.fromEntries(attendanceStatusOptions.map((o) => [o.value, o.badge]));
 
+/** How a record got created. Displayed on the admin recap so a hand-entered
+ *  row is never mistaken for a scan. */
+export const attendanceMethodOptions = [
+  { value: "QR", label: "Scan QR" },
+  { value: "CARD", label: "Scan Kartu" },
+  { value: "MANUAL", label: "Manual" },
+] as const;
+
+export const ATTENDANCE_METHOD_LABELS: Record<string, string> =
+  Object.fromEntries(attendanceMethodOptions.map((o) => [o.value, o.label]));
+
 /** Statuses that record someone as not present — `attendanceStatusOptions`
  *  minus the two "did show up" cases. Used by the teacher-absence form. */
 export const absenceStatusOptions = attendanceStatusOptions.filter(
