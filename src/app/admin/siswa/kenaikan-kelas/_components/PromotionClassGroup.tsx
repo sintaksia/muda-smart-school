@@ -91,6 +91,7 @@ export function PromotionClassGroup({
               onChange={(value) => applyBulk(bulkAction, value)}
               className={FILTER_FIELD_CLASS}
               placeholder="Pilih kelas tujuan"
+              searchable
               options={targetClasses.map((schoolClass) => ({
                 value: schoolClass.id,
                 label: schoolClass.name,

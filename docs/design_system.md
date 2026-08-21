@@ -278,6 +278,7 @@ over. That is how this app ended up with two unrelated dropdowns.
 | --------------------------------------- | --------------------------------------------------- |
 | Dropdown, plain `value` / `onChange`    | `components/common/SelectField`                     |
 | Dropdown, react-hook-form via `control` | `components/common/FormSelect`                      |
+| Dropdown over a long, data-driven list  | the same two, with `searchable`                     |
 | Dropdown inside a shadcn `<Form>`       | `FormField` + `ui/select` (see `JadwalSelectField`) |
 | Text / number / date / email / password | `ui/input`                                          |
 | Multi-line text                         | `ui/textarea`                                       |
@@ -303,6 +304,16 @@ variant="ghost" className="h-auto p-0 hover:bg-transparent">` to satisfy a rule
 (`ADMIN_FIELD_CLASS` for the 44px master-data forms, `FILTER_FIELD_CLASS` for
 compact filter bars). Layer them on a primitive; never re-declare a local
 `inputClass` string.
+
+**Long lists get a search box.** Any dropdown whose options come from the
+database — students, teachers, classes, subjects, credit owners — passes
+`searchable` to `SelectField` / `FormSelect`. That swaps the Radix Select for
+`components/common/ComboboxField` (Popover + `ui/command`), which keeps the same
+trigger, the same `value`/`onChange` contract and the same empty-value handling,
+and adds a filter box. Matching is on the label only, so an id never scores
+against the query, and the list renders at most 100 matches with a
+"Menampilkan X dari Y" note below it. Leave `searchable` off for fixed enums
+(status, hari, jenis kelamin) — a search box over six options is friction.
 
 **Why the wrappers exist:** Radix `SelectItem` throws on `value=""`, but our
 filters and nullable fields use `""`/`null` for "no value".

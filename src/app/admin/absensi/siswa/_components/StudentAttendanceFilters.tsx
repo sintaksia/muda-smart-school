@@ -47,6 +47,7 @@ export function StudentAttendanceFilters({
           {ENTITY_LABELS.CLASS}
         </span>
         <SelectField
+          searchable
           ariaLabel={`Filter ${ENTITY_LABELS.CLASS}`}
           value={classId}
           onChange={(next) => setParam("classId", next)}

@@ -68,6 +68,7 @@ export function PromotionStudentRow({
             onChange={(value) => onTargetChange(student.studentId, value)}
             className={FILTER_FIELD_CLASS}
             placeholder="Pilih kelas"
+            searchable
             options={targetClasses.map((schoolClass) => ({
               value: schoolClass.id,
               label: schoolClass.name,

@@ -108,6 +108,7 @@ export function TeacherAbsenceManager({
                   <td className="px-4 py-3">
                     {record.substitute ?? (
                       <SelectField
+                        searchable
                         ariaLabel="Guru Pengganti"
                         placeholder="Pilih pengganti…"
                         disabled={busyId === record.id}

@@ -68,6 +68,7 @@ export function StudentAcademicFields({
       </StudentField>
       <StudentField label={ENTITY_LABELS.CLASS}>
         <FormSelect
+          searchable
           control={control}
           name="classId"
           ariaLabel={ENTITY_LABELS.CLASS}

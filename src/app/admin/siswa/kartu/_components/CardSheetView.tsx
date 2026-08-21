@@ -31,6 +31,7 @@ export function CardSheetView({
             {ENTITY_LABELS.CLASS}
           </span>
           <SelectField
+            searchable
             ariaLabel={`Pilih ${ENTITY_LABELS.CLASS}`}
             placeholder={`Pilih ${ENTITY_LABELS.CLASS}`}
             value={selectedClassId}

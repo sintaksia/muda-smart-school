@@ -65,6 +65,7 @@ export function TeacherAbsenceForm({
       </h3>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <SelectField
+          searchable
           ariaLabel={ENTITY_LABELS.TEACHER}
           value={teacherId}
           onChange={setTeacherId}

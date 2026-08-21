@@ -19,7 +19,8 @@ import {
   fromSelectValue,
   toSelectValue,
 } from "./selectSentinel";
-import type { SelectOption } from "./SelectField";
+import { ComboboxField } from "./ComboboxField";
+import type { SelectOption } from "./selectOption";
 
 interface FormSelectProps<T extends FieldValues> {
   control: Control<T>;
@@ -31,6 +32,10 @@ interface FormSelectProps<T extends FieldValues> {
   ariaLabel?: string;
   className?: string;
   disabled?: boolean;
+  /** Swaps the plain list for a searchable popover — see `SelectField`. */
+  searchable?: boolean;
+  /** Searchable only: placeholder for the search box. */
+  searchPlaceholder?: string;
 }
 
 /**
@@ -48,38 +53,56 @@ export function FormSelect<T extends FieldValues>({
   ariaLabel,
   className,
   disabled,
+  searchable,
+  searchPlaceholder,
 }: FormSelectProps<T>) {
+  const empty = emptyLabel ? null : "";
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field }) => (
-        <Select
-          value={toSelectValue(field.value)}
-          onValueChange={(next) =>
-            field.onChange(fromSelectValue(next, emptyLabel ? null : ""))
-          }
-          disabled={disabled}
-        >
-          <SelectTrigger
-            aria-label={ariaLabel}
+      render={({ field }) =>
+        searchable ? (
+          <ComboboxField
+            value={field.value ?? ""}
+            onChange={(next) => field.onChange(next === "" ? empty : next)}
+            options={options}
+            emptyLabel={emptyLabel}
+            placeholder={placeholder}
+            searchPlaceholder={searchPlaceholder}
+            ariaLabel={ariaLabel ?? name}
+            className={className}
+            disabled={disabled}
             onBlur={field.onBlur}
-            className={cn("w-full bg-white", className)}
+          />
+        ) : (
+          <Select
+            value={toSelectValue(field.value)}
+            onValueChange={(next) =>
+              field.onChange(fromSelectValue(next, empty))
+            }
+            disabled={disabled}
           >
-            <SelectValue placeholder={placeholder ?? emptyLabel} />
-          </SelectTrigger>
-          <SelectContent>
-            {emptyLabel && (
-              <SelectItem value={EMPTY_SELECT_VALUE}>{emptyLabel}</SelectItem>
-            )}
-            {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+            <SelectTrigger
+              aria-label={ariaLabel}
+              onBlur={field.onBlur}
+              className={cn("w-full bg-white", className)}
+            >
+              <SelectValue placeholder={placeholder ?? emptyLabel} />
+            </SelectTrigger>
+            <SelectContent>
+              {emptyLabel && (
+                <SelectItem value={EMPTY_SELECT_VALUE}>{emptyLabel}</SelectItem>
+              )}
+              {options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )
+      }
     />
   );
 }

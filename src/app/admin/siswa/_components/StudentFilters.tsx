@@ -32,6 +32,7 @@ export function StudentFilters({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <SelectField
+        searchable
         ariaLabel={ENTITY_LABELS.CLASS}
         className={FILTER_FIELD_CLASS}
         value={value.classId}

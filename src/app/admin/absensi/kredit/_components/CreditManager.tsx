@@ -116,6 +116,7 @@ export function CreditManager({
             }))}
           />
           <SelectField
+            searchable
             ariaLabel={CREDIT_OWNER_TYPE_LABELS[ownerType]}
             placeholder={`Pilih ${CREDIT_OWNER_TYPE_LABELS[ownerType]}…`}
             value={ownerId}

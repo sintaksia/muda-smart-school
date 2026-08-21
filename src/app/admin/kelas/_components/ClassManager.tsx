@@ -179,6 +179,7 @@ export function ClassManager({
             className={`${ADMIN_FIELD_CLASS} tabular-nums`}
           />
           <SelectField
+            searchable
             ariaLabel="Wali Kelas"
             value={homeroomTeacherId}
             onChange={setHomeroomTeacherId}
@@ -232,6 +233,7 @@ export function ClassManager({
                   </td>
                   <td className="px-4 py-3">
                     <SelectField
+                      searchable
                       ariaLabel="Wali Kelas"
                       value={row.homeroomTeacherId ?? ""}
                       onChange={(next) => changeWali(row, next)}

@@ -77,20 +77,28 @@ export function JadwalForm({
   const selectFields = [
     {
       name: "classId" as const,
+      searchable: true,
       label: ENTITY_LABELS.CLASS,
       options: toSelectOptions(classOptions),
     },
     {
       name: "subjectId" as const,
+      searchable: true,
       label: ENTITY_LABELS.SUBJECT,
       options: toSelectOptions(subjectOptions),
     },
     {
       name: "teacherId" as const,
+      searchable: true,
       label: ENTITY_LABELS.TEACHER,
       options: toSelectOptions(teacherOptions),
     },
-    { name: "dayOfWeek" as const, label: "Hari", options: dayOfWeekOptions },
+    {
+      name: "dayOfWeek" as const,
+      label: "Hari",
+      options: dayOfWeekOptions,
+      searchable: false,
+    },
   ];
 
   return (
@@ -108,6 +116,7 @@ export function JadwalForm({
                 name={field.name}
                 label={field.label}
                 options={field.options}
+                searchable={field.searchable}
               />
             ))}
 

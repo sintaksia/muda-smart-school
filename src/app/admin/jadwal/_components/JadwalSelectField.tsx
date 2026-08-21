@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
+import { ComboboxField } from "@/src/components/common/ComboboxField";
 import type { ScheduleFormData } from "@/src/app/api/attendance/schedules/ScheduleSchema";
 
 interface JadwalSelectFieldProps {
@@ -22,6 +23,8 @@ interface JadwalSelectFieldProps {
   name: FieldPath<ScheduleFormData>;
   label: string;
   options: ReadonlyArray<{ value: string; label: string }>;
+  /** Data-driven lists (kelas, mapel, guru) get a search box; "Hari" does not. */
+  searchable?: boolean;
 }
 
 export function JadwalSelectField({
@@ -29,6 +32,7 @@ export function JadwalSelectField({
   name,
   label,
   options,
+  searchable,
 }: JadwalSelectFieldProps) {
   return (
     <FormField
@@ -37,20 +41,32 @@ export function JadwalSelectField({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
+          {searchable ? (
             <FormControl>
-              <SelectTrigger className="rounded-sm w-full">
-                <SelectValue placeholder={`Pilih ${label}`} />
-              </SelectTrigger>
+              <ComboboxField
+                ariaLabel={label}
+                placeholder={`Pilih ${label}`}
+                options={options}
+                value={field.value ?? ""}
+                onChange={field.onChange}
+              />
             </FormControl>
-            <SelectContent>
-              {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          ) : (
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger className="rounded-sm w-full">
+                  <SelectValue placeholder={`Pilih ${label}`} />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {options.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <FormMessage />
         </FormItem>
       )}
