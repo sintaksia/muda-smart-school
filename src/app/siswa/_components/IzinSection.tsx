@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { SelectField } from "@/src/components/common/SelectField";
+import { DateField } from "@/src/components/common/DateField";
 import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
 import {
   leaveTypeOptions,
@@ -79,10 +79,10 @@ export function IzinSection({ submissions }: IzinSectionProps) {
               label: option.label,
             }))}
           />
-          <Input
-            type="date"
+          <DateField
+            ariaLabel="Tanggal"
             value={date}
-            onChange={(event) => setDate(event.target.value)}
+            onChange={setDate}
             className={ADMIN_FIELD_CLASS}
           />
         </div>

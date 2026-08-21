@@ -76,7 +76,6 @@ import {
   UtensilsCrossed,
   Car,
   Bus,
-  Bike as BikeIcon,
   Wrench,
   Hammer,
   Zap,

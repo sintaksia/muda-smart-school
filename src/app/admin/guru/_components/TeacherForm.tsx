@@ -12,6 +12,7 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { SelectField } from "@/src/components/common/SelectField";
+import { DateField } from "@/src/components/common/DateField";
 import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
 import {
   genderOptions,
@@ -167,11 +168,11 @@ export function TeacherForm({
               minLength={2}
               className={ADMIN_FIELD_CLASS}
             />
-            <Input
-              type="date"
+            <DateField
+              ariaLabel="Tanggal lahir"
               value={form.birthDate}
-              onChange={(e) => set("birthDate", e.target.value)}
-              required
+              onChange={(next) => set("birthDate", next)}
+              birthDate
               className={ADMIN_FIELD_CLASS}
             />
           </div>

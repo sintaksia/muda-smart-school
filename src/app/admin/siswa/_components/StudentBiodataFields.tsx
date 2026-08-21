@@ -2,6 +2,7 @@
 
 import { Input } from "@/src/components/ui/input";
 import { FormSelect } from "@/src/components/common/FormSelect";
+import { FormDateField } from "@/src/components/common/FormDateField";
 import { genderOptions } from "@/src/lib/constants";
 import { STUDENT_SHEET_COLUMNS } from "@/src/features/master/constants";
 import {
@@ -54,9 +55,13 @@ export function StudentBiodataFields({
         label={STUDENT_SHEET_COLUMNS.birthDate}
         error={errors.birthDate?.message}
       >
-        <Input
-          type="date"
-          {...register("birthDate", nullableField)}
+        <FormDateField
+          control={control}
+          name="birthDate"
+          ariaLabel={STUDENT_SHEET_COLUMNS.birthDate}
+          birthDate
+          nullable
+          clearable
           className={studentInputClass}
         />
       </StudentField>

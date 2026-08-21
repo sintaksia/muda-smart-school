@@ -18,6 +18,7 @@ import {
 
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
+import { DateField } from "@/src/components/common/DateField";
 import {
   Form,
   FormControl,
@@ -350,9 +351,13 @@ export default function RegistrasiForm() {
                   <FormLabel>
                     <FieldLabel name="birthDate">Tanggal Lahir</FieldLabel>
                   </FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
+                  <DateField
+                    ariaLabel="Tanggal Lahir"
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    birthDate
+                  />
                   <FormMessage />
                 </FormItem>
               )}

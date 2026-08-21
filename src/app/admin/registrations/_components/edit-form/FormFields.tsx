@@ -50,7 +50,7 @@ export function FormSection({ title, icon, children }: FormSectionProps) {
   );
 }
 
-function FieldLabel({
+export function FieldLabel({
   name,
   children,
 }: {

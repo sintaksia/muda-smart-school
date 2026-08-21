@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { SelectField } from "@/src/components/common/SelectField";
+import { DateField } from "@/src/components/common/DateField";
 import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
 import { absenceStatusOptions, ENTITY_LABELS } from "@/src/lib/constants";
 
@@ -74,10 +75,10 @@ export function TeacherAbsenceForm({
             label: teacher.name,
           }))}
         />
-        <Input
-          type="date"
+        <DateField
+          ariaLabel="Tanggal"
           value={date}
-          onChange={(event) => setDate(event.target.value)}
+          onChange={setDate}
           className={ADMIN_FIELD_CLASS}
         />
         <SelectField

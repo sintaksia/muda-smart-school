@@ -69,16 +69,6 @@ export function registrationToFormDefaults(
   };
 }
 
-/** Format tanggal untuk display, mis. "15 Januari 2025". */
-export function formatTanggal(date: Date | string): string {
-  const d = new Date(date);
-  return d.toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
 /** Format nomor telepon 12 digit menjadi 0812-3456-7890; kosong jadi "-". */
 export function formatPhoneNumber(phone: string): string {
   if (!phone) return "-";

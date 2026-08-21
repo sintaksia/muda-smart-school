@@ -12,15 +12,7 @@ import {
   REGISTRATION_STATUS_LABELS,
   REGISTRATION_STATUS_BADGES,
 } from "@/src/lib/constants";
-
-const formatTanggal = (date: Date | string): string => {
-  const d = new Date(date);
-  return d.toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-};
+import { formatTanggal } from "@/src/lib/date";
 
 const getStatusLabel = (status: string): string =>
   REGISTRATION_STATUS_LABELS[status] ?? status;

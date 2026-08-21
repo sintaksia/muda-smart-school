@@ -11,6 +11,7 @@ import {
   SelectFormField,
   type RegistrasiControl,
 } from "./FormFields";
+import { DateFormField } from "./DateFormField";
 
 export function IdentitasDiriFields({
   control,
@@ -52,11 +53,11 @@ export function IdentitasDiriFields({
           name="birthPlace"
           label="Tempat Lahir"
         />
-        <TextFormField
+        <DateFormField
           control={control}
           name="birthDate"
           label="Tanggal Lahir"
-          type="date"
+          birthDate
         />
         <TextFormField
           control={control}

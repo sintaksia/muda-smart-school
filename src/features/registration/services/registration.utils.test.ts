@@ -1,23 +1,12 @@
 import { describe, it, expect } from "vitest";
 import type { Registration } from "@prisma/client";
 import {
-  formatTanggal,
   formatPhoneNumber,
   getInitials,
   toDateInputValue,
   toYearString,
   registrationToFormDefaults,
 } from "./registration.utils";
-
-describe("formatTanggal", () => {
-  it("formats a date in Indonesian locale", () => {
-    expect(formatTanggal(new Date("2025-01-15"))).toBe("15 Januari 2025");
-  });
-
-  it("accepts a date string", () => {
-    expect(formatTanggal("2025-08-17")).toBe("17 Agustus 2025");
-  });
-});
 
 describe("formatPhoneNumber", () => {
   it("groups a 12-digit number", () => {

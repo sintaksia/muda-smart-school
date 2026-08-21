@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@/src/components/ui/input";
+import { DateField } from "@/src/components/common/DateField";
 import { SelectField } from "@/src/components/common/SelectField";
 import { FILTER_FIELD_CLASS } from "@/src/components/common/formClasses";
 import { attendanceStatusOptions, ENTITY_LABELS } from "@/src/lib/constants";
@@ -30,17 +30,17 @@ export function StudentAttendanceFilters({
 
   return (
     <section className="border-border flex flex-wrap items-end gap-3 rounded-md border bg-white p-4">
-      <label className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1">
         <span className="text-muted-foreground text-xs font-semibold">
           Tanggal
         </span>
-        <Input
-          type="date"
+        <DateField
+          ariaLabel="Filter tanggal"
           value={date}
-          onChange={(event) => setParam("date", event.target.value)}
+          onChange={(next) => setParam("date", next)}
           className={FILTER_FIELD_CLASS}
         />
-      </label>
+      </div>
 
       <div className="flex flex-col gap-1">
         <span className="text-muted-foreground text-xs font-semibold">
