@@ -3,8 +3,10 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { FileSpreadsheet, LayoutGrid, List, Plus } from "lucide-react";
+import { FileSpreadsheet, LayoutGrid, List } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
+import { CreateButton } from "@/src/app/admin/_components/CreateButton";
+import { apiRequest } from "@/src/lib/apiRequest";
 import {
   findConflictIds,
   type JadwalEntry,
@@ -52,13 +54,12 @@ export function JadwalManager({
 
   async function handleDelete(id: string): Promise<void> {
     try {
-      const response = await fetch(`/api/attendance/schedules/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error ?? "Gagal menghapus jadwal");
-      }
+      await apiRequest(
+        `/api/attendance/schedules/${id}`,
+        "DELETE",
+        undefined,
+        "Gagal menghapus jadwal",
+      );
       toast.success("Jadwal dinonaktifkan");
       router.refresh();
     } catch (error: unknown) {
@@ -108,13 +109,10 @@ export function JadwalManager({
             <FileSpreadsheet className="h-5 w-5" strokeWidth={1.75} />
             Export Excel
           </Button>
-          <Button
+          <CreateButton
+            label="Tambah Jadwal"
             onClick={() => setFormOpen(true)}
-            className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white"
-          >
-            <Plus className="h-5 w-5" strokeWidth={1.75} />
-            Tambah Jadwal
-          </Button>
+          />
         </div>
       </div>
 

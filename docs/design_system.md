@@ -321,6 +321,39 @@ filters and nullable fields use `""`/`null` for "no value".
 has to invent a sentinel — inventing one per file is what pushed several forms
 back onto native `<select>` originally.
 
+### 6.2 Where a form lives — popup or its own page, never inline
+
+A create/edit form is **never** rendered inline above the table it feeds. Only
+two shapes are allowed:
+
+| Form                                                | Shape                                                         |
+| --------------------------------------------------- | ------------------------------------------------------------- |
+| Short-to-medium create/edit, list stays in view     | `components/common/FormDialog` opened by `admin/CreateButton` |
+| Long form with its own URL (CMS entries, user edit) | A dedicated `create/` or `[id]/` route                        |
+
+An inline form pushes the table below the fold, occupies the page whether or
+not anyone is creating anything, and gives no cancel affordance — which is why
+`admin/kelas`, `admin/mapel`, `admin/absensi/guru`, `admin/absensi/kredit` and
+the student izin card were converted.
+
+**Filters are the exception, and the only one.** A filter bar sits inline above
+the table, uses `FILTER_FIELD_CLASS`, and shares the header row with the
+`CreateButton` on its right. If a control narrows what the table shows, it
+belongs in that row; if it writes a record, it belongs in the dialog.
+
+The pieces:
+
+| Piece                                 | Job                                                               |
+| ------------------------------------- | ----------------------------------------------------------------- |
+| `components/common/FormDialog`        | The shell — title, description, `sm`/`md`/`lg`/`xl` width, scroll |
+| `components/common/FormDialogActions` | The `Batal` + submit row, inside the `<form>`                     |
+| `admin/_components/CreateButton`      | The one "Tambah …" affordance — pass `href` **or** `onClick`      |
+| `lib/apiRequest`                      | The mutation call, surfacing the route's `{ error }` message      |
+
+Do not hand-roll `<Dialog><DialogContent>` for a form, and do not restyle the
+create button with a local `bg-primary-900 …` string — both existed in this
+codebase and both drifted.
+
 ---
 
 ## 7. Status

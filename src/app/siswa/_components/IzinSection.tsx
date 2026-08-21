@@ -1,20 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { Plus } from "lucide-react";
 import { Badge } from "@/src/app/admin/_components/Badge";
 import { Button } from "@/src/components/ui/button";
-import { Textarea } from "@/src/components/ui/textarea";
-import { SelectField } from "@/src/components/common/SelectField";
-import { DateField } from "@/src/components/common/DateField";
-import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
 import {
-  leaveTypeOptions,
   LEAVE_TYPE_LABELS,
   LEAVE_STATUS_BADGES,
   LEAVE_STATUS_LABELS,
 } from "@/src/lib/constants";
+import { IzinForm } from "./IzinForm";
 
 interface IzinItem {
   id: string;
@@ -29,83 +24,22 @@ interface IzinSectionProps {
 }
 
 export function IzinSection({ submissions }: IzinSectionProps) {
-  const router = useRouter();
-  const [type, setType] = useState<string>("SICK");
-  const [date, setDate] = useState<string>(
-    new Date().toISOString().slice(0, 10),
-  );
-  const [reason, setReason] = useState<string>("");
-  const [submitting, setSubmitting] = useState<boolean>(false);
-
-  async function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>,
-  ): Promise<void> {
-    event.preventDefault();
-    setSubmitting(true);
-    try {
-      const response = await fetch("/api/attendance/leave-requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, date, reason }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error ?? "Gagal mengajukan izin");
-      }
-      toast.success("Pengajuan terkirim ke wali kelas");
-      setReason("");
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(error instanceof Error ? error.message : "Terjadi kesalahan");
-    } finally {
-      setSubmitting(false);
-    }
-  }
+  const [formOpen, setFormOpen] = useState<boolean>(false);
 
   return (
     <section className="border-border rounded-md border bg-white p-5">
-      <h3 className="text-foreground mb-4 text-base font-semibold">
-        Ajukan Izin / Sakit
-      </h3>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          <SelectField
-            ariaLabel="Jenis Pengajuan"
-            value={type}
-            onChange={setType}
-            className={ADMIN_FIELD_CLASS}
-            options={leaveTypeOptions.map((option) => ({
-              value: option.value,
-              label: option.label,
-            }))}
-          />
-          <DateField
-            ariaLabel="Tanggal"
-            value={date}
-            onChange={setDate}
-            className={ADMIN_FIELD_CLASS}
-          />
-        </div>
-        <Textarea
-          value={reason}
-          onChange={(event) => setReason(event.target.value)}
-          placeholder="Alasan (mis. demam, acara keluarga)…"
-          required
-          minLength={3}
-          rows={2}
-          className="bg-white text-sm"
-        />
-        <Button
-          type="submit"
-          disabled={submitting || reason.trim().length < 3}
-          className="h-11 w-full"
-        >
-          {submitting ? "Mengirim..." : "Kirim Pengajuan"}
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h3 className="text-foreground text-base font-semibold">
+          Izin / Sakit
+        </h3>
+        <Button size="sm" onClick={() => setFormOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Ajukan
         </Button>
-      </form>
+      </div>
 
-      {submissions.length > 0 && (
-        <ul className="border-border mt-5 border-t pt-4">
+      {submissions.length > 0 ? (
+        <ul className="border-border border-t pt-2">
           {submissions.map((izin) => (
             <li
               key={izin.id}
@@ -126,7 +60,13 @@ export function IzinSection({ submissions }: IzinSectionProps) {
             </li>
           ))}
         </ul>
+      ) : (
+        <p className="text-muted-foreground py-6 text-center text-sm">
+          Belum ada pengajuan izin.
+        </p>
       )}
+
+      <IzinForm open={formOpen} onOpenChange={setFormOpen} />
     </section>
   );
 }

@@ -4,16 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
+import { FormDialog } from "@/src/components/common/FormDialog";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { downloadStudentTemplate } from "@/src/features/master/utils/studentExcel";
+import { ENTITY_LABELS } from "@/src/lib/constants";
 import { StudentBulkResultSummary } from "./StudentBulkResultSummary";
 import type { StudentImportResult } from "@/src/features/master/types";
 
@@ -77,58 +72,54 @@ export function ImportStudentDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto rounded-lg sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Impor Siswa dari Excel</DialogTitle>
-          <DialogDescription>
-            Unduh template, isi datanya, lalu unggah kembali. Setiap baris akan
-            dibuatkan akun login dengan password default dari NIS.
-          </DialogDescription>
-        </DialogHeader>
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      size="lg"
+      title={`Impor ${ENTITY_LABELS.STUDENT} dari Excel`}
+      description="Unduh template, isi datanya, lalu unggah kembali. Setiap baris akan dibuatkan akun login dengan password default dari NIS."
+    >
+      <div className="space-y-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={downloadStudentTemplate}
+        >
+          <Download className="mr-2 h-4 w-4" />
+          Unduh Template
+        </Button>
 
-        <div className="space-y-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={downloadStudentTemplate}
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Unduh Template
-          </Button>
+        <Input
+          type="file"
+          accept=".xlsx,.xls,.csv"
+          disabled={importing}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            event.target.value = "";
+            if (file) void handleFile(file);
+          }}
+          className="h-auto bg-white p-3"
+        />
 
-          <Input
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            disabled={importing}
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              event.target.value = "";
-              if (file) void handleFile(file);
-            }}
-            className="h-auto bg-white p-3"
+        {importing && (
+          <p className="text-muted-foreground flex items-center gap-2 text-sm">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Mengimpor data dan membuat akun siswa...
+          </p>
+        )}
+
+        {result && (
+          <StudentBulkResultSummary
+            created={result.created}
+            credentials={result.credentials}
+            failures={result.failures.map((failure) => ({
+              id: `${failure.row}-${failure.nis}`,
+              label: `Baris ${failure.row} · ${failure.name || "—"}`,
+              error: failure.error,
+            }))}
           />
-
-          {importing && (
-            <p className="text-muted-foreground flex items-center gap-2 text-sm">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Mengimpor data dan membuat akun siswa...
-            </p>
-          )}
-
-          {result && (
-            <StudentBulkResultSummary
-              created={result.created}
-              credentials={result.credentials}
-              failures={result.failures.map((failure) => ({
-                id: `${failure.row}-${failure.nis}`,
-                label: `Baris ${failure.row} · ${failure.name || "—"}`,
-                error: failure.error,
-              }))}
-            />
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+        )}
+      </div>
+    </FormDialog>
   );
 }

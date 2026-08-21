@@ -13,7 +13,7 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
-    "lint:ci": "eslint --max-warnings 51",
+    "lint:ci": "eslint --max-warnings 49",
     "prepare": "husky",
     "db:seed": "pnpx prisma db seed",
     "db:backfill-class-history": "pnpx tsx scripts/backfill-class-history.ts",

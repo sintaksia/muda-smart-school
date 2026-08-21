@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Download, FileUp, Plus, UserRoundPlus } from "lucide-react";
+import { Download, FileUp, UserRoundPlus } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
+import { CreateButton } from "@/src/app/admin/_components/CreateButton";
 import { DataTable } from "@/src/app/admin/_components/DataTable";
 import { downloadStudentExport } from "@/src/features/master/utils/studentExcel";
 import { ENTITY_LABELS } from "@/src/lib/constants";
@@ -106,10 +107,10 @@ export function StudentManager({
             Tarik dari Pendaftaran
             {pendingIntakeCount > 0 && ` (${pendingIntakeCount})`}
           </Button>
-          <Button onClick={openCreateForm}>
-            <Plus className="mr-2 h-4 w-4" />
-            Tambah {ENTITY_LABELS.STUDENT}
-          </Button>
+          <CreateButton
+            label={`Tambah ${ENTITY_LABELS.STUDENT}`}
+            onClick={openCreateForm}
+          />
         </div>
       </div>
 

@@ -5,12 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
-import {
   Form,
   FormControl,
   FormField,
@@ -19,7 +13,9 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
-import { Button } from "@/src/components/ui/button";
+import { FormDialog } from "@/src/components/common/FormDialog";
+import { FormDialogActions } from "@/src/components/common/FormDialogActions";
+import { apiRequest } from "@/src/lib/apiRequest";
 import { dayOfWeekOptions, ENTITY_LABELS } from "@/src/lib/constants";
 import {
   scheduleSchema,
@@ -53,15 +49,12 @@ export function JadwalForm({
 
   async function onSubmit(values: ScheduleFormData): Promise<void> {
     try {
-      const response = await fetch("/api/attendance/schedules", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error ?? "Gagal menyimpan jadwal");
-      }
+      const data = await apiRequest<{ warnings?: string[] }>(
+        "/api/attendance/schedules",
+        "POST",
+        values,
+        "Gagal menyimpan jadwal",
+      );
       for (const warning of data.warnings ?? []) {
         toast.warning(warning);
       }
@@ -102,55 +95,53 @@ export function JadwalForm({
   ];
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-lg sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-foreground">Tambah Jadwal</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {selectFields.map((field) => (
-              <JadwalSelectField
-                key={field.name}
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Tambah Jadwal"
+      size="sm"
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {selectFields.map((field) => (
+            <JadwalSelectField
+              key={field.name}
+              control={form.control}
+              name={field.name}
+              label={field.label}
+              options={field.options}
+              searchable={field.searchable}
+            />
+          ))}
+
+          <div className="grid grid-cols-2 gap-4">
+            {(["startTime", "endTime"] as const).map((name) => (
+              <FormField
+                key={name}
                 control={form.control}
-                name={field.name}
-                label={field.label}
-                options={field.options}
-                searchable={field.searchable}
+                name={name}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {name === "startTime" ? "Jam Mulai" : "Jam Selesai"}
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="time" className="rounded-sm" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             ))}
+          </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {(["startTime", "endTime"] as const).map((name) => (
-                <FormField
-                  key={name}
-                  control={form.control}
-                  name={name}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {name === "startTime" ? "Jam Mulai" : "Jam Selesai"}
-                      </FormLabel>
-                      <FormControl>
-                        <Input type="time" className="rounded-sm" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
-            </div>
-
-            <Button
-              type="submit"
-              disabled={form.formState.isSubmitting}
-              className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 w-full text-sm font-semibold text-white"
-            >
-              {form.formState.isSubmitting ? "Menyimpan..." : "Simpan Jadwal"}
-            </Button>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          <FormDialogActions
+            onCancel={() => onOpenChange(false)}
+            submitting={form.formState.isSubmitting}
+            submitLabel="Simpan Jadwal"
+          />
+        </form>
+      </Form>
+    </FormDialog>
   );
 }

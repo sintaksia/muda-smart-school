@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { EMPLOYMENT_STATUS_LABELS } from "@/src/lib/constants";
+import { CreateButton } from "@/src/app/admin/_components/CreateButton";
+import { EMPLOYMENT_STATUS_LABELS, ENTITY_LABELS } from "@/src/lib/constants";
 import { TeacherForm } from "./TeacherForm";
 
 export interface TeacherRow {
@@ -30,13 +29,10 @@ export function TeacherManager({
   return (
     <div className="space-y-6">
       <div className="flex justify-end">
-        <Button
+        <CreateButton
+          label={`Tambah ${ENTITY_LABELS.TEACHER}`}
           onClick={() => setFormOpen(true)}
-          className="bg-primary-900 hover:bg-primary-800 active:bg-primary-950 rounded-sm h-11 px-5 text-sm font-semibold text-white"
-        >
-          <Plus className="h-5 w-5" strokeWidth={1.75} />
-          Tambah Guru
-        </Button>
+        />
       </div>
 
       <TeacherForm

@@ -3,21 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
-import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { SelectField } from "@/src/components/common/SelectField";
 import { DateField } from "@/src/components/common/DateField";
+import { FormDialog } from "@/src/components/common/FormDialog";
+import { FormDialogActions } from "@/src/components/common/FormDialogActions";
 import { ADMIN_FIELD_CLASS } from "@/src/components/common/formClasses";
+import { apiRequest } from "@/src/lib/apiRequest";
 import {
   genderOptions,
   educationOptions,
   employmentStatusOptions,
+  ENTITY_LABELS,
 } from "@/src/lib/constants";
 
 interface TeacherFormProps {
@@ -69,21 +66,18 @@ export function TeacherForm({
     }
     setSubmitting(true);
     try {
-      const response = await fetch("/api/master/teachers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      await apiRequest(
+        "/api/master/teachers",
+        "POST",
+        {
           ...form,
           phone: form.phone || undefined,
           nip: form.nip || undefined,
           subjectIds,
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error ?? "Gagal membuat akun guru");
-      }
-      toast.success("Akun guru dibuat");
+        },
+        `Gagal membuat akun ${ENTITY_LABELS.TEACHER.toLowerCase()}`,
+      );
+      toast.success(`Akun ${ENTITY_LABELS.TEACHER.toLowerCase()} dibuat`);
       setForm(initialState);
       setSubjectIds([]);
       onOpenChange(false);
@@ -96,130 +90,131 @@ export function TeacherForm({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-lg max-h-[90vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="text-foreground">Tambah Guru</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-3">
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={`Tambah ${ENTITY_LABELS.TEACHER}`}
+    >
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <Input
+          value={form.name}
+          onChange={(e) => set("name", e.target.value)}
+          placeholder="Nama lengkap"
+          required
+          minLength={3}
+          className={ADMIN_FIELD_CLASS}
+        />
+        <div className="grid grid-cols-2 gap-3">
           <Input
-            value={form.name}
-            onChange={(e) => set("name", e.target.value)}
-            placeholder="Nama lengkap"
+            type="email"
+            value={form.email}
+            onChange={(e) => set("email", e.target.value)}
+            placeholder="Email"
             required
-            minLength={3}
             className={ADMIN_FIELD_CLASS}
           />
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              type="email"
-              value={form.email}
-              onChange={(e) => set("email", e.target.value)}
-              placeholder="Email"
-              required
-              className={ADMIN_FIELD_CLASS}
-            />
-            <Input
-              type="password"
-              value={form.password}
-              onChange={(e) => set("password", e.target.value)}
-              placeholder="Password (min. 8)"
-              required
-              minLength={8}
-              className={ADMIN_FIELD_CLASS}
-            />
-            <Input
-              value={form.phone}
-              onChange={(e) => set("phone", e.target.value)}
-              placeholder="No. HP (opsional)"
-              className={ADMIN_FIELD_CLASS}
-            />
-            <Input
-              value={form.nip}
-              onChange={(e) => set("nip", e.target.value)}
-              placeholder="NIP (opsional)"
-              className={ADMIN_FIELD_CLASS}
-            />
-            <SelectField
-              ariaLabel="Jenis Kelamin"
-              value={form.gender}
-              onChange={(next) => set("gender", next)}
-              className={ADMIN_FIELD_CLASS}
-              options={genderOptions.map((o) => ({
-                value: o.value,
-                label: o.label,
-              }))}
-            />
-            <SelectField
-              ariaLabel="Status Kepegawaian"
-              value={form.employmentStatus}
-              onChange={(next) => set("employmentStatus", next)}
-              className={ADMIN_FIELD_CLASS}
-              options={employmentStatusOptions.map((o) => ({
-                value: o.value,
-                label: o.label,
-              }))}
-            />
-            <Input
-              value={form.birthPlace}
-              onChange={(e) => set("birthPlace", e.target.value)}
-              placeholder="Tempat lahir"
-              required
-              minLength={2}
-              className={ADMIN_FIELD_CLASS}
-            />
-            <DateField
-              ariaLabel="Tanggal lahir"
-              value={form.birthDate}
-              onChange={(next) => set("birthDate", next)}
-              birthDate
-              className={ADMIN_FIELD_CLASS}
-            />
-          </div>
-          <SelectField
-            ariaLabel="Pendidikan Terakhir"
-            value={form.education}
-            onChange={(next) => set("education", next)}
+          <Input
+            type="password"
+            value={form.password}
+            onChange={(e) => set("password", e.target.value)}
+            placeholder="Password (min. 8)"
+            required
+            minLength={8}
             className={ADMIN_FIELD_CLASS}
-            options={educationOptions.map((o) => ({
+          />
+          <Input
+            value={form.phone}
+            onChange={(e) => set("phone", e.target.value)}
+            placeholder="No. HP (opsional)"
+            className={ADMIN_FIELD_CLASS}
+          />
+          <Input
+            value={form.nip}
+            onChange={(e) => set("nip", e.target.value)}
+            placeholder="NIP (opsional)"
+            className={ADMIN_FIELD_CLASS}
+          />
+          <SelectField
+            ariaLabel="Jenis Kelamin"
+            value={form.gender}
+            onChange={(next) => set("gender", next)}
+            className={ADMIN_FIELD_CLASS}
+            options={genderOptions.map((o) => ({
               value: o.value,
               label: o.label,
             }))}
           />
+          <SelectField
+            ariaLabel="Status Kepegawaian"
+            value={form.employmentStatus}
+            onChange={(next) => set("employmentStatus", next)}
+            className={ADMIN_FIELD_CLASS}
+            options={employmentStatusOptions.map((o) => ({
+              value: o.value,
+              label: o.label,
+            }))}
+          />
+          <Input
+            value={form.birthPlace}
+            onChange={(e) => set("birthPlace", e.target.value)}
+            placeholder="Tempat lahir"
+            required
+            minLength={2}
+            className={ADMIN_FIELD_CLASS}
+          />
+          <DateField
+            ariaLabel="Tanggal lahir"
+            value={form.birthDate}
+            onChange={(next) => set("birthDate", next)}
+            birthDate
+            className={ADMIN_FIELD_CLASS}
+          />
+        </div>
+        <SelectField
+          ariaLabel="Pendidikan Terakhir"
+          value={form.education}
+          onChange={(next) => set("education", next)}
+          className={ADMIN_FIELD_CLASS}
+          options={educationOptions.map((o) => ({
+            value: o.value,
+            label: o.label,
+          }))}
+        />
 
-          <fieldset className="border-border rounded-sm border p-3">
-            <legend className="text-neutral-600 px-1 text-xs font-semibold">
-              Kualifikasi Mata Pelajaran
-            </legend>
-            {subjectOptions.length === 0 ? (
-              <p className="text-yellow-600 text-xs font-semibold">
-                Belum ada mapel — buat dulu di menu Mata Pelajaran.
-              </p>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                {subjectOptions.map((subject) => (
-                  <label
-                    key={subject.id}
-                    className="text-foreground flex items-center gap-2 text-sm"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={subjectIds.includes(subject.id)}
-                      onChange={() => toggleSubject(subject.id)}
-                      className="accent-primary-900"
-                    />
-                    {subject.name}
-                  </label>
-                ))}
-              </div>
-            )}
-          </fieldset>
+        <fieldset className="border-border rounded-sm border p-3">
+          <legend className="text-neutral-600 px-1 text-xs font-semibold">
+            Kualifikasi Mata Pelajaran
+          </legend>
+          {subjectOptions.length === 0 ? (
+            <p className="text-yellow-600 text-xs font-semibold">
+              Belum ada mapel — buat dulu di menu Mata Pelajaran.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {subjectOptions.map((subject) => (
+                <label
+                  key={subject.id}
+                  className="text-foreground flex items-center gap-2 text-sm"
+                >
+                  <input
+                    type="checkbox"
+                    checked={subjectIds.includes(subject.id)}
+                    onChange={() => toggleSubject(subject.id)}
+                    className="accent-primary-900"
+                  />
+                  {subject.name}
+                </label>
+              ))}
+            </div>
+          )}
+        </fieldset>
 
-          <Button type="submit" disabled={submitting} className="h-11 w-full">
-            {submitting ? "Menyimpan..." : "Buat Akun Guru"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <FormDialogActions
+          onCancel={() => onOpenChange(false)}
+          submitting={submitting}
+          submitLabel={`Buat Akun ${ENTITY_LABELS.TEACHER}`}
+        />
+      </form>
+    </FormDialog>
   );
 }

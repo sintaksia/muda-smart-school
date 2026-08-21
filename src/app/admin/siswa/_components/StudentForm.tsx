@@ -5,13 +5,9 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
-import { Button } from "@/src/components/ui/button";
+import { FormDialog } from "@/src/components/common/FormDialog";
+import { FormDialogActions } from "@/src/components/common/FormDialogActions";
+import { apiRequest } from "@/src/lib/apiRequest";
 import { ENTITY_LABELS } from "@/src/lib/constants";
 import {
   createStudentSchema,
@@ -85,20 +81,12 @@ export function StudentForm({
       // Email and password are account-creation only; editing them is done
       // from the user menu / reset-password action.
       const { email, password, ...editable } = values;
-      const response = await fetch(
+      await apiRequest(
         isEdit ? `/api/master/students/${student?.id}` : "/api/master/students",
-        {
-          method: isEdit ? "PATCH" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            isEdit ? editable : { ...editable, email, password },
-          ),
-        },
+        isEdit ? "PATCH" : "POST",
+        isEdit ? editable : { ...editable, email, password },
+        `Gagal menyimpan ${ENTITY_LABELS.STUDENT.toLowerCase()}`,
       );
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error ?? "Gagal menyimpan siswa");
-      }
       toast.success(
         isEdit
           ? `Data ${ENTITY_LABELS.STUDENT} diperbarui`
@@ -116,39 +104,29 @@ export function StudentForm({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto rounded-lg sm:max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>
-            {isEdit
-              ? `Edit ${ENTITY_LABELS.STUDENT}`
-              : `Tambah ${ENTITY_LABELS.STUDENT}`}
-          </DialogTitle>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <StudentFormSections
-            register={register}
-            control={control}
-            errors={errors}
-            classOptions={classOptions}
-            isEdit={isEdit}
-          />
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={submitting}
-            >
-              Batal
-            </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? "Menyimpan..." : "Simpan"}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      size="xl"
+      title={
+        isEdit
+          ? `Edit ${ENTITY_LABELS.STUDENT}`
+          : `Tambah ${ENTITY_LABELS.STUDENT}`
+      }
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <StudentFormSections
+          register={register}
+          control={control}
+          errors={errors}
+          classOptions={classOptions}
+          isEdit={isEdit}
+        />
+        <FormDialogActions
+          onCancel={() => onOpenChange(false)}
+          submitting={submitting}
+        />
+      </form>
+    </FormDialog>
   );
 }

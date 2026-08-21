@@ -83,6 +83,13 @@ The non-negotiables, so they're never guessed:
   clickable surfaces (tiles, sort headers) — §6.1 of the doc draws the line, so
   don't re-litigate it per component. Size overrides come from
   `components/common/formClasses.ts`; never declare a local `inputClass`.
+- **Forms open in a popup or on their own route — never inline above a table** —
+  `components/common/FormDialog` + `FormDialogActions`, opened by
+  `admin/_components/CreateButton` (which takes `href` _or_ `onClick`), or a
+  dedicated `create/`/`[id]/` page. Only **filters** sit inline above a table,
+  sharing the header row with the create button. §6.2 of the doc has the
+  breakdown — don't re-litigate it per page, and don't hand-roll a
+  `<Dialog><DialogContent>` shell for a form.
 - **Elevation is hairline-first** — resting cards get `border border-border`
   and no shadow; hoverable cards add `hover:shadow-sm`; overlays get
   `shadow-md`. `shadow-lg`/`xl`/`2xl` and colored shadows are banned.

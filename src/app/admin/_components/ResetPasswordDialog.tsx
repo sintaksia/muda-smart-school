@@ -3,18 +3,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
-import { Button } from "@/src/components/ui/button";
+import { FormDialog } from "@/src/components/common/FormDialog";
+import { FormDialogActions } from "@/src/components/common/FormDialogActions";
 import { Input } from "@/src/components/ui/input";
 import {
   Form,
@@ -81,59 +73,44 @@ export function ResetPasswordDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Reset Password</DialogTitle>
-          <DialogDescription>
-            Reset password untuk user <strong>{userName}</strong>
-          </DialogDescription>
-        </DialogHeader>
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Reset Password"
+      description={
+        <>
+          Reset password untuk user <strong>{userName}</strong>
+        </>
+      }
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password Baru</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Masukkan password baru"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password Baru</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Masukkan password baru"
-                      disabled={isLoading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isLoading}
-              >
-                Batal
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Menyimpan...
-                  </>
-                ) : (
-                  "Reset Password"
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          <FormDialogActions
+            onCancel={() => onOpenChange(false)}
+            submitting={isLoading}
+            submitLabel="Reset Password"
+          />
+        </form>
+      </Form>
+    </FormDialog>
   );
 }
