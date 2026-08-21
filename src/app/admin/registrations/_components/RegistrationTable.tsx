@@ -3,13 +3,8 @@
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/src/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { SelectField } from "@/src/components/common/SelectField";
+import { FILTER_FIELD_CLASS } from "@/src/components/common/formClasses";
 import { Download } from "lucide-react";
 import { DataTable } from "@/src/app/admin/_components/DataTable";
 import { StatusFilter } from "./StatusFilter";
@@ -22,16 +17,17 @@ interface RegistrationTableProps {
 }
 
 export function RegistrationTable({ data }: RegistrationTableProps) {
-  const [programFilter, setProgramFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  // `""` is "no filter" — the value every `SelectField` emits for its empty row.
+  const [programFilter, setProgramFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
 
   const filteredData = useMemo(
     () =>
       data.filter((item) => {
-        if (programFilter !== "all" && item.specialization !== programFilter) {
+        if (programFilter && item.specialization !== programFilter) {
           return false;
         }
-        if (statusFilter !== "all" && item.status !== statusFilter) {
+        if (statusFilter && item.status !== statusFilter) {
           return false;
         }
         return true;
@@ -47,8 +43,8 @@ export function RegistrationTable({ data }: RegistrationTableProps) {
         body: JSON.stringify({
           data: filteredData,
           filters: {
-            program: programFilter,
-            status: statusFilter === "all" ? undefined : statusFilter,
+            program: programFilter || undefined,
+            status: statusFilter || undefined,
           },
         }),
       });
@@ -76,26 +72,20 @@ export function RegistrationTable({ data }: RegistrationTableProps) {
     <div className="space-y-4">
       {/* Filter Controls */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-1 flex-col gap-4 sm:flex-row">
-          <div className="w-full sm:w-[220px]">
-            <Select value={programFilter} onValueChange={setProgramFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter Program" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Program</SelectItem>
-                {specializationOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="flex flex-1 flex-wrap items-center gap-3">
+          <SelectField
+            ariaLabel="Filter Program"
+            className={FILTER_FIELD_CLASS}
+            value={programFilter}
+            onChange={setProgramFilter}
+            emptyLabel="Semua Program"
+            options={specializationOptions.map((option) => ({
+              value: option.value,
+              label: option.label,
+            }))}
+          />
 
-          <div className="w-full sm:w-[200px]">
-            <StatusFilter value={statusFilter} onChange={setStatusFilter} />
-          </div>
+          <StatusFilter value={statusFilter} onChange={setStatusFilter} />
         </div>
 
         <Button variant="outline" onClick={handleExport}>

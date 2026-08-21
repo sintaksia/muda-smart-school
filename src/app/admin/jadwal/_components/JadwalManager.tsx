@@ -43,10 +43,9 @@ export function JadwalManager({
     () =>
       jadwal.filter(
         (row) =>
-          (filters.dayOfWeek === "ALL" ||
-            row.dayOfWeek === filters.dayOfWeek) &&
-          (filters.classId === "ALL" || row.classId === filters.classId) &&
-          (filters.teacherId === "ALL" || row.teacherId === filters.teacherId),
+          (!filters.dayOfWeek || row.dayOfWeek === filters.dayOfWeek) &&
+          (!filters.classId || row.classId === filters.classId) &&
+          (!filters.teacherId || row.teacherId === filters.teacherId),
       ),
     [jadwal, filters],
   );

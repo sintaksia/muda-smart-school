@@ -302,8 +302,17 @@ variant="ghost" className="h-auto p-0 hover:bg-transparent">` to satisfy a rule
 
 **Sizing overrides** live in `components/common/formClasses.ts`
 (`ADMIN_FIELD_CLASS` for the 44px master-data forms, `FILTER_FIELD_CLASS` for
-compact filter bars). Layer them on a primitive; never re-declare a local
-`inputClass` string.
+compact filter bars and in-table controls). Layer them on a primitive; never
+re-declare a local `inputClass` string, and never hand-write `h-10 w-44` on a
+`SelectTrigger` — a filter bar where one control is a different height or
+width than the next is the exact drift these constants exist to stop.
+
+**Only the box gets compact, never the type.** `FILTER_FIELD_CLASS` sets height
+and width and deliberately leaves `text-sm` — the primitive default — alone. A
+`text-xs` dropdown reads as shrunken next to the form fields and table cells
+around it, and 12px is reserved for captions (§3). Filter *labels* above a
+control stay `text-xs font-semibold text-muted-foreground`; the control's own
+value does not.
 
 **Long lists get a search box.** Any dropdown whose options come from the
 database — students, teachers, classes, subjects, credit owners — passes

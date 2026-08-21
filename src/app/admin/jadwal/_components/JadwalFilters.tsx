@@ -1,15 +1,10 @@
 "use client";
 
 import { X } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
 import { Button } from "@/src/components/ui/button";
-import { dayOfWeekOptions } from "@/src/lib/constants";
+import { SelectField } from "@/src/components/common/SelectField";
+import { FILTER_FIELD_CLASS } from "@/src/components/common/formClasses";
+import { dayOfWeekOptions, ENTITY_LABELS } from "@/src/lib/constants";
 
 export interface JadwalFilterState {
   dayOfWeek: string;
@@ -17,10 +12,11 @@ export interface JadwalFilterState {
   teacherId: string;
 }
 
+/** An unset filter is `""` — the value `SelectField` emits for its empty row. */
 export const EMPTY_FILTERS: JadwalFilterState = {
-  dayOfWeek: "ALL",
-  classId: "ALL",
-  teacherId: "ALL",
+  dayOfWeek: "",
+  classId: "",
+  teacherId: "",
 };
 
 interface JadwalFiltersProps {
@@ -36,15 +32,13 @@ export function JadwalFilters({
   classOptions,
   teacherOptions,
 }: JadwalFiltersProps) {
-  const hasActiveFilter =
-    filters.dayOfWeek !== "ALL" ||
-    filters.classId !== "ALL" ||
-    filters.teacherId !== "ALL";
+  const hasActiveFilter = Object.values(filters).some(Boolean);
 
   const selects = [
     {
       key: "dayOfWeek" as const,
-      placeholder: "Semua Hari",
+      label: "Hari",
+      emptyLabel: "Semua Hari",
       options: dayOfWeekOptions.map((option) => ({
         value: option.value as string,
         label: option.label,
@@ -52,7 +46,10 @@ export function JadwalFilters({
     },
     {
       key: "classId" as const,
-      placeholder: "Semua Kelas",
+      label: ENTITY_LABELS.CLASS,
+      emptyLabel: `Semua ${ENTITY_LABELS.CLASS}`,
+      // Data-driven list — long enough to want a search box.
+      searchable: true,
       options: classOptions.map((option) => ({
         value: option.id,
         label: option.name,
@@ -60,7 +57,9 @@ export function JadwalFilters({
     },
     {
       key: "teacherId" as const,
-      placeholder: "Semua Guru",
+      label: ENTITY_LABELS.TEACHER,
+      emptyLabel: `Semua ${ENTITY_LABELS.TEACHER}`,
+      searchable: true,
       options: teacherOptions.map((option) => ({
         value: option.id,
         label: option.name,
@@ -71,32 +70,23 @@ export function JadwalFilters({
   return (
     <div className="flex flex-wrap items-center gap-3">
       {selects.map((select) => (
-        <Select
+        <SelectField
           key={select.key}
+          ariaLabel={`Filter ${select.label}`}
+          searchable={select.searchable}
+          className={FILTER_FIELD_CLASS}
           value={filters[select.key]}
-          onValueChange={(value) =>
-            onChange({ ...filters, [select.key]: value })
-          }
-        >
-          <SelectTrigger className="rounded-sm h-10 w-44 bg-white">
-            <SelectValue placeholder={select.placeholder} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{select.placeholder}</SelectItem>
-            {select.options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          onChange={(value) => onChange({ ...filters, [select.key]: value })}
+          emptyLabel={select.emptyLabel}
+          options={select.options}
+        />
       ))}
       {hasActiveFilter && (
         <Button
           type="button"
           variant="ghost"
           onClick={() => onChange(EMPTY_FILTERS)}
-          className="text-muted-foreground hover:text-foreground h-10 px-3 text-sm"
+          className="text-muted-foreground hover:text-foreground hover:bg-primary-50 h-9 px-3 text-sm"
         >
           <X className="h-4 w-4" strokeWidth={1.75} />
           Reset

@@ -2,13 +2,8 @@
 
 import { useState } from "react";
 import { ENTITY_LABELS } from "@/src/lib/constants";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { SelectField } from "@/src/components/common/SelectField";
+import { FILTER_FIELD_CLASS } from "@/src/components/common/formClasses";
 import type { JadwalEntry } from "@/src/features/attendance/utils/jadwalGrid";
 import { JadwalWeekGrid } from "./JadwalWeekGrid";
 import { JadwalHeatmap } from "./JadwalHeatmap";
@@ -27,14 +22,17 @@ export function JadwalGridView({
   teacherOptions,
 }: JadwalGridViewProps) {
   const [mode, setMode] = useState<"class" | "teacher">("class");
-  const [entityId, setEntityId] = useState<string>("ALL");
+  // `""` is the "all entities" view — the value `SelectField` emits for its
+  // empty row, and what the heatmap falls back to.
+  const [entityId, setEntityId] = useState<string>("");
 
   const entityOptions = mode === "class" ? classOptions : teacherOptions;
   const entityKey = mode === "class" ? "classId" : "teacherId";
-  const entityEntries =
-    entityId === "ALL"
-      ? entries
-      : entries.filter((entry) => entry[entityKey] === entityId);
+  const entityLabel =
+    mode === "class" ? ENTITY_LABELS.CLASS : ENTITY_LABELS.TEACHER;
+  const entityEntries = entityId
+    ? entries.filter((entry) => entry[entityKey] === entityId)
+    : entries;
 
   return (
     <div className="border-border rounded-md border bg-white">
@@ -46,7 +44,7 @@ export function JadwalGridView({
               type="button"
               onClick={() => {
                 setMode(value);
-                setEntityId("ALL");
+                setEntityId("");
               }}
               className={`px-4 py-1.5 transition-colors ${
                 mode === value
@@ -59,25 +57,21 @@ export function JadwalGridView({
             </button>
           ))}
         </div>
-        <Select value={entityId} onValueChange={setEntityId}>
-          <SelectTrigger className="rounded-sm h-10 w-56 bg-white">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">
-              Ringkasan Semua{" "}
-              {mode === "class" ? ENTITY_LABELS.CLASS : ENTITY_LABELS.TEACHER}
-            </SelectItem>
-            {entityOptions.map((option) => (
-              <SelectItem key={option.id} value={option.id}>
-                {option.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <SelectField
+          searchable
+          ariaLabel={`Filter ${entityLabel}`}
+          className={FILTER_FIELD_CLASS}
+          value={entityId}
+          onChange={setEntityId}
+          emptyLabel={`Ringkasan Semua ${entityLabel}`}
+          options={entityOptions.map((option) => ({
+            value: option.id,
+            label: option.name,
+          }))}
+        />
       </div>
 
-      {entityId === "ALL" ? (
+      {!entityId ? (
         <JadwalHeatmap
           entries={entries}
           mode={mode}
