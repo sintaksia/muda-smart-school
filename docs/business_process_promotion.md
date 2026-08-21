@@ -472,9 +472,18 @@ kehilangan data.
 
 ### 9.2 Backfill
 
-`prisma/seed.ts` sudah ada; tambahkan skrip sekali jalan
-`scripts/backfill-class-history.ts` (dijalankan dengan
-`bun --env-file=.env scripts/backfill-class-history.ts`):
+`prisma/seed.ts` sudah ada; skrip sekali jalan `scripts/backfill-class-history.ts`
+mengikuti pola yang sama — dotenv dimuat di baris pertama, lalu dijalankan
+dengan **tsx**, bukan Bun:
+
+```bash
+pnpm db:backfill-class-history                    # dev
+ENV_FILE=.env.prod pnpm db:backfill-class-history # prod
+```
+
+Bun tidak bisa dipakai di sini: ia me-resolve `pg` dengan kondisi browser dan
+gagal pada `require("tls")`/`require("dns")`. `prisma.config.ts` menjalankan
+seed lewat `pnpx tsx` karena alasan yang sama.
 
 Untuk tiap siswa yang punya `classId`, buat baris riwayat
 `{ studentId, classId, academicYear: schoolClass.academicYear, status, action: null }`

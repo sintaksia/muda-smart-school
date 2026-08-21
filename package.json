@@ -16,6 +16,7 @@
     "lint:ci": "eslint --max-warnings 51",
     "prepare": "husky",
     "db:seed": "pnpx prisma db seed",
+    "db:backfill-class-history": "pnpx tsx scripts/backfill-class-history.ts",
     "release": "release-it",
     "release:patch": "release-it patch --ci",
     "release:minor": "release-it minor --ci",
