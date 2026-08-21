@@ -16,6 +16,9 @@ export const ENTITY_LABELS = {
   TEACHER: ROLE_LABELS.TEACHER,
   CLASS: "Kelas",
   SUBJECT: "Mata Pelajaran",
+  /** Not a `UserRole` — parents have no account yet, but the noun is shown
+   *  in the portal login, so it is single-sourced here like the others. */
+  PARENT: "Orang Tua",
 } as const;
 
 /**

@@ -490,3 +490,34 @@
     padding: 0 !important;
   }
 }
+
+/* ============================================================
+   Portal login — pastel wash
+   ------------------------------------------------------------
+   Two soft blooms over the ruled lines of an attendance register,
+   the artefact this portal is built around. Colours come only from
+   the brand ramps (docs/design_system.md §2.1), held at pastel
+   strength so all three hues can sit together without shouting.
+   ============================================================ */
+.login-wash {
+  --login-bloom-a: color-mix(in srgb, var(--green-400) 40%, transparent);
+  --login-bloom-b: color-mix(in srgb, var(--yellow-300) 38%, transparent);
+  --login-rule: color-mix(in srgb, var(--primary-800) 7%, transparent);
+
+  background-image:
+    radial-gradient(
+      62% 55% at 16% 10%,
+      var(--login-bloom-a) 0%,
+      transparent 72%
+    ),
+    radial-gradient(
+      52% 45% at 92% 88%,
+      var(--login-bloom-b) 0%,
+      transparent 72%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--login-rule) 0 1px,
+      transparent 1px 36px
+    );
+}

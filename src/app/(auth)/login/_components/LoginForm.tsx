@@ -19,6 +19,7 @@ import {
 } from "@/src/components/ui/form";
 import type { AuthUser } from "@/src/features/auth/types";
 import { getHomeRouteForRole } from "@/src/features/auth/utils/getHomeRouteForRole";
+import { LOGIN_EMAIL_PLACEHOLDER } from "@/src/features/auth/constants";
 import { loginSchema, type LoginFormData } from "./LoginSchema";
 import { GoogleLoginButton } from "./GoogleLoginButton";
 
@@ -89,7 +90,7 @@ export function LoginForm() {
               <FormControl>
                 <Input
                   type="email"
-                  placeholder="admin@muda.sch.id"
+                  placeholder={LOGIN_EMAIL_PLACEHOLDER}
                   autoComplete="email"
                   disabled={isLoading}
                   {...field}
@@ -120,7 +121,11 @@ export function LoginForm() {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button
+          type="submit"
+          className="bg-primary-900 hover:bg-primary-800 h-10 w-full"
+          disabled={isLoading}
+        >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -136,7 +141,7 @@ export function LoginForm() {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">Atau</span>
+            <span className="bg-background text-muted-foreground px-2">Atau</span>
           </div>
         </div>
 

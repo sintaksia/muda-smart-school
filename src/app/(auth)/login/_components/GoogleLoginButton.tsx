@@ -49,7 +49,7 @@ export function GoogleLoginButton({
     <Button
       type="button"
       variant="outline"
-      className="w-full"
+      className="h-10 w-full hover:bg-neutral-50 hover:text-neutral-900"
       disabled={disabled || isLoading}
       onClick={handleGoogleLogin}
     >
