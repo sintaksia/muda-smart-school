@@ -63,6 +63,15 @@ export function ComboboxField({
 
   const selected = options.find((option) => option.value === value);
 
+  // Mirror what the Radix Select shows so the two triggers are indistinguishable.
+  // `emptyLabel` is a *chosen* row there ("Semua Kelas" is a real filter state,
+  // and `selectSentinel` gives it a value Radix will accept), so it renders in
+  // the foreground; only a true placeholder — nothing selected and no empty row
+  // to fall back on — is muted. Getting this wrong is invisible in a form, but
+  // side by side in a filter bar one dropdown reads grey and its neighbour black.
+  const label = selected?.label ?? emptyLabel ?? placeholder ?? ariaLabel;
+  const isPlaceholder = !selected && !emptyLabel;
+
   // Filtered here rather than by cmdk: matching the label only keeps an id
   // like `cmf3k…` from scoring against the query, and lets the list be capped.
   const matches = useMemo<SelectOption[]>(() => {
@@ -95,13 +104,11 @@ export function ComboboxField({
           className={cn(
             selectTriggerClass,
             "w-full justify-between bg-white font-normal",
-            !selected && "text-muted-foreground",
+            isPlaceholder && "text-muted-foreground",
             className,
           )}
         >
-          <span className="truncate">
-            {selected?.label ?? placeholder ?? emptyLabel ?? ariaLabel}
-          </span>
+          <span className="truncate">{label}</span>
           <ChevronsUpDownIcon className="size-4 shrink-0 opacity-50" />
         </button>
         {/* eslint-enable jsx-a11y/role-has-required-aria-props */}
@@ -132,7 +139,7 @@ export function ComboboxField({
                       value ? "opacity-0" : "opacity-100",
                     )}
                   />
-                  <span className="text-muted-foreground">{emptyLabel}</span>
+                  <span>{emptyLabel}</span>
                 </CommandItem>
               )}
               {matches.map((option) => (

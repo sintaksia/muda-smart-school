@@ -28,7 +28,11 @@ interface SelectFieldProps {
    * select, which then has no way to return to empty.
    */
   emptyLabel?: string;
-  /** Shown while nothing is selected. Defaults to `emptyLabel`, then `ariaLabel`. */
+  /**
+   * Shown while nothing is selected — and only meaningful *without* an
+   * `emptyLabel`, since an empty row is itself a selection. Renders muted;
+   * `emptyLabel` renders in the foreground. Defaults to `ariaLabel`.
+   */
   placeholder?: string;
   ariaLabel: string;
   className?: string;
