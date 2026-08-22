@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 import { ENTITY_LABELS } from "@/src/lib/constants";
-import type { SidebarNavItem } from "./SidebarCollapsibleGroup";
+import type { SidebarNavItem } from "./sidebarGroup";
 
 // Menu Utama
 export const mainMenuItems: SidebarNavItem[] = [

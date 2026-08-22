@@ -20,10 +20,8 @@ import {
   SidebarTrigger,
 } from "@/src/components/ui/sidebar";
 import { UserMenu } from "./UserMenu";
-import {
-  SidebarCollapsibleGroup,
-  SIDEBAR_GROUP_CLASS,
-} from "./SidebarCollapsibleGroup";
+import { SidebarCollapsibleGroup } from "./SidebarCollapsibleGroup";
+import { SIDEBAR_GROUP_CLASS } from "./sidebarGroup";
 import {
   mainMenuItems,
   cmsMenuItems,
